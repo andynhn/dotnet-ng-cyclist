@@ -1,0 +1,26 @@
+<div class="container mt-5">
+    <div *ngIf="!registerMode" style='text-align: center;'>
+        <h1>Saddle up cyclists!</h1>
+        <p class="lead mb-5">Sign up today to meet new cylists in your area, plan group rides, and more!</p>
+        <div class="text-center">
+            <button (click)="registerToggle()" class="btn btn-primary btn-lg mr-2">Sign up</button>
+            <button class="btn btn-info btn-lg">Info</button>
+        </div>
+    </div>
+
+    <div *ngIf="registerMode" class="container">
+        <div class="row justify-content-center">
+            <div class="col-5">
+                <!-- send "users" from this landing page component to the register component (parent to child). 
+                    So use [ ] in <app-register> for it to receive data  -->
+                <!-- e.g. [variableInChildComponent] = "variable in this component" -->
+                <!-- make sure userseFromHomeComponent has the @Input() decorator -->
+                <app-register 
+                    (cancelRegisterEmitToLandingFromRegister)="cancelRegisterMode($event)">
+                </app-register>
+                <!-- () to send data. data emitted from cancelRegisterEmitToLandingFromRegister emits a boolean from child to parent component. -->
+                <!-- This lets us trigger the cancelRegisterMode method in the parent component -->
+            </div>
+        </div>
+    </div>
+</div>

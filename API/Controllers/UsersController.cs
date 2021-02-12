@@ -51,10 +51,33 @@ namespace API.Controllers
         /// List of users via the memberDto data object, as well as Status Code 200OK.
         /// </returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await _unitOfWork.UserRepository.GetMembersAsync();
+            /*
+                User.GetUsername() gets the username from a User claims principle
+                We want to get the username from what we're authenticating against which is the token.
+                Inside a Controller we have access to a claims principle of the User. This contains info about their identity.
+                We want to find the claim that matches the name identifier, which is the claim that we give the user in their token.
+            */
+            userParams.CurrentUsername = User.GetUsername();
 
+            // if no gender is selected in userParams, default to returning all
+            if (string.IsNullOrEmpty(userParams.Gender))
+                userParams.Gender = "all";
+            if (string.IsNullOrEmpty(userParams.CyclingFrequency))
+                userParams.CyclingFrequency = "all";
+            if (string.IsNullOrEmpty(userParams.CyclingCategory))
+                userParams.CyclingCategory = "all";
+            if (string.IsNullOrEmpty(userParams.SkillLevel))
+                userParams.SkillLevel = "all";
+
+            // Get a PagedList of filtered users based on the userParams
+            var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
+
+            // Pass the the pagination data back via a Pagination Header. We always have access to the Response in here.
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
+            // Needed the Ok() result here because of IEnumerable (revisit returning ok, sending a pagedlist now)
             return Ok(users);
         }
 
@@ -89,21 +112,18 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
         {
-            // get the current user from the Claims Principal user.
+            // get the current user from the Claims Principal.
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             // use automapper to map the memberUpdateDto information to the user we returned from the UserRepository.
             _mapper.Map(memberUpdateDto, user);
-
-            // change the UpdatedAt property.
+            // modify the UpdatedAt property.
             user.UpdatedAt = DateTime.UtcNow;
-
             // Update the database with the new changes.
             _unitOfWork.UserRepository.Update(user);
 
             // save changes to the db then return 204NoContent.
             if (await _unitOfWork.Complete()) return NoContent();
-
             // return 400BadRequest if all fails.
             return BadRequest("Failed to update user");
         }
@@ -125,14 +145,10 @@ namespace API.Controllers
             // get logged in user from the ClaimsPrincipal
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
-            // Add photo to cloudinary via the photo service. get results back from the photo service
+            // Add photo to cloudinary via the photo service. get results back from the photo service.
             var result = await _photoService.AddPhotoAsync(file);
-
             // If result.Error has data, return BadRequest beacuse there was an error uploading to Cloudinary
-            if (result.Error != null)
-            {
-                return BadRequest(result.Error.Message);
-            }
+            if (result.Error != null) return BadRequest(result.Error.Message);
 
             // Create a new photo object with the data returned from Cloudinary.
             var photo = new Photo
@@ -140,16 +156,12 @@ namespace API.Controllers
                 Url = result.SecureUrl.AbsoluteUri,
                 PublicId = result.PublicId
             };
-
             // add the new photo to the user's existing list of photos.
             user.Photos.Add(photo);
 
-            // save changes to the db...
+            // save changes to the db...then send route name, route values, and value in order to send back a 201 status.
             if (await _unitOfWork.Complete())
-            {
-                // ...then send route name, route values, and value in order to send back a 201 status.
                 return CreatedAtRoute("GetUser", new { username = user.UserName }, _mapper.Map<PhotoDto>(photo));
-            }
 
             // if we make it here, then something went wrong.
             return BadRequest("Problem adding photo");

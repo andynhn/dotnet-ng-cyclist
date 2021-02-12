@@ -1,0 +1,91 @@
+/* You can add global styles to this file, and also import other style files */
+
+/*
+    Loading Spinner
+*/
+.loader-overlay {
+    position: fixed; /* Sit on top of the page content */
+    display: block; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(212, 212, 212, 0.199); /* Black background with opacity */
+    z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+.loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 120px;
+    height: 120px;
+    margin: -76px 0 0 -76px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #0929b9;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+  
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/*
+    Tabs for a members about page
+*/
+.tab-panel {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+  
+.nav-tabs > li.open, .member-tabset > .nav-tabs > li:hover {
+    border-bottom: 4px solid #327ffc6e;
+}
+  
+.member-tabset > .nav-tabs > li.open > a, .member-tabset > .nav-tabs > li:hover > a {
+    border: 0;
+    background: none !important;
+    color: #333333;
+}
+  
+.member-tabset > .nav-tabs > li.open > a > i, .member-tabset > .nav-tabs > li:hover > a > i {
+    color: #a6a6a6;
+}
+  
+.member-tabset > .nav-tabs > li.open .dropdown-menu, .member-tabset > .nav-tabs > li:hover .dropdown-menu {
+    margin-top: 0px;
+}
+  
+.member-tabset > .nav-tabs > li.active {
+    border-bottom: 4px solid #062785;
+    position: relative;
+}
+  
+.member-tabset > .nav-tabs > li.active > a {
+    border: 0 !important;
+    color: #333333;
+}
+  
+.member-tabset > .nav-tabs > li.active > a > i {
+    color: #404040;
+}
+  
+.member-tabset > .tab-content {
+    margin-top: -3px;
+    background-color: #fff;
+    border: 0;
+    border-top: 1px solid #eee;
+    padding: 15px 0;
+}

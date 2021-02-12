@@ -51,9 +51,27 @@ namespace API.Extensions
                         ValidateAudience = false
                     };
 
+                    // Valdiating messages sent via Signal R: futher configure so that we can validate messages sent with Signal R.
+                    options.Events = new JwtBearerEvents
+                    {
+                        // this allows the client to send up the JWT as a query string. But we also need to
+                        // "AllowCredentials" within our Startup.cs app.UseCors configuration
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"]; // signal r sends up token by default with this excact spelling
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs")) // this needs to match what we use in Startup.cs
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+
                 });
 
-            // Configure authorization (e.g. Roles) to include Admin and Moderator roles.
+            // Configure authorization policies (e.g. Roles) to include Admin and Moderator roles.
             services.AddAuthorization(opt => 
             {
                 opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));

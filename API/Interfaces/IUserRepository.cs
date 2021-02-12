@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 
 namespace API.Interfaces
 {
@@ -11,10 +12,11 @@ namespace API.Interfaces
         Task<AppUser> GetUserByUsernameAsync(string username);
         Task<AppUser> GetUserByPhotoId(int photoId);
         Task<IEnumerable<AppUser>> GetUsersAsync();
+        Task<string> GetUserGender(string username);
         void Update(AppUser user);
 
         // need to ignore the query filter for photos for the current user...
         Task<MemberDto> GetMemberAsync(string username, bool? isCurrentUser);
-        Task<IEnumerable<MemberDto>> GetMembersAsync();
+        Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
     }
 }

@@ -1,0 +1,106 @@
+<div class="text-center mt-1">
+    <h2>Discover cyclists</h2>
+    <span *ngIf="pagination?.totalItems > 0 && pagination?.totalItems != 1">
+        <h5>Found {{pagination?.totalItems}} cyclists. Reach out and plan a ride!</h5>
+    </span>
+    <span *ngIf="pagination?.totalItems == 1">
+        <h5>Found {{pagination?.totalItems}} cyclist. Reach out and plan a ride!</h5>
+    </span>
+    <span *ngIf="pagination?.totalItems == 0">
+        <h5>Sorry! Didn't find any cyclists that met your criteria.</h5>
+    </span>
+</div>
+
+<div class="container-mt-3">
+    <form #form="ngForm" class="mb-1" (ngSubmit)="loadMembers()" autocomplete="off">
+        <div class="d-flex justify-content-between mb-1">
+            <div>
+                <button class="btn btn-primary btn-sm ml-1" type="submit">Apply Filters</button>
+                <button (click)="resetFilters()" class="btn btn-secondary btn-sm ml-1" type="submit">Reset Filters</button>
+            </div>
+            
+            <div>
+                <div class="btn-group float-right">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-info btn-sm ml-1" 
+                        name="orderBy" 
+                        [(ngModel)]="userParams.orderBy"
+                        (click)="loadMembers()"
+                        btnRadio="lastActive">Last Active</button>
+                    <button 
+                        type="button"
+                        class="btn btn-outline-info btn-sm ml-1" 
+                        name="orderBy" 
+                        [(ngModel)]="userParams.orderBy"
+                        (click)="loadMembers()"
+                        btnRadio="created">Newest Members</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group form-inline">
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Age from: </label>
+                <input type="number" class="form-control ml-1" style="width: 60px;" name="minAge" [(ngModel)]="userParams.minAge">
+            </div>
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Age to: </label>
+                <input type="number" class="form-control ml-1" style="width: 60px;" name="maxAge" [(ngModel)]="userParams.maxAge">
+            </div>
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Gender: </label>
+                <select [(ngModel)]="userParams.gender" name="gender" style="width: 80px" class="form-control ml-1">
+                    <option *ngFor="let gender of genderList" [value]="gender.value" >
+                        {{gender.display}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Cycling Frequency: </label>
+                <select [(ngModel)]="userParams.cyclingFrequency" name="cyclingFrequency" style="width: 80px" class="form-control ml-1">
+                    <option *ngFor="let item of cyclingFrequency" [value]="item.value" >
+                        {{item.display}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Cycling Category: </label>
+                <select [(ngModel)]="userParams.cyclingCategory" name="cyclingCategory" style="width: 100px" class="form-control ml-1">
+                    <option *ngFor="let item of cyclingCategory" [value]="item.value" >
+                        {{item.display}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Skill Level: </label>
+                <select [(ngModel)]="userParams.skillLevel" name="skillLevel" style="width: 100px" class="form-control ml-1">
+                    <option *ngFor="let item of skillLevel" [value]="item.value" >
+                        {{item.display}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        
+
+
+    </form>
+</div>
+
+<div class="d-flex justify-content-center" *ngIf="pagination">
+    <pagination 
+        [boundaryLinks]="true" 
+        [totalItems]="pagination.totalItems"
+        [itemsPerPage]="pagination.itemsPerPage"
+        [(ngModel)]="pagination.currentPage"
+        (pageChanged)="pageChanged($event)" 
+        previousText="&lsaquo;" 
+        nextText="&rsaquo;" 
+        firstText="&laquo;" 
+        lastText="&raquo;" >
+    </pagination>
+</div>
+<div class="row">
+    <div class="col-2" *ngFor="let member of members">
+        <app-member-card [memberFromMemberCardComponent]="member"></app-member-card>
+    </div>
+</div>

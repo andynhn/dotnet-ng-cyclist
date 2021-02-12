@@ -2,6 +2,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,11 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            // Since our "presence tracker dictionary" is a service that is shared with every connection coming into our server, we add it as a Singleton
+            // NOTE: scalability issues. But we've locked our dictionary while others access, etc.
+            // To scale, use something like Redis or save to your DB rather than tracking presence in memory
+            services.AddSingleton<PresenceTracker>();
+            
             // Need to configure cloudinary based on keys set in our config files.
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             

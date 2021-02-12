@@ -28,6 +28,10 @@ namespace API.Data
         {
         }
 
+        public DbSet<Message> Messages { get; set; }
+        // properties for Signal R group hub message implementation
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Connection> Connections { get; set; }
         public DbSet<Photo> Photos { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -47,6 +51,20 @@ namespace API.Data
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
 
+            // configure the Recipient side of the Message feature.
+            // a message has one recipient with many messages that can be received.
+            builder.Entity<Message>()
+                .HasOne(u => u.Recipient)
+                .WithMany(m => m.MessagesReceived)
+                .OnDelete(DeleteBehavior.Restrict); // only remove if other party deleted it as well
+            
+            // configure the sender side of the message feature.
+            // a message has one sender with many messages that can be sent.
+            builder.Entity<Message>()
+                .HasOne(u => u.Sender)
+                .WithMany(m => m.MessagesSent)
+                .OnDelete(DeleteBehavior.Restrict); // only remove if other party deleted it as well.
+            
             // add a query filter to only return approved photos
             builder.Entity<Photo>()
                 .HasQueryFilter(p => p.IsApproved);
@@ -57,10 +75,10 @@ namespace API.Data
     }
 
     /*
-        Static class that makes sure all dat time is in UTC format.
+        Static class that makes sure all date time is in UTC format.
     */
     /// <summary>
-    /// Static class that makes sure all dat time is in UTC format.
+    /// Static class that makes sure all date time is in UTC format.
     /// </summary>
     public static class UtcDateAnnotation
     {

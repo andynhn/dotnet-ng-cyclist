@@ -1,0 +1,63 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container">
+      <a class="navbar-brand" routerLink='/' routerLinkActive='active'>Cycling App</a>
+      <!-- <button class="navbar-toggler" 
+            type="button" 
+            data-toggle="collapse" 
+            data-target="#navbarColor02" 
+            aria-controls="navbarColor02" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button> -->
+  
+      <ul class="navbar-nav mr-auto">
+        <ng-container *ngIf="accountService.currentUser$ | async" >
+          <!-- use conditionals in the ng-container -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink='/home' routerLinkActive='active'>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink='/discover' routerLinkActive='active'>Discover</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink='/chat' routerLinkActive='active'>Chat</a>
+          </li>
+          <li class="nav-item" *appHasRole='["Admin", "Moderator"]'>
+            <a class="nav-link" routerLink='/admin' routerLinkActive='active'>Admin</a>
+          </li>
+        </ng-container>
+        <li class="nav-item">
+          <a class="nav-link" routerLink='/errors' routerLinkActive='active'>Errors</a>
+        </li>
+      </ul>
+  
+      <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
+          <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}">
+          <!-- async pipe auto-unsubscribes if our component is no longer visible or in use. -->
+          <!-- With the pipe, we can avoid subscribing to a currentUser$ observable in the nav.component.ts file where we'd have to manually unsubscribe. -->
+          <a class="dropdown-toggle text-light ml-2" dropdownToggle>Welcome {{user.firstName || user.username | titlecase}}</a>
+          <div class="dropdown-menu mt-3" *dropdownMenu>
+              <a class="dropdown-item" routerLink='/member/edit'>Edit Profile</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" (click)="logout()">Logout</a>
+          </div>
+      </div>
+  
+      <form *ngIf="(accountService.currentUser$ | async) === null" #loginForm="ngForm" class="form-inline mt-2 mt-md-0" (ngSubmit)="login()" autocomplete="off">
+          <input
+              name="username"
+              [(ngModel)]="model.username"
+              class="form-control mr-sm-2" 
+              type="text" 
+              placeholder="Username">
+          <input
+              name="password"
+              [(ngModel)]="model.password"
+              class="form-control mr-sm-2" 
+              type="password" 
+              placeholder="Password">
+          <button class="btn btn-success my-2 my-sm-0" type="submit">Login</button>
+      </form>
+    </div>
+  </nav>

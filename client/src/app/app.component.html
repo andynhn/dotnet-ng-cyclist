@@ -1,0 +1,10 @@
+<div *ngIf="isLoading">
+  <div class="loader-overlay">
+      <div class="loader"></div>
+  </div>
+</div>
+
+<app-nav></app-nav>
+<div class="container" style="margin-top: 100px">
+  <router-outlet></router-outlet>
+</div>

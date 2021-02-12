@@ -6,6 +6,7 @@ namespace API.Interfaces
     {
         IUserRepository UserRepository {get; }
         IPhotoRepository PhotoRepository {get; }
+        IMessageRepository MessageRepository {get; }
         Task<bool> Complete();
         bool HasChanges();
     }

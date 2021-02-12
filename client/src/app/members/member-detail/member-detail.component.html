@@ -1,0 +1,77 @@
+<div class="row">
+    <div class="col-4">
+        <div class="card">
+            <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.firstName}}" 
+                class="card-img-top img-thumbnail">
+            <div class="card-body">
+                <div class="mb-2" *ngIf="(presence.onlineUsers$ | async).includes(member.username)">
+                    <i class="fa fa-user-circle text-success"></i> Online now
+                </div>
+                <div>
+                    <strong>Location:</strong>
+                    <p>{{member.city}}, {{member.country}}</p>
+                </div>
+                <div>
+                    <strong>Age:</strong>
+                    <p>{{member.age}}</p>
+                </div>
+                <div>
+                    <strong>Last Active:</strong>
+                    <p>{{member.lastActive | timeago}}</p>
+                </div>
+                <div>
+                    <strong>Member since:</strong>
+                    <p>{{member.createdAt | date: 'dd MMM yyyy'}}</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group d-flex">
+                    <button 
+                        class="btn btn-success"
+                        (click)="selectTab(3)">Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <tabset class="member-tabset" #memberTabs>
+            <tab heading='About {{member.firstName | titlecase}}' (selectTab)="onTabActivated($event)">
+                <h4>Description</h4>
+                <p>{{member.introduction}}</p>
+                <h4>Cycling Preferences</h4>
+                <table class="table">
+                    <tr>
+                        <td><strong>Cycling Frequency:</strong></td>
+                        <td>{{member.cyclingFrequency | titlecase}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Preferred cycling category:</strong></td>
+                        <td>{{member.cyclingCategory | titlecase}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cycling skill level:</strong></td>
+                        <td>{{member.skillLevel |titlecase}}</td>
+                    </tr>
+                </table>
+            </tab>
+            <tab heading='Interests' (selectTab)="onTabActivated($event)">
+                <h4>Interests</h4>
+                <p>{{member.interests}}</p>
+            </tab>
+            <tab heading='Photos' (selectTab)="onTabActivated($event)">
+                <ngx-gallery 
+                    [options]="galleryOptions" 
+                    [images]="galleryImages" 
+                    class="ngx-gallery" 
+                    style="display: inline-block; margin-bottom: 20px;">
+                </ngx-gallery>
+            </tab>
+            <tab heading='Messages' (selectTab)="onTabActivated($event)">
+                <app-member-messages
+                    [username]="member.username">
+                </app-member-messages>
+            </tab>
+        </tabset>
+    </div>
+</div>

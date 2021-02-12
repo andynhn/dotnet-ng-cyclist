@@ -6,9 +6,11 @@ namespace API.Extensions
     {
         /*
             Static method that calculates age given a date
+            We use this so that users can filter user lists by age.
         */
         /// <summary>
         /// Static method that calculates age given a date
+        /// We use this so that users can filter user lists by age.
         /// </summary>
         public static int CalculateAge(this DateTime dob)
         {

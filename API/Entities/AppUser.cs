@@ -23,6 +23,9 @@ namespace API.Entities
         public string Gender { get; set; }
         public string Introduction { get; set; }
         public string Interests { get; set; }
+        public string CyclingFrequency { get; set; }   // Daily, Weekly, Monthly
+        public string CyclingCategory { get; set; } // Road, Gravel, Mountain
+        public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
         public string City { get; set; }
         public string Country { get; set; }
                 
@@ -33,5 +36,8 @@ namespace API.Entities
 
         // many to many - 1 user can have many roles. 1 role can have many users.
         public ICollection<AppUserRole> UserRoles { get; set; }
+
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
     }
 }

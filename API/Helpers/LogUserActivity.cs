@@ -20,7 +20,7 @@ namespace API.Helpers
     public class LogUserActivity : IAsyncActionFilter
     {
         /// <summary>
-        /// this method updates the lastActive property for a logged in user to now.
+        /// This method updates the lastActive property for a logged in user to now.
         /// </summary>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -31,13 +31,13 @@ namespace API.Helpers
             // get userId from User claims principle and extension method.
             var userId = resultContext.HttpContext.User.GetUserId();
             // get unit of work repository
-            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            var unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
             // get user from repository using username from claims principal
-            var user = await uow.UserRepository.GetUserByIdAsync(userId);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
             // set LastActive to Utc Now.
             user.LastActive = DateTime.UtcNow;
             // async save to repository.
-            await uow.Complete();
+            await unitOfWork.Complete();
         }
     }
 }

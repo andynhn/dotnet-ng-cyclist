@@ -3,11 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace API.Entities
 {
     /*
-        Entity for Photos in our app.
+        Entity for Photos in our app. These photos can be set to a user's profile.
         PublicId property is needed for Cloudinary integration.
     */
     /// <summary>
-    /// Entity for Photos in our app.
+    /// Entity for Photos in our app. These photos can be set to a user's profile.
+    /// PublicId property is needed for Cloudinary integration.
     /// </summary>
     [Table("Photos")]
     public class Photo

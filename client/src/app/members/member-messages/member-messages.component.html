@@ -1,0 +1,85 @@
+<div class="card">
+    <div class="card-body" 
+        #scrollMe
+        style="overflow: scroll; height: 535px;"
+        [scrollTop]="scrollMe.scrollHeight"
+    >
+        <div *ngIf="(messageService.messageThread$ | async)?.length === 0">
+            No messages yet... say hi by using the message box below
+        </div>
+
+        <ul *ngIf="(messageService.messageThread$ | async)?.length > 0" 
+            class="chat">
+            <li *ngFor="let message of (messageService.messageThread$ | async)">
+                <div *ngIf="message.senderUsername === user.username; then thenBlock else elseBlock"></div>
+                <ng-template #thenBlock>
+                    <div>
+                        <span class="chat-img float-right ml-2">
+                            <img src="{{message.senderPhotoUrl || './assets/user.png'}}" alt="{{message.senderUsername}}" class="rounded-circle">
+                        </span>
+                        <div class="chat-body text-right">
+                            <div class="header">
+                                <small class="text-muted">
+                                    <span class="fa fa-clock-o"> {{message.messageSent | timeago}}</span>
+                                    <!-- display read/unread only for logged-in user's sent messages,
+                                    not if the message sender is the other member -->
+                                    <span class="text-danger" *ngIf="!message.dateRead 
+                                        && message.senderUsername !== username">
+                                        (unread)
+                                    </span>
+                                    <span class="text-success" *ngIf="message.dateRead 
+                                        && message.senderUsername !== username">
+                                        (read {{message.dateRead | timeago}})
+                                    </span>
+                                </small>
+                            </div>
+                            <p>{{message.content}}</p>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #elseBlock>
+                    <div>
+                        <span class="chat-img float-left mr-2">
+                            <img src="{{message.senderPhotoUrl || './assets/user.png'}}" alt="{{message.senderUsername}}" class="rounded-circle">
+                        </span>
+                        <div class="chat-body">
+                            <div class="header">
+                                <small class="text-muted">
+                                    <span class="fa fa-clock-o"> {{message.messageSent | timeago}}</span>
+                                    <span class="text-danger" *ngIf="!message.dateRead 
+                                        && message.senderUsername !== username">
+                                        (unread)
+                                    </span>
+                                    <span class="text-success" *ngIf="message.dateRead 
+                                        && message.senderUsername !== username">
+                                        (read {{message.dateRead | timeago}})
+                                    </span>
+                                </small>
+                            </div>
+                            <p>{{message.content}}</p>
+                        </div>
+                    </div>
+                </ng-template>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card-footer">
+        <form #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
+            <div class="input-group">
+                <input 
+                    name="messageContent"
+                    required
+                    [(ngModel)]="messageContent"
+                    type="text" 
+                    class="form-control input-sm" 
+                    placeholder="Send a private message">
+                <div class="input-group-append">
+                    <button [disabled]="!messageForm.valid || loading" class="btn btn-primary" type="submit">Send
+                        <i class="fa fa-spinner fa-spin" *ngIf="loading"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

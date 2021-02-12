@@ -24,7 +24,7 @@ namespace API.Data
             if (await userManager.Users.AnyAsync()) return;
             
             // get userData from json file.
-            var userData = await System.IO.File.ReadAllTextAsync("Data/UserSeedData.json");
+            var userData = await System.IO.File.ReadAllTextAsync("Data/UserSeedData2.json");
             // deserialize the json file into a list of app users
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
 

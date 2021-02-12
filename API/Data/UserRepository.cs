@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -15,7 +16,7 @@ namespace API.Data
         Primary repository for Users
     */
     /// <summary>
-    /// Primary repository for Userse
+    /// Primary repository for Users
     /// </summary>
     public class UserRepository : IUserRepository
     {
@@ -51,6 +52,15 @@ namespace API.Data
                 .SingleOrDefaultAsync(x => x.UserName == username);
         }
 
+
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users
+                .Where(x => x.UserName == username)
+                .Select(x => x.Gender).FirstOrDefaultAsync();
+        }
+
+
         /// <summary>
         /// Gets a list of users.
         /// </summary>
@@ -59,14 +69,14 @@ namespace API.Data
         /// </returns>
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            // must .Include to have photos returned from data context as well.
+            // must ".Include" to have photos returned from data context as well.
             return await _context.Users
                 .Include(p => p.Photos)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Updates an app user. Signals to Entity Framework that the entity was modified.
+        /// Updates an app user. Signal to Entity Framework that the entity was modified.
         /// </summary>
         /// <returns>
         /// Void
@@ -84,7 +94,7 @@ namespace API.Data
         /// </returns>
         public async Task<AppUser> GetUserByPhotoId(int photoId)
         {
-            // from the context, include photos, ignore query fitlers and find a user,
+            // from the context, include photos, ignore query filters, and find a user,
             // first or default where any photo id matches the given photo id
             return await _context.Users
                 .Include(p => p.Photos)
@@ -94,7 +104,7 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Gets a user, as a member dto, which we use to show user profiles
+        /// Gets a user, projected to a member dto, which we use to show user profiles
         /// </summary>
         /// <returns>
         /// 1 app user mapped as a member dto
@@ -109,24 +119,54 @@ namespace API.Data
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                 .AsQueryable();
             
-            // ignore the photo query filter for the current user. 
+            // ignore the photo query filter for the current user so that they can still see unapproved photos.
             if (isCurrentUser == true) query = query.IgnoreQueryFilters();
 
-            // we don't need the .Include when project to automapper above. Can be more efficient.
+            // we don't need the ".Include()" when we project to automapper above. Can be more efficient sometimes.
             return await query.FirstOrDefaultAsync();
         }
 
         /// <summary>
-        /// Gets a list of members to dispay on the page
+        /// Main method to get a list of members to dispay on the page. Return it as a PagedList so that we can enable pagination.
+        /// AsNoTracking() turns off tracking in Entity Framework because we just want to read from it.
+        /// Pass in userParams (in the query string) for queryable filtered results.
         /// </summary>
         /// <returns>
-        /// 1List of app users as member dtos.
+        /// 1 List of app users as member dtos.
         /// </returns>
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            return await _context.Users
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            // queryable so that we can decide what we want to filter by with a query.
+            var query = _context.Users.AsQueryable();
+
+            // with the given userParams, filter out the logged in user from the list.
+            query = query.Where(u => u.UserName != userParams.CurrentUsername);
+            // filter by these categories only if the user provided a filter.
+            if (userParams.Gender.ToLower() != "all") 
+                query = query.Where(u => u.Gender == userParams.Gender);
+            if (userParams.CyclingFrequency.ToLower() != "all") 
+                query = query.Where(u => u.CyclingFrequency == userParams.CyclingFrequency);
+            if (userParams.CyclingCategory.ToLower() != "all") 
+                query = query.Where(u => u.CyclingCategory == userParams.CyclingCategory);
+            if (userParams.SkillLevel.ToLower() != "all")
+                query = query.Where(u => u.SkillLevel == userParams.SkillLevel);
+
+            // If the user wants to filter users by age, calculate minimum age and maximum age filtering
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+            query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+            // these are the new C# switch expressions. instead of creating switch and cases, we can do this.
+            // the _ is the default case.
+            query = userParams.OrderBy switch
+            {
+                "createdAt" => query.OrderByDescending(u => u.CreatedAt),
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
+
+            // project to automapper here before sending back
+            return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
+                userParams.PageNumber, userParams.PageSize);
         }
     }
 }

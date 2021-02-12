@@ -26,9 +26,13 @@ namespace API.Data
             _mapper = mapper;
         }
 
+        // Below are the primary repositories in the app. Unit of work will access them and be the primary method of communication.
         public IUserRepository UserRepository => new UserRepository(_context, _mapper);
 
+        public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
+
         public IPhotoRepository PhotoRepository => new PhotoRepository(_context);
+
 
         /// <summary>
         /// Primary method to save changes to the database via Entity Framework.

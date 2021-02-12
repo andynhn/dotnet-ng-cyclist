@@ -10,6 +10,9 @@ namespace API.DTOs
     {
         public string Introduction { get; set; }
         public string Interests { get; set; }
+        public string CyclingFrequency { get; set; }   // Daily, Weekly, Monthly
+        public string CyclingCategory { get; set; } // Road, Gravel, Mountain
+        public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
         public string City { get; set; }
         public string Country { get; set; }
     }

@@ -18,16 +18,22 @@ namespace API.Extensions
     /// </summary>
     public static class ClaimsPrincipalExtensions
     {
+        /// <summary>
+        /// Extension method for getting a username, based on the User in the ClaimsPrincipal.
+        /// </summary>
         public static string GetUsername(this ClaimsPrincipal user)
         {
             // ClaimTypes.Name is the UniqueName property that we set in our TokenService. (even though it's slightly different)
             return user.FindFirst(ClaimTypes.Name)?.Value;
         }
 
+        /// <summary>
+        /// Extension method for getting a user Id, based on the User in the ClaimsPrincipal.
+        /// </summary>
         public static int GetUserId(this ClaimsPrincipal user)
         {
             // ClaimTypes.NameIdentifier is the NameId property that we set inside our TokenService. (even though it's slightly different)
-            // our user id is of type int, in this case.
+            // NOTE: our user id is of type int, in this case.
             return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         }
     }
