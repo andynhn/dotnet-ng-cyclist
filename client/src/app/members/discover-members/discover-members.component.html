@@ -15,12 +15,13 @@
     <form #form="ngForm" class="mb-1" (ngSubmit)="loadMembers()" autocomplete="off">
         <div class="d-flex justify-content-between mb-1">
             <div>
-                <button class="btn btn-primary btn-sm ml-1" type="submit">Apply Filters</button>
+                <button [disabled]="!form.dirty" class="btn btn-primary btn-sm ml-1" type="submit">Apply Filters</button>
                 <button (click)="resetFilters()" class="btn btn-secondary btn-sm ml-1" type="submit">Reset Filters</button>
             </div>
             
             <div>
                 <div class="btn-group float-right">
+                    <!-- TODO: Make this a drop down. Add Sort A-Z, Z-A -->
                     <button 
                         type="button"
                         class="btn btn-outline-info btn-sm ml-1" 
@@ -57,7 +58,7 @@
             </div>
             <div class="form-group px-2 mt-1 input-group input-group-sm">
                 <label>Cycling Frequency: </label>
-                <select [(ngModel)]="userParams.cyclingFrequency" name="cyclingFrequency" style="width: 80px" class="form-control ml-1">
+                <select [(ngModel)]="userParams.cyclingFrequency" name="cyclingFrequency" style="width: 90px" class="form-control ml-1">
                     <option *ngFor="let item of cyclingFrequency" [value]="item.value" >
                         {{item.display}}
                     </option>
@@ -79,6 +80,7 @@
                     </option>
                 </select>
             </div>
+            <!-- TODO: Create filter for searching via TEXT. -->
         </div>
         
 
@@ -86,12 +88,13 @@
     </form>
 </div>
 
-<div class="d-flex justify-content-center" *ngIf="pagination">
+<div class="d-flex justify-content-center" *ngIf="pagination && pagination?.totalItems != 0">
     <pagination 
         [boundaryLinks]="true" 
         [totalItems]="pagination.totalItems"
         [itemsPerPage]="pagination.itemsPerPage"
         [(ngModel)]="pagination.currentPage"
+        [maxSize]="10"
         (pageChanged)="pageChanged($event)" 
         previousText="&lsaquo;" 
         nextText="&rsaquo;" 

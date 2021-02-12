@@ -4,6 +4,7 @@ import { ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
+import { MessageService } from './message.service';
 import { PresenceService } from './presence.service';
 
 @Injectable({
@@ -18,7 +19,7 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource.asObservable();
 
-  constructor(private http: HttpClient, private presence: PresenceService) { }
+  constructor(private http: HttpClient, private presence: PresenceService, private messageService: MessageService) { }
 
   /**
    * Primary method for logging in users.
@@ -114,6 +115,7 @@ export class AccountService {
    */
   logout() {
     localStorage.removeItem('user');
+    this.messageService.resetPageParams();  // destroy the messages cache for the inbox/outbox/unread tab.
     this.currentUserSource.next(null);
     this.presence.stopHubConnection();
     // signalR auto disconnnects user from hub when user closes browser, moves to another website, etc.

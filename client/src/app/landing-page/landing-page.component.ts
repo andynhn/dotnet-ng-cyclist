@@ -18,7 +18,7 @@ export class LandingPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Do not display landing page to logged in users. This hides the register comonent as well.
+    // Do not display landing page to logged in users. This hides the register component as well.
     // Instead, navigate authenticated users back to the home component.
     if (this.user) {
       this.router.navigateByUrl('/home');

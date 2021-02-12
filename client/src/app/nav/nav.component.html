@@ -15,16 +15,16 @@
         <ng-container *ngIf="accountService.currentUser$ | async" >
           <!-- use conditionals in the ng-container -->
           <li class="nav-item">
-            <a class="nav-link" routerLink='/home' routerLinkActive='active'>Home</a>
+            <a class="nav-link" routerLink='/home' routerLinkActive='active'><i class='fa fa-inbox mr-1'></i></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink='/discover' routerLinkActive='active'>Discover</a>
+            <a class="nav-link" routerLink='/discover' routerLinkActive='active'><i class='fa fa-search mr-1'></i></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink='/chat' routerLinkActive='active'>Chat</a>
+            <a class="nav-link" routerLink='/chat' routerLinkActive='active'><i class="fa fa-commenting mr-1"></i></a>
           </li>
           <li class="nav-item" *appHasRole='["Admin", "Moderator"]'>
-            <a class="nav-link" routerLink='/admin' routerLinkActive='active'>Admin</a>
+            <a class="nav-link" routerLink='/admin' routerLinkActive='active'><i class="fa fa-key mr-1"></i></a>
           </li>
         </ng-container>
         <li class="nav-item">

@@ -35,7 +35,7 @@ export class MembersService {
     console.log(Object.values(userParams).join('-'));
     /**
      * "key" that stores the userParams so that we can keep track of user activity for caching
-     * the key is just the params separated by a hyphen. Idea is for faster loading on on routes that we've already loaded. 
+     * the key is just the params separated by a hyphen. Idea is for faster loading on on routes that we've already loaded.
      * This response tries to get a value from the memberCache based on the most recent userParams.
      */
     var response = this.memberCache.get(Object.values(userParams).join('-'));
@@ -61,9 +61,9 @@ export class MembersService {
     // Then upon return, add that key params route to the memberCache map.
     // onto the memberCache map so that we avoid the loading Spinner next time.
     return getPaginatedResult<Member[]>(this.baseUrl + 'users', params, this.http).pipe(
-      map(response => {
-        this.memberCache.set(Object.values(userParams).join('-'), response);
-        return response;
+      map(paginatedResult => {
+        this.memberCache.set(Object.values(userParams).join('-'), paginatedResult);
+        return paginatedResult;
       })
     );
   }

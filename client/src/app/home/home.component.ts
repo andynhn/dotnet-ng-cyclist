@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
 import { Message } from '../_models/message';
@@ -14,14 +14,11 @@ import { MessageService } from '../_services/message.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   user: User;
   messages: Message[];
   pagination: Pagination;
   pageParams: PageParams;
-  // container = 'Unread';
-  // pageNumber = 1;
-  // pageSize = 5;
   loading = false;
 
   constructor(public accountService: AccountService,
@@ -37,10 +34,11 @@ export class HomeComponent implements OnInit {
   }
 
   loadMessages() {
+    console.log('loadMessages home.component.ts');
     this.loading = true;
     this.messageService.setPageParams(this.pageParams);
     this.messageService.getMessages(this.pageParams).subscribe(response => {
-      console.log(response);
+      // console.log(response);
       this.messages = response.result;
       this.pagination = response.pagination;
       this.loading = false; // quick way to hide messages here until they are finished loading. Fixes issue with photos out of sync
@@ -65,6 +63,10 @@ export class HomeComponent implements OnInit {
     this.pageParams.pageNumber = event.page;
     this.messageService.setPageParams(this.pageParams);
     this.loadMessages();
+  }
+
+  ngOnDestroy() {
+    this.messageService.resetPageParams();
   }
 
 }

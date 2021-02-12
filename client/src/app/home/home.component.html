@@ -1,22 +1,47 @@
 <div class="row mb-4">
     <div class="btn-group" name="container">
-        <button class="btn btn-warning btn-sm mr-1" btnRadio="Unread" [(ngModel)]="pageParams.container" (click)="loadMessages()">
-            <i class="fa fa-envelope"></i> Unread
-        </button>
-        <button class="btn btn-primary btn-sm mr-1" btnRadio="Inbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
-            <i class="fa fa-envelope-open"></i> Inbox
-        </button>
-        <button class="btn btn-secondary btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
-            <i class="fa fa-paper-plane"></i> Outbox
-        </button>
+        <div *ngIf="pageParams.container=='Unread'; then unreadFilled else unreadOutline"></div>
+        <ng-template #unreadFilled>
+            <button class="btn btn-warning btn-sm mr-1" btnRadio="Unread" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-envelope"></i> Unread
+            </button>
+        </ng-template>
+        <ng-template #unreadOutline>
+            <button class="btn btn-outline-warning btn-sm mr-1" btnRadio="Unread" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-envelope"></i> Unread
+            </button>
+        </ng-template>
+        <div *ngIf="pageParams.container=='Inbox'; then inboxFilled else inboxOutline"></div>
+        <ng-template #inboxFilled>
+            <button class="btn btn-primary btn-sm mr-1" btnRadio="Inbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-envelope-open"></i> Inbox
+            </button>
+        </ng-template>
+        <ng-template #inboxOutline>
+            <button class="btn btn-outline-primary btn-sm mr-1" btnRadio="Inbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-envelope-open"></i> Inbox
+            </button>
+        </ng-template>
+        <div *ngIf="pageParams.container=='Outbox'; then outboxFilled else outboxOutline"></div>
+        <ng-template #outboxFilled>
+            <button class="btn btn-secondary btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-paper-plane"></i> Outbox
+            </button>
+        </ng-template>
+        <ng-template #outboxOutline>
+            <button class="btn btn-outline-secondary btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+                <i class="fa fa-paper-plane"></i> Outbox
+            </button>
+        </ng-template>
     </div>
 </div>
 
-<div class="d-flex justify-content-center" *ngIf="pagination && !loading">
+<div class="d-flex justify-content-center" *ngIf="pagination && !loading && messages?.length !== 0">
     <pagination 
         [boundaryLinks]="true" 
         [totalItems]="pagination.totalItems"
         [itemsPerPage]="pagination.itemsPerPage"
+        [maxSize]="10"
         [(ngModel)]="pagination.currentPage"
         (pageChanged)="pageChanged($event)" 
         previousText="&lsaquo;" 
@@ -26,12 +51,12 @@
     </pagination>
 </div>
 
-<div class="row" *ngIf="messages?.length === 0">
+<div class="row" *ngIf="messages?.length === 0 && !loading">
     <h3>No messages</h3>
 </div>
 
-<div class="rown" *ngIf="messages?.length > 0">
-    <table class="table table-hover" style="cursor: pointer">
+<div class="row" *ngIf="messages?.length > 0">
+    <table class="table table-hover" style="cursor: pointer" *ngIf="!loading">
         <tr>
             <th style="width: 40%">Message</th>
             <th style="width: 20%">
@@ -69,7 +94,7 @@
             </td>
             <td>{{message.messageSent | timeago}}</td> 
             <td>
-                <button (click)="$event.stopPropagation()" (click)="deleteMessage(message.id)" class="btn btn-danger">Delete</button>
+                <button (click)="$event.stopPropagation()" (click)="deleteMessage(message.id)" class="btn btn-danger btn-sm">Delete</button>
             </td>
         </tr>
     </table>

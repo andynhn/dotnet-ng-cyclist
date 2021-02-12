@@ -22,6 +22,13 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Asynchronously get's users messages for a user from a given query of message params.
+        /// Route: "api/messages"
+        /// </summary>
+        /// <returns>
+        /// List of MessageDTO
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
         {
@@ -31,7 +38,7 @@ namespace API.Controllers
 
             Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
 
-            return messages;
+            return Ok(messages); // TODO: Revisit if need to return ok here.
         }
 
         [HttpDelete("{id}")]
