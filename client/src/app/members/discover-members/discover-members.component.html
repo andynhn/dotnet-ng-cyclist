@@ -20,22 +20,50 @@
             </div>
             
             <div>
-                <div class="btn-group float-right">
-                    <!-- TODO: Make this a drop down. Add Sort A-Z, Z-A -->
-                    <button 
-                        type="button"
-                        class="btn btn-outline-info btn-sm ml-1" 
-                        name="orderBy" 
-                        [(ngModel)]="userParams.orderBy"
-                        (click)="loadMembers()"
-                        btnRadio="lastActive">Last Active</button>
-                    <button 
-                        type="button"
-                        class="btn btn-outline-info btn-sm ml-1" 
-                        name="orderBy" 
-                        [(ngModel)]="userParams.orderBy"
-                        (click)="loadMembers()"
-                        btnRadio="created">Newest Members</button>
+                <div class="btn-group float-right" dropdown>
+                    <button id="button-animated" 
+                        dropdownToggle  type="button" 
+                        class="btn btn-info btn-sm dropdown-toggle" 
+                        aria-controls="dropdown-animated">Sort <span class="caret"></span>
+                    </button>
+                    <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-animated">
+                        <li role="menuitem">
+                            <button
+                                type="button"
+                                class="btn btn-outline-info btn-sm dropdown-item" 
+                                name="orderBy" 
+                                [(ngModel)]="userParams.orderBy"
+                                (click)="loadMembers()"
+                                btnRadio="lastActive">Last Active</button>
+                        </li>
+                        <li role="menuitem">
+                            <button
+                                type="button"
+                                class="btn btn-outline-info btn-sm dropdown-item" 
+                                name="orderBy" 
+                                [(ngModel)]="userParams.orderBy"
+                                (click)="loadMembers()"
+                                btnRadio="createdAt">Newest Members</button>
+                        </li>
+                        <li role="menuitem">
+                            <button 
+                                type="button"
+                                class="btn btn-outline-info btn-sm dropdown-item" 
+                                name="orderBy" 
+                                [(ngModel)]="userParams.orderBy"
+                                (click)="loadMembers()"
+                                btnRadio="aToZ">Name: A to Z</button>
+                        </li>
+                        <li role="menuitem">
+                            <button 
+                                type="button"
+                                class="btn btn-outline-info btn-sm dropdown-item" 
+                                name="orderBy" 
+                                [(ngModel)]="userParams.orderBy"
+                                (click)="loadMembers()"
+                                btnRadio="zToA">Name: Z to A</button>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -80,7 +108,10 @@
                     </option>
                 </select>
             </div>
-            <!-- TODO: Create filter for searching via TEXT. -->
+            <div class="form-group px-2 mt-1 input-group input-group-sm">
+                <label>Search Name: </label>
+                <input type="text" class="form-control ml-1" style="width: 200px;" name="nameSearch" [(ngModel)]="userParams.nameSearch" maxlength="30">
+            </div>
         </div>
         
 

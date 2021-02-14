@@ -150,6 +150,8 @@ namespace API.Data
                 query = query.Where(u => u.CyclingCategory == userParams.CyclingCategory);
             if (userParams.SkillLevel.ToLower() != "all")
                 query = query.Where(u => u.SkillLevel == userParams.SkillLevel);
+            if (userParams.NameSearch.ToLower() != "all" && userParams.NameSearch.ToLower() != null)
+                query = query.Where(u => (u.FirstName + u.LastName).Contains(userParams.NameSearch.ToLower()));
 
             // If the user wants to filter users by age, calculate minimum age and maximum age filtering
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
@@ -161,6 +163,8 @@ namespace API.Data
             query = userParams.OrderBy switch
             {
                 "createdAt" => query.OrderByDescending(u => u.CreatedAt),
+                "aToZ" => query.OrderBy(u => u.FirstName),
+                "zToA" => query.OrderByDescending(u => u.FirstName),
                 _ => query.OrderByDescending(u => u.LastActive)
             };
 

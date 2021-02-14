@@ -53,8 +53,13 @@ export class MembersService {
     params = params.append('cyclingFrequency', userParams.cyclingFrequency);
     params = params.append('cyclingCategory', userParams.cyclingCategory);
     params = params.append('skillLevel', userParams.skillLevel);
+    console.log(userParams.nameSearch);
+    userParams.nameSearch = userParams.nameSearch.trim().toLowerCase();
+    params = params.append('nameSearch', userParams.nameSearch.length <= 30
+      ? userParams.nameSearch
+      : userParams.nameSearch.substring(0, 30));
     params = params.append('orderBy', userParams.orderBy);
-
+    console.log(userParams.nameSearch);
     console.log(params);
 
     // If it passes the above caching functionality, then go to the api, which hits our loading interceptor.

@@ -61,7 +61,7 @@ namespace API.Controllers
             */
             userParams.CurrentUsername = User.GetUsername();
 
-            // if no gender is selected in userParams, default to returning all
+            // if nothing selected for that userParams, default to a value.
             if (string.IsNullOrEmpty(userParams.Gender))
                 userParams.Gender = "all";
             if (string.IsNullOrEmpty(userParams.CyclingFrequency))
@@ -70,6 +70,19 @@ namespace API.Controllers
                 userParams.CyclingCategory = "all";
             if (string.IsNullOrEmpty(userParams.SkillLevel))
                 userParams.SkillLevel = "all";
+            if (string.IsNullOrEmpty(userParams.NameSearch))
+            {
+                userParams.NameSearch = "all";
+            } 
+            else 
+            {
+                userParams.NameSearch = userParams.NameSearch.Trim().ToLower();
+                if (userParams.NameSearch.Length > 30)
+                {
+                    // set max length of name search to 30. only return 30 characters if greater than max length.
+                    userParams.NameSearch = userParams.NameSearch.Substring(0, 30);
+                }
+            }
 
             // Get a PagedList of filtered users based on the userParams
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
@@ -77,7 +90,7 @@ namespace API.Controllers
             // Pass the the pagination data back via a Pagination Header. We always have access to the Response in here.
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
-            // Needed the Ok() result here because of IEnumerable (revisit returning ok, sending a pagedlist now)
+            // Needed the Ok() result here because of IEnumerable (TODO: revisit returning ok, sending a pagedlist)
             return Ok(users);
         }
 

@@ -72,7 +72,8 @@
             </tab>
             <tab heading='Messages' (selectTab)="onTabActivated($event)">
                 <app-member-messages
-                    [username]="member.username">
+                    [username]="member.username"
+                    [activeTabC]="activeTab">
                 </app-member-messages>
             </tab>
         </tabset>

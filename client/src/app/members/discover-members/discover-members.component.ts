@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { Member } from 'src/app/_models/member';
 import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
@@ -8,7 +9,8 @@ import { MembersService } from 'src/app/_services/members.service';
 @Component({
   selector: 'app-discover-members',
   templateUrl: './discover-members.component.html',
-  styleUrls: ['./discover-members.component.css']
+  styleUrls: ['./discover-members.component.css'],
+  providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }]
 })
 export class DiscoverMembersComponent implements OnInit {
   members: Member[];

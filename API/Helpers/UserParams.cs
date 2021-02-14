@@ -14,10 +14,9 @@ namespace API.Helpers
         public int MinAge { get; set; } = 18;
         public int MaxAge { get; set; } = 150;
         public string OrderBy { get; set; } = "lastActive";
-
-        // TODO: Add these to the user entity and incorporate into UserParams for filtering on Discover page.
         public string CyclingFrequency { get; set; }   // Daily, Weekly, Monthly
         public string CyclingCategory { get; set; } // Road, Gravel, Mountain
         public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
+        public string NameSearch { get; set; }
     }
 }

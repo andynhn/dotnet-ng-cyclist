@@ -37,7 +37,7 @@
           <!-- async pipe auto-unsubscribes if our component is no longer visible or in use. -->
           <!-- With the pipe, we can avoid subscribing to a currentUser$ observable in the nav.component.ts file where we'd have to manually unsubscribe. -->
           <a class="dropdown-toggle text-light ml-2" dropdownToggle>Welcome {{user.firstName || user.username | titlecase}}</a>
-          <div class="dropdown-menu mt-3" *dropdownMenu>
+          <div class="dropdown-menu mt-2" *dropdownMenu>
               <a class="dropdown-item" routerLink='/member/edit'>Edit Profile</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" (click)="logout()">Logout</a>

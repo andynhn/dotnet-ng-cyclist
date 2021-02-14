@@ -120,5 +120,7 @@ export class AccountService {
     this.presence.stopHubConnection();
     // signalR auto disconnnects user from hub when user closes browser, moves to another website, etc.
     // but we need to stop it manually when they log out.
+
+    // TODO: implement force refresh after logout and navigation to root.
   }
 }

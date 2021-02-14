@@ -11,7 +11,7 @@
                 <button routerLink="/members/{{memberFromMemberCardComponent.username}}" 
                     [queryParams]='{tab: 3}'
                     class="btn btn-primary">
-                        <i class="fa fa-envelope"></i>
+                        <i class="fa fa-commenting"></i>
                 </button>
             </li>
         </ul>
@@ -19,7 +19,7 @@
     <div class="card-body p-1">
         <h6 class="card-title text-center mb-1">
             <span [class.is-online]="(presence.onlineUsers$ | async).includes(memberFromMemberCardComponent.username)">
-                <i class="fa fa-user mr-2"></i>
+                <i class="fa fa-user-circle mr-2"></i>
             </span>
             {{memberFromMemberCardComponent.firstName | titlecase}}, {{memberFromMemberCardComponent.age}}
         </h6>

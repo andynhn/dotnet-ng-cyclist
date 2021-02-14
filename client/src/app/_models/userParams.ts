@@ -9,6 +9,7 @@ export class UserParams {
     cyclingFrequency = 'all';
     cyclingCategory = 'all';
     skillLevel = 'all';
+    nameSearch = '';
     orderBy = 'lastActive';
 
     constructor(user: User) {

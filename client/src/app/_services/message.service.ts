@@ -29,6 +29,12 @@ export class MessageService {
   onOutbox = 0;
   // property to help with caching. If a container is modified (message deleted, etc.), use logic to refresh the cache.
   containerModified = false;
+  // property to help determine if the message thread on a member profile has been loaded. If so, use logic to scroll to bottom.
+  private messageThreadLoaded = new BehaviorSubject<boolean>(false);
+  messageThreadLoaded$ = this.messageThreadLoaded.asObservable();
+  // property used in feature to help scroll to bottom of chat thread when access "Messages" tab
+  private scrollBottomCount = new BehaviorSubject<number>(0);
+  scrollBottomCount$ = this.scrollBottomCount.asObservable();
 
   constructor(private http: HttpClient, private loadingService: LoadingService) {
     this.pageParams = new PageParams();
@@ -57,7 +63,11 @@ export class MessageService {
 
     // this name is exactly what we called it in the MesssageHub.cs class
     this.hubConnection.on('ReceiveMessageThread', messages => {
+      // updat the message thread observable to include the received messages from the server.
       this.messageThreadSource.next(messages);
+      // update the boolean that tracks whether messages have been received. Used for scroll on member-messages.component.ts.
+      this.messageThreadLoaded.next(true);
+      console.log('received messages');
     });
 
     this.hubConnection.on('NewMessage', message => {
@@ -88,6 +98,8 @@ export class MessageService {
     // stop the hub connection if it exists.
     if (this.hubConnection) {
       this.messageThreadSource.next([]);  // when we stop the hub connection (they navigate from messages tab), clear this.
+      this.resetScrollBottomCount();
+      this.resetMessageThreadLoadedBoolean();
       this.hubConnection.stop();
     }
   }
@@ -209,5 +221,13 @@ export class MessageService {
     this.pageParams = new PageParams();
     this.onUnread = 0; this.onInbox = 0; this.onOutbox = 0;
     this.messageCache = new Map();
+  }
+
+  resetMessageThreadLoadedBoolean(): void {
+    this.messageThreadLoaded.next(false);
+  }
+
+  resetScrollBottomCount(): void {
+    this.scrollBottomCount.next(0);
   }
 }
