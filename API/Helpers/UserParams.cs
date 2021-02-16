@@ -18,5 +18,7 @@ namespace API.Helpers
         public string CyclingCategory { get; set; } // Road, Gravel, Mountain
         public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
         public string NameSearch { get; set; }
+        public string State { get; set; }
+        public string City { get; set; }
     }
 }

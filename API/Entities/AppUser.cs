@@ -27,7 +27,7 @@ namespace API.Entities
         public string CyclingCategory { get; set; } // Road, Gravel, Mountain
         public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
         public string City { get; set; }
-        public string Country { get; set; }
+        public string State { get; set; }
                 
         // Relationships with other entities...
 

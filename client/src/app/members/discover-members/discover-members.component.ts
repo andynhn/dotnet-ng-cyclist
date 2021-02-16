@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { Member } from 'src/app/_models/member';
@@ -25,7 +26,7 @@ export class DiscoverMembersComponent implements OnInit {
   cyclingFrequency = [
     {value: 'all', display: ''},
     {value: 'daily', display: 'Daily'},
-    {value: 'weekly', display: 'Weekly'}, 
+    {value: 'weekly', display: 'Weekly'},
     {value: 'monthly', display: 'Monthly'}
   ];
   cyclingCategory = [
@@ -40,20 +41,59 @@ export class DiscoverMembersComponent implements OnInit {
     {value: 'intermediate', display: 'Intermediate'},
     {value: 'advanced', display: 'Advanced'}
   ];
+  states: object;
+  cities: string[] = [];
+  loading = false;
+  selectedState = '';
 
-  constructor(private memberService: MembersService) {
+  constructor(private memberService: MembersService, private http: HttpClient) {
     this.userParams = this.memberService.getUserParams();
   }
 
   ngOnInit(): void {
+    this.getCityStates();
     this.loadMembers();
+    this.userParams.city = '';
+    this.userParams.state = '';
+  }
+
+  getCityStates(): any {
+    this.http.get('../../assets/cityStates.json').subscribe(data => {
+      this.states = data;
+    });
+  }
+
+  changeState(data) {
+    console.log(data);
+    if (!data) {
+      console.log('no state selected')
+      this.selectedState = '';
+    }
+    if (data) {
+      this.selectedState = data;
+      console.log('made it here');
+      this.cities = this.states[data];
+    }
   }
 
   loadMembers() {
+    this.loading = true;
     this.memberService.setUserParams(this.userParams);
     this.memberService.getMembers(this.userParams).subscribe(response => {
       this.members = response.result;
       this.pagination = response.pagination;
+      if (this.userParams.nameSearch === 'all') {
+        this.userParams.nameSearch = '';
+      }
+      if (this.userParams.state === 'all') {
+        this.userParams.state = '';
+        this.selectedState = '';
+      }
+      if (this.userParams.city === 'all') {
+        this.userParams.city = '';
+      }
+      this.loading = false;
+      console.log(this.userParams);
     });
   }
 

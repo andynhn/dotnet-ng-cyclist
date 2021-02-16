@@ -1,6 +1,7 @@
+<div class="container mt-3">
 <div class="row" *ngIf="member">
     <div class="col-4">
-        <h1>Your profile</h1>
+        <h3>Your profile</h3>
     </div>
     <div class="col-8">
         <div class="alert alert-info" *ngIf="editForm.dirty">
@@ -12,10 +13,6 @@
             <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.firstName}}" 
                 class="card-img-top img-thumbnail">
             <div class="card-body">
-                <div>
-                    <strong>Location:</strong>
-                    <p>{{member.city}}, {{member.country}}</p>
-                </div>
                 <div>
                     <strong>Age:</strong>
                     <p>{{member.age}}</p>
@@ -48,20 +45,26 @@
     </div>
     <div class="col-8">
         <tabset class="member-tabset">
-            <tab heading='About {{member.firstName | titlecase}}'>
+            <tab heading='About'>
                 <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
-                    <h4>Description</h4>
-                    <textarea [(ngModel)]="member.introduction" name="introduction" rows="6" class="form-control"></textarea>
-                    <h4 class="mt-2">Interests</h4>
-                    <textarea [(ngModel)]="member.interests" name="interests" rows="6" class="form-control"></textarea>
-                    <h4 class="mt-2">Location Details: </h4>
+                    <div class="form-inline">
+                        <label for="firstName">First Name: </label>
+                        <input [(ngModel)]="member.firstName" type="text" name="firstName" class="form-control mx-2" required>
+                        <label for="lastName">Last Name: </label>
+                        <input [(ngModel)]="member.lastName" type="text" name="lastName" class="form-control mx-2" required>
+                    </div>
+                    <h5 class="mt-2"><strong>Description:</strong></h5>
+                    <textarea [(ngModel)]="member.introduction" name="introduction" rows="5" class="form-control"></textarea>
+                    <h5 class="mt-2"><strong>Interests:</strong></h5>
+                    <textarea [(ngModel)]="member.interests" name="interests" rows="5" class="form-control"></textarea>
+                    <h5 class="mt-2"><strong>Location Details:</strong></h5>
                     <div class="form-inline">
                         <label for="city">City: </label>
                         <input [(ngModel)]="member.city" type="text" name="city" class="form-control mx-2" required>
-                        <label for="country">Country: </label>
-                        <input [(ngModel)]="member.country" type="text" name="country" class="form-control mx-2" required>
+                        <label for="state">State: </label>
+                        <input [(ngModel)]="member.state" type="text" name="state" class="form-control mx-2" required>
                     </div>
-                    <h4 class="mt-3">Cycling Preferences: </h4>
+                    <h5 class="mt-3"><strong>Cycling Preferences:</strong></h5>
                     <div class="form-inline">
                         <label for="cyclingFrequency" style="margin-right: 10px;">I ride my bike: </label>
                         <div *ngFor="let item of cyclingFrequency">
@@ -104,4 +107,5 @@
             </tab>
         </tabset>
     </div>
+</div>
 </div>

@@ -58,6 +58,8 @@ export class MembersService {
     params = params.append('nameSearch', userParams.nameSearch.length <= 30
       ? userParams.nameSearch
       : userParams.nameSearch.substring(0, 30));
+    params = params.append('state', userParams.state);
+    params = params.append('city', userParams.city);
     params = params.append('orderBy', userParams.orderBy);
     console.log(userParams.nameSearch);
     console.log(params);
@@ -113,6 +115,20 @@ export class MembersService {
   }
 
   setUserParams(params: UserParams) {
+    // set to "all" in these scenarios in order to implement member cache functionality
+    // and more easily read the cache (avoid multiple dashes in a row when certain params are empty) (see getMembers()).
+    if (params.gender !== 'female' && params.gender !== 'male') {
+      params.gender = 'all';
+    }
+    if (params.city === '' || params.city === null || params.city === undefined) {
+      params.city = 'all';
+    }
+    if (params.state === '' || params.state === null || params.state === undefined) {
+      params.state = 'all';
+    }
+    if (params.nameSearch === '' || params.nameSearch === null || params.nameSearch === undefined) {
+      params.nameSearch = 'all';
+    }
     this.userParams = params;
   }
 

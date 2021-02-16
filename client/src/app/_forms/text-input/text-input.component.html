@@ -1,20 +1,45 @@
-<div class="form-group">
-    <input 
-        [class.is-invalid]="ngControl.touched && ngControl.invalid"
-        type="{{type}}" 
-        class="form-control" 
-        [formControl]="ngControl.control"
-        placeholder={{label}}>
-    <div *ngIf="ngControl.control.errors?.required"
-        class="invalid-feedback">Please enter a {{label}}
+<div class="form-group mb-2">
+
+    <!-- Minor customization for username field -->
+    <div *ngIf="label === 'Username'" class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">@</span>
+        </div>
+        <input 
+            [class.is-invalid]="ngControl.touched && ngControl.invalid"
+            type="{{type}}" 
+            class="form-control" 
+            [formControl]="ngControl.control"
+            placeholder={{label}}>
+        <div *ngIf="ngControl.control.errors?.required"
+            class="invalid-feedback">Please enter a {{label}}
+        </div>
+        <div *ngIf="ngControl.control.errors?.minlength"
+            class="invalid-feedback">{{label}} must be at least {{ngControl.control.errors.minlength['requiredLength']}} characters
+        </div>
+        <div *ngIf="ngControl.control.errors?.maxlength"
+            class="invalid-feedback">{{label}} must be at most {{ngControl.control.errors.maxlength['requiredLength']}} characters
+        </div>
     </div>
-    <div *ngIf="ngControl.control.errors?.minlength"
-        class="invalid-feedback">{{label}} must be at least {{ngControl.control.errors.minlength['requiredLength']}} characters
-    </div>
-    <div *ngIf="ngControl.control.errors?.maxlength"
-        class="invalid-feedback">{{label}} must be at most {{ngControl.control.errors.maxlength['requiredLength']}} characters
-    </div>
-    <div *ngIf="ngControl.control.errors?.isMatching"
-        class="invalid-feedback">Passwords do not match
+
+    <div *ngIf="label !== 'Username'">
+        <input 
+            [class.is-invalid]="ngControl.touched && ngControl.invalid"
+            type="{{type}}" 
+            class="form-control" 
+            [formControl]="ngControl.control"
+            placeholder={{label}}>
+        <div *ngIf="ngControl.control.errors?.required"
+            class="invalid-feedback">Please enter a {{label}}
+        </div>
+        <div *ngIf="ngControl.control.errors?.minlength"
+            class="invalid-feedback">{{label}} must be at least {{ngControl.control.errors.minlength['requiredLength']}} characters
+        </div>
+        <div *ngIf="ngControl.control.errors?.maxlength"
+            class="invalid-feedback">{{label}} must be at most {{ngControl.control.errors.maxlength['requiredLength']}} characters
+        </div>
+        <div *ngIf="ngControl.control.errors?.isMatching"
+            class="invalid-feedback">Passwords do not match
+        </div>
     </div>
 </div>

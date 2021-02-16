@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,30 +15,69 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   maxDate: Date;
   validationErrors: string[] = [];
+  states: object;
+  cities: string[] = [];
+  selectedState = '';
+  loading = false;
+  genders = ['female', 'male', 'other'];
 
-  constructor(private accountService: AccountService, private toastr: ToastrService, private fb: FormBuilder, private router: Router) { }
+  constructor(private accountService: AccountService,
+              private toastr: ToastrService,
+              private fb: FormBuilder,
+              private router: Router,
+              private http: HttpClient) {
+
+  }
 
   ngOnInit(): void {
+    this.getCityStates();
     this.initializeForm();
     // must be over 18 years old.
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
+  getCityStates(): any {
+    this.loading = true;
+    this.http.get('../../assets/cityStates.json').subscribe(data => {
+      console.log(data);
+      console.log(this.selectedState);
+      this.states = data;
+      this.loading = false;
+      console.log(this.cities);
+    });
+  }
+
+  changeState(data) {
+    console.log(data);
+    if (!data) {
+      console.log('no data here')
+      this.selectedState = '';
+    }
+    if (data) {
+      this.selectedState = data;
+      console.log('made it here');
+      this.cities = this.states[data];
+    }
+  }
+
   initializeForm() {
     this.registerForm = this.fb.group({
-      username: ['', Validators.required],
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      username: ['', [Validators.required, Validators.minLength(3),
+        Validators.maxLength(30)]],
+      firstName: ['', [Validators.required,
+        Validators.maxLength(30)]],
+      lastName: ['', [Validators.required,
+        Validators.maxLength(30)]],
       dateOfBirth: ['', Validators.required],
       city: ['', Validators.required],
-      country: ['', Validators.required],
-      gender: ['female'],
+      state: ['', Validators.required],
+      gender: ['', Validators.required],
       cyclingFrequency: ['daily'],
       cyclingCategory: ['road'],
       skillLevel: ['beginner'],
       password: ['', [Validators.required, Validators.minLength(8),
-        Validators.maxLength(250)]],
+        Validators.maxLength(100)]],
       confirmPassword: ['', [Validators.required, this.matchValues('password')]]
     });
   }

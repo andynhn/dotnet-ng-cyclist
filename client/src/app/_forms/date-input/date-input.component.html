@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group mb-2">
     <input 
         type="text"
         [class.is-invalid]='ngControl.touched && ngControl.invalid'
@@ -9,5 +9,5 @@
         [bsConfig]='bsConfig'
         [maxDate]='maxDate'
     >
-    <div class="invalid-feedback" *ngIf="ngControl.control.errors?.required">The {{label}} is required</div>
+    <div class="invalid-feedback" *ngIf="ngControl.control.errors?.required">{{label}} is required</div>
 </div>

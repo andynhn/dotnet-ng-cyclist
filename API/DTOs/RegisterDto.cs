@@ -16,10 +16,13 @@ namespace API.DTOs
     public class RegisterDto
     {
         [Required]
+        [StringLength(30, MinimumLength = 3)]
         public string Username { get; set; }
         [Required]
+        [StringLength(30)]
         public string FirstName { get; set; }
         [Required]
+        [StringLength(30)]
         public string LastName { get; set; }
         [Required]
         public string Gender { get; set; }
@@ -34,9 +37,9 @@ namespace API.DTOs
         [Required]
         public string City { get; set; }
         [Required]
-        public string Country { get; set; }
+        public string State { get; set; }
         [Required]
-        [StringLength(250, MinimumLength = 8)]
+        [StringLength(100, MinimumLength = 8)]
         public string Password { get; set; }
     }
 }

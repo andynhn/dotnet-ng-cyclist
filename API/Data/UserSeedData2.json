@@ -11,8 +11,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "weekly",
       "SkillLevel": "intermediate",
-      "City": "Gracey",
-      "Country": "Virgin Islands (US)",
+      "City": "seattle",
+      "State": "washington",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/32.jpg",
@@ -32,8 +32,8 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "monthly",
       "SkillLevel": "beginner",
-      "City": "Caspar",
-      "Country": "Korea (South)",
+      "City": "mobile",
+      "State": "alabama",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/12.jpg",
@@ -53,8 +53,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Brandermill",
-      "Country": "Venezuela",
+      "City": "atlanta",
+      "State": "georgia",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/14.jpg",
@@ -74,8 +74,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Newkirk",
-      "Country": "Djibouti",
+      "City": "san francisco",
+      "State": "california",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/98.jpg",
@@ -95,8 +95,8 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "weekly",
       "SkillLevel": "intermediate",
-      "City": "Holtville",
-      "Country": "Greece",
+      "City": "phoenix",
+      "State": "arizona",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/80.jpg",
@@ -116,8 +116,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "weekly",
       "SkillLevel": "beginner",
-      "City": "Cetronia",
-      "Country": "Dominican Republic",
+      "City": "austin",
+      "State": "texas",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/53.jpg",
@@ -137,8 +137,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "monthly",
       "SkillLevel": "advanced",
-      "City": "Draper",
-      "Country": "Malta",
+      "City": "tampa",
+      "State": "florida",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/28.jpg",
@@ -158,8 +158,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Golconda",
-      "Country": "Bermuda",
+      "City": "tampa",
+      "State": "florida",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/10.jpg",
@@ -179,8 +179,8 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Eggertsville",
-      "Country": "Montserrat",
+      "City": "phoenix",
+      "State": "arizona",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/66.jpg",
@@ -200,8 +200,8 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "weekly",
       "SkillLevel": "intermediate",
-      "City": "Ahwahnee",
-      "Country": "Finland",
+      "City": "baltimore",
+      "State": "maryland",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/2.jpg",
@@ -221,8 +221,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "daily",
       "SkillLevel": "intermediate",
-      "City": "Elfrida",
-      "Country": "France, Metropolitan",
+      "City": "baltimore",
+      "State": "maryland",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/61.jpg",
@@ -242,8 +242,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "monthly",
       "SkillLevel": "beginner",
-      "City": "Barrelville",
-      "Country": "Samoa",
+      "City": "detroit",
+      "State": "michigan",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/37.jpg",
@@ -263,8 +263,8 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "weekly",
       "SkillLevel": "advanced",
-      "City": "Kent",
-      "Country": "San Marino",
+      "City": "boston",
+      "State": "massachusetts",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/74.jpg",
@@ -284,11 +284,11 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "weekly",
       "SkillLevel": "intermediate",
-      "City": "Zeba",
-      "Country": "Liechtenstein",
+      "City": "boston",
+      "State": "massachusetts",
       "Photos": [
         {
-          "Url": "https://randomuser.me/api/portraits/men/37.jpg",
+          "Url": "https://randomuser.me/api/portraits/men/3.jpg",
           "IsMain": true
         }
       ]
@@ -305,8 +305,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "monthly",
       "SkillLevel": "intermediate",
-      "City": "Orviston",
-      "Country": "Botswana",
+      "City": "boston",
+      "State": "massachusetts",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/69.jpg",
@@ -326,8 +326,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "weekly",
       "SkillLevel": "advanced",
-      "City": "Wheatfields",
-      "Country": "Canada",
+      "City": "portland",
+      "State": "oregon",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/24.jpg",
@@ -347,11 +347,11 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "monthly",
       "SkillLevel": "beginner",
-      "City": "Diaperville",
-      "Country": "Nicaragua",
+      "City": "portland",
+      "State": "oregon",
       "Photos": [
         {
-          "Url": "https://randomuser.me/api/portraits/men/11.jpg",
+          "Url": "https://randomuser.me/api/portraits/men/59.jpg",
           "IsMain": true
         }
       ]
@@ -368,8 +368,8 @@
       "CyclingCategory": "mountain",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Ona",
-      "Country": "Russian Federation",
+      "City": "richmond",
+      "State": "virginia",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/11.jpg",
@@ -389,8 +389,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "daily",
       "SkillLevel": "advanced",
-      "City": "Tilleda",
-      "Country": "New Zealand",
+      "City": "richmond",
+      "State": "virginia",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/48.jpg",
@@ -410,8 +410,8 @@
       "CyclingCategory": "road",
       "CyclingFrequency": "monthly",
       "SkillLevel": "beginner",
-      "City": "Cherokee",
-      "Country": "Germany",
+      "City": "richmond",
+      "State": "virginia",
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/men/10.jpg",

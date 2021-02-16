@@ -1,140 +1,196 @@
-<div class="text-center mt-1">
-    <h2>Discover cyclists</h2>
-    <span *ngIf="pagination?.totalItems > 0 && pagination?.totalItems != 1">
-        <h5>Found {{pagination?.totalItems}} cyclists. Reach out and plan a ride!</h5>
-    </span>
-    <span *ngIf="pagination?.totalItems == 1">
-        <h5>Found {{pagination?.totalItems}} cyclist. Reach out and plan a ride!</h5>
-    </span>
-    <span *ngIf="pagination?.totalItems == 0">
-        <h5>Sorry! Didn't find any cyclists that met your criteria.</h5>
-    </span>
-</div>
-
-<div class="container-mt-3">
+<!-- SIDE BAR FILTERS -->
+<div class="container-fluid">
     <form #form="ngForm" class="mb-1" (ngSubmit)="loadMembers()" autocomplete="off">
-        <div class="d-flex justify-content-between mb-1">
-            <div>
-                <button [disabled]="!form.dirty" class="btn btn-primary btn-sm ml-1" type="submit">Apply Filters</button>
-                <button (click)="resetFilters()" class="btn btn-secondary btn-sm ml-1" type="submit">Reset Filters</button>
-            </div>
-            
-            <div>
-                <div class="btn-group float-right" dropdown>
-                    <button id="button-animated" 
-                        dropdownToggle  type="button" 
-                        class="btn btn-info btn-sm dropdown-toggle" 
-                        aria-controls="dropdown-animated">Sort <span class="caret"></span>
-                    </button>
-                    <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-animated">
-                        <li role="menuitem">
-                            <button
-                                type="button"
-                                class="btn btn-outline-info btn-sm dropdown-item" 
-                                name="orderBy" 
-                                [(ngModel)]="userParams.orderBy"
-                                (click)="loadMembers()"
-                                btnRadio="lastActive">Last Active</button>
+        <div class="row">
+            <!-- START SIDE BAR -->
+            <nav class="col-xl-2 col-lg-2 col-md-3 bg-light sidebar" *ngIf="!loading">
+                <div class="sidebar-sticky">
+                    <h5 class="mt-3">Filters</h5>
+                    <hr>
+                    <!-- RESET FILTERS BUTTON -->
+                    <div class="my-2">
+                        <div class="form-row text-center">
+                            <div class="col">
+                                <button [disabled]="!form.dirty" (click)="resetFilters()" class="btn btn-danger" type="submit">Reset Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <ul class="nav flex-column">
+                        <div class="form-row">
+                            <div class="col">
+                                <li class="nav-item">
+                                    <label class="mb-0">Age from: </label>
+                                    <input type="number" class="form-control form-control-sm" name="minAge" [(ngModel)]="userParams.minAge">
+                                </li>
+                            </div>
+                            <div class="col">
+                                <li class="nav-item">
+                                    <label class="mb-0">Age to: </label>
+                                    <input type="number" class="form-control form-control-sm" name="maxAge" [(ngModel)]="userParams.maxAge">
+                                </li>
+                            </div>
+                        </div>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">Gender: </label>
+                            <select [(ngModel)]="userParams.gender" name="gender" class="form-control form-control-sm">
+                                <option *ngFor="let gender of genderList" [value]="gender.value" >
+                                    {{gender.display}}
+                                </option>
+                            </select>
                         </li>
-                        <li role="menuitem">
-                            <button
-                                type="button"
-                                class="btn btn-outline-info btn-sm dropdown-item" 
-                                name="orderBy" 
-                                [(ngModel)]="userParams.orderBy"
-                                (click)="loadMembers()"
-                                btnRadio="createdAt">Newest Members</button>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">Search Name: </label>
+                            <input type="text" class="form-control form-control-sm" name="nameSearch" [(ngModel)]="userParams.nameSearch" maxlength="30">
                         </li>
-                        <li role="menuitem">
-                            <button 
-                                type="button"
-                                class="btn btn-outline-info btn-sm dropdown-item" 
-                                name="orderBy" 
-                                [(ngModel)]="userParams.orderBy"
-                                (click)="loadMembers()"
-                                btnRadio="aToZ">Name: A to Z</button>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">Cycling Frequency: </label>
+                            <select [(ngModel)]="userParams.cyclingFrequency" name="cyclingFrequency" class="form-control form-control-sm">
+                                <option *ngFor="let item of cyclingFrequency" [value]="item.value" >
+                                    {{item.display}}
+                                </option>
+                            </select>
                         </li>
-                        <li role="menuitem">
-                            <button 
-                                type="button"
-                                class="btn btn-outline-info btn-sm dropdown-item" 
-                                name="orderBy" 
-                                [(ngModel)]="userParams.orderBy"
-                                (click)="loadMembers()"
-                                btnRadio="zToA">Name: Z to A</button>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">Cycling Surface: </label>
+                            <select [(ngModel)]="userParams.cyclingCategory" name="cyclingCategory" class="form-control form-control-sm">
+                                <option *ngFor="let item of cyclingCategory" [value]="item.value" >
+                                    {{item.display}}
+                                </option>
+                            </select>
+                        </li>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">Skill Level: </label>
+                            <select [(ngModel)]="userParams.skillLevel" name="skillLevel" class="form-control form-control-sm">
+                                <option *ngFor="let item of skillLevel" [value]="item.value" >
+                                    {{item.display}}
+                                </option>
+                            </select>
+                        </li>
+                        <li class="nav-item mt-1">
+                            <label class="mb-0">State: </label>
+                            <select [(ngModel)]="userParams.state" name="state" class="form-control form-control-sm" (change)="changeState($event.target.value)">
+                                <option value="" >Select a state...</option>
+                                <option *ngFor="let state of states | keyvalue" [value]="state.key" >
+                                    {{state.key}}
+                                </option>
+                            </select>
+                        </li>
+                        <li class="nav-item mt-1 mb-1">
+                            <div *ngIf="selectedState !== ''">
+                                <label class="mb-0">City: </label>
+                                <select [(ngModel)]="userParams.city" name="city" class="form-control form-control-sm">
+                                    <option value="" >Select a city...</option>
+                                    <option *ngFor="let city of cities" [value]="city" >
+                                        {{city}}
+                                    </option>
+                                </select>
+                            </div>
                         </li>
                     </ul>
+                    <hr>
+                    <!-- APPLY FILTERS BUTTON -->
+                    <div class="form-row text-center my-3">
+                        <div class="col">
+                            <button [disabled]="!form.dirty" class="btn btn-primary" type="submit">Apply Filters</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="form-group form-inline">
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Age from: </label>
-                <input type="number" class="form-control ml-1" style="width: 60px;" name="minAge" [(ngModel)]="userParams.minAge">
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Age to: </label>
-                <input type="number" class="form-control ml-1" style="width: 60px;" name="maxAge" [(ngModel)]="userParams.maxAge">
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Gender: </label>
-                <select [(ngModel)]="userParams.gender" name="gender" style="width: 80px" class="form-control ml-1">
-                    <option *ngFor="let gender of genderList" [value]="gender.value" >
-                        {{gender.display}}
-                    </option>
-                </select>
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Cycling Frequency: </label>
-                <select [(ngModel)]="userParams.cyclingFrequency" name="cyclingFrequency" style="width: 90px" class="form-control ml-1">
-                    <option *ngFor="let item of cyclingFrequency" [value]="item.value" >
-                        {{item.display}}
-                    </option>
-                </select>
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Cycling Category: </label>
-                <select [(ngModel)]="userParams.cyclingCategory" name="cyclingCategory" style="width: 100px" class="form-control ml-1">
-                    <option *ngFor="let item of cyclingCategory" [value]="item.value" >
-                        {{item.display}}
-                    </option>
-                </select>
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Skill Level: </label>
-                <select [(ngModel)]="userParams.skillLevel" name="skillLevel" style="width: 100px" class="form-control ml-1">
-                    <option *ngFor="let item of skillLevel" [value]="item.value" >
-                        {{item.display}}
-                    </option>
-                </select>
-            </div>
-            <div class="form-group px-2 mt-1 input-group input-group-sm">
-                <label>Search Name: </label>
-                <input type="text" class="form-control ml-1" style="width: 200px;" name="nameSearch" [(ngModel)]="userParams.nameSearch" maxlength="30">
-            </div>
-        </div>
-        
+            </nav>
 
+            <!-- PAGE TITLE TO THE RIGHT OF SIDE BAR AND ABOVE MAIN CONTENT -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="mt-3">
+                        <h3>Discover cyclists</h3>
+                        <span *ngIf="pagination?.totalItems > 0 && pagination?.totalItems != 1">
+                            <h6>Found {{pagination?.totalItems}} cyclists. Reach out and plan a ride!</h6>
+                        </span>
+                        <span *ngIf="pagination?.totalItems == 1">
+                            <h6>Found {{pagination?.totalItems}} cyclist. Reach out and plan a ride!</h6>
+                        </span>
+                        <span *ngIf="pagination?.totalItems == 0">
+                            <h6>Sorry! We didn't find any cyclists that met your criteria.</h6>
+                        </span>
+                    </div>
+                    <!-- SORT DROPDOWN -->
+                    <div class="btn-group float-right" dropdown>
+                        <button id="button-animated" 
+                            dropdownToggle  type="button" 
+                            class="btn btn-info btn-sm dropdown-toggle" 
+                            aria-controls="dropdown-animated">Sort <span class="caret"></span>
+                        </button>
+                        <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-animated">
+                            <li role="menuitem">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="lastActive">Last Active</button>
+                            </li>
+                            <li role="menuitem">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="createdAt">Newest Members</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="aToZ">Name: A to Z</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="zToA">Name: Z to A</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
+                <!-- MEMBER-CARD COMPONENT -->
+                <div class="container">
+                    <div class="row" *ngIf="!loading">
+                        <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12" *ngFor="let member of members">
+                            <app-member-card [memberFromMemberCardComponent]="member"></app-member-card>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+
+            </main>
+        </div>
     </form>
-</div>
+    <!-- END SIDE BAR -->
 
-<div class="d-flex justify-content-center" *ngIf="pagination && pagination?.totalItems != 0">
-    <pagination 
-        [boundaryLinks]="true" 
-        [totalItems]="pagination.totalItems"
-        [itemsPerPage]="pagination.itemsPerPage"
-        [(ngModel)]="pagination.currentPage"
-        [maxSize]="10"
-        (pageChanged)="pageChanged($event)" 
-        previousText="&lsaquo;" 
-        nextText="&rsaquo;" 
-        firstText="&laquo;" 
-        lastText="&raquo;" >
-    </pagination>
-</div>
-<div class="row">
-    <div class="col-2" *ngFor="let member of members">
-        <app-member-card [memberFromMemberCardComponent]="member"></app-member-card>
+    <!-- PAGINATION -->
+    <div class="d-flex justify-content-center" *ngIf="pagination && pagination?.totalItems != 0 && !loading">
+        <pagination 
+            [boundaryLinks]="true" 
+            [totalItems]="pagination.totalItems"
+            [itemsPerPage]="pagination.itemsPerPage"
+            [(ngModel)]="pagination.currentPage"
+            [maxSize]="10"
+            (pageChanged)="pageChanged($event)" 
+            previousText="&lsaquo;" 
+            nextText="&rsaquo;" 
+            firstText="&laquo;" 
+            lastText="&raquo;" >
+        </pagination>
     </div>
+
 </div>

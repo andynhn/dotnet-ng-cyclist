@@ -17,6 +17,6 @@ export interface Member {
     cyclingCategory: string;
     skillLevel: string;
     city: string;
-    country: string;
+    state: string;
     photos: Photo[];
 }

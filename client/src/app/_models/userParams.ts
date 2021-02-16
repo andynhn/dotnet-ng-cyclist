@@ -10,6 +10,8 @@ export class UserParams {
     cyclingCategory = 'all';
     skillLevel = 'all';
     nameSearch = '';
+    state = '';
+    city = '';
     orderBy = 'lastActive';
 
     constructor(user: User) {

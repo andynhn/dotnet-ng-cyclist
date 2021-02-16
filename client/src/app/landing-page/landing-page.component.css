@@ -1,0 +1,9 @@
+.jumbotron {
+    background-image: url("../../assets/cyclists2.jpg");
+    background-repeat: no-repeat;
+    background-position: bottom; 
+    background-size: cover;
+    background-color: rgb(44, 44, 44);
+    height: 400px;
+    border-radius: 0px;
+}

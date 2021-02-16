@@ -1,16 +1,52 @@
-<div class="container mt-5">
-    <div *ngIf="!registerMode" style='text-align: center;'>
-        <h1>Saddle up cyclists!</h1>
-        <p class="lead mb-5">Sign up today to meet new cylists in your area, plan group rides, and more!</p>
-        <div class="text-center">
-            <button (click)="registerToggle()" class="btn btn-primary btn-lg mr-2">Sign up</button>
-            <button class="btn btn-info btn-lg">Info</button>
-        </div>
+<div>
+    <div *ngIf="!registerMode">
+        <main role="main">
+
+            <!-- Main jumbotron for a primary marketing message or call to action -->
+            <div class="jumbotron">
+                <div class="container">
+                    <div class="col-lg-6 col-md-9 col-sm-12 col-xs-12">
+                        <h1 class="display-5 text-white"><strong>Saddle up cyclists!</strong></h1>
+                        <h4 class="text-white my-lg-4 my-md-3 my-sm-2">Sign up today to meet new cylists in your area, plan rides, and more!</h4>
+                        <button (click)="registerToggle()" class="btn btn-info btn-lg mr-2">Sign up</button>
+                    </div>
+                </div>
+            </div>
+      
+            <div class="container">
+              <!-- Example row of columns -->
+                <div class="row">
+                <div class="col-md-4">
+                    <h3>Customize</h3>
+                    <p>Create a profile detaling how often you cycle, your preferred cycling surface (road, gravel, or mountain), and your cycling skill-level.</p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Discover</h3>
+                    <p>Discover other cyclists in your area. Or search for cyclists that match your rider profile. </p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Chat</h3>
+                    <p>Send private messages and plan a bike ride!</p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                </div>
+                </div>
+        
+                <hr>
+      
+            </div> <!-- /container -->
+      
+        </main>
+      
+        <footer class="container">
+        <p>By Andy N.H. Nguyen - <a href="https://andynhn.me">andynhn.me</a></p>
+        </footer>
     </div>
 
     <div *ngIf="registerMode" class="container">
         <div class="row justify-content-center">
-            <div class="col-5">
+            <div>
                 <!-- send "users" from this landing page component to the register component (parent to child). 
                     So use [ ] in <app-register> for it to receive data  -->
                 <!-- e.g. [variableInChildComponent] = "variable in this component" -->

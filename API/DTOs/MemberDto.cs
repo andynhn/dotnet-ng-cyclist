@@ -26,7 +26,7 @@ namespace API.DTOs
         public string CyclingCategory { get; set; } // Road, Gravel, Mountain
         public string SkillLevel { get; set; }    // Beginner, Intermediate, Advanced
         public string City { get; set; }
-        public string Country { get; set; }
+        public string State { get; set; }
 
         // one to many - 1 user can have many photos
         public ICollection<PhotoDto> Photos { get; set; }

@@ -27,6 +27,9 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   activeTab: TabDirective;
   messages: Message[] = [];
   user: User;
+  cyclingFrequency = ['daily', 'weekly', 'monthly'];
+  cyclingCategory = ['road', 'gravel', 'mountain'];
+  skillLevel = ['beginner', 'intermediate', 'advanced'];
 
   constructor(public presence: PresenceService, private route: ActivatedRoute,
               private messageService: MessageService,

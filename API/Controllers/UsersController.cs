@@ -83,6 +83,10 @@ namespace API.Controllers
                     userParams.NameSearch = userParams.NameSearch.Substring(0, 30);
                 }
             }
+            if (string.IsNullOrEmpty(userParams.State))
+                userParams.State = "all";
+            if (string.IsNullOrEmpty(userParams.City))
+                userParams.City = "all";
 
             // Get a PagedList of filtered users based on the userParams
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);

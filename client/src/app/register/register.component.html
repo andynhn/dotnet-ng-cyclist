@@ -1,98 +1,137 @@
+<div *ngIf="!loading" class="mx-2">
 <!-- reactive forms -->
-<form [formGroup]='registerForm' (ngSubmit)="registerForm.valid && register()" method="post" autocomplete="off">
-    <h3 class="text-center text-primary">Sign up</h3>
+<form [formGroup]='registerForm' (ngSubmit)="registerForm.valid && register()" method="post" autocomplete="off" class="mt-5">
+    <h3 class="text-center text-primary mb-3">Sign up</h3>
+    <div class="form-row mb-2 d-flex justify-content-center">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <app-text-input 
+                [formControl]='registerForm.controls["username"]'
+                [label]='"Username"'>
+            </app-text-input>
+        </div>
+    </div>
+    <div class="form-row mb-2 d-flex justify-content-center">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <app-text-input 
+                [formControl]='registerForm.controls["firstName"]'
+                [label]='"First Name"'>
+            </app-text-input>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <app-text-input 
+                [formControl]='registerForm.controls["lastName"]'
+                [label]='"Last Name"'>
+            </app-text-input>
+        </div>
+    </div>
+    <div class="form-row mb-2 d-flex justify-content-center">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <!-- created a form with a reusable text input component -->
+            <app-date-input
+                [formControl]='registerForm.controls["dateOfBirth"]'
+                [label]='"Date Of Birth"'
+                [maxDate]="maxDate">
+            </app-date-input>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group-row">
+                <select formControlName="gender" name="gender" class="form-control" required>
+                    <option value="">Select gender...</option>
+                    <option *ngFor="let gender of genders" [value]="gender" >
+                        {{gender | titlecase}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row mb-2 d-flex justify-content-center">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <select formControlName="state" name="state" class="form-control" (change)="changeState($event.target.value)" required>
+                <option value="" selected>Select state...</option>
+                <option *ngFor="let state of states | keyvalue" [value]="state.key" >
+                    {{state.key}}
+                </option>
+            </select>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div *ngIf="selectedState !== ''">
+                <select formControlName="city" name="city" class="form-control">
+                    <option value="" selected>Select city...</option>
+                    <option *ngFor="let city of cities" [value]="city" >
+                        {{city}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row d-flex justify-content-center">
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <app-text-input 
+                [formControl]='registerForm.controls["password"]'
+                [label]='"Password"'
+                [type]='"password"'>
+            </app-text-input>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <app-text-input 
+                [formControl]='registerForm.controls["confirmPassword"]'
+                [label]='"Confirm Password"'
+                [type]='"password"'>
+            </app-text-input>
+        </div>
+    </div>
+
+    <div class="form-row d-flex justify-content-center">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label" style="margin-right: 10px;"><strong>I cycle: </strong></label>
+                <label class="radio-inline">
+                    <input type="radio" value="daily" formControlName="cyclingFrequency"> Daily
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="weekly" formControlName="cyclingFrequency" class="ml-3"> Weekly
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="monthly" formControlName="cyclingFrequency" class="ml-3"> Monthly
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-row d-flex justify-content-center">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label" style="margin-right: 10px;"><strong>Preferred surface: </strong></label>
+                <label class="radio-inline">
+                    <input type="radio" value="road" formControlName="cyclingCategory"> Road
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="gravel" formControlName="cyclingCategory" class="ml-3"> Gravel
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="mountain" formControlName="cyclingCategory" class="ml-3"> Mountain
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-row d-flex justify-content-center">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label" style="margin-right: 10px;"><strong>Skill level: </strong></label>
+                <label class="radio-inline">
+                    <input type="radio" value="beginner" formControlName="skillLevel"> Beginner
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="intermediate" formControlName="skillLevel" class="ml-3"> Intermediate
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="advanced" formControlName="skillLevel" class="ml-3"> Advanced
+                </label>
+            </div>
+        </div>
+    </div>
+
     <hr>
-
-    <!-- created a form with a reusable text input component -->
-
-    <app-text-input 
-        [formControl]='registerForm.controls["username"]'
-        [label]='"Username"'>
-    </app-text-input>
-    <app-text-input 
-        [formControl]='registerForm.controls["firstName"]'
-        [label]='"First Name"'>
-    </app-text-input>
-    <app-text-input 
-        [formControl]='registerForm.controls["lastName"]'
-        [label]='"Last Name"'>
-    </app-text-input>
-    <app-date-input
-        [formControl]='registerForm.controls["dateOfBirth"]'
-        [label]='"Date Of Birth"'
-        [maxDate]="maxDate">
-    </app-date-input>
-    <app-text-input 
-        [formControl]='registerForm.controls["city"]'
-        [label]='"City"'>
-    </app-text-input>
-    <app-text-input 
-        [formControl]='registerForm.controls["country"]'
-        [label]='"Country"'>
-    </app-text-input>
-
-    <div class="form-group">
-        <label class="control-label" style="margin-right: 10px;"><strong>Gender: </strong></label>
-        <label class="radio-inline">
-            <input type="radio" value="female" formControlName="gender"> Female
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="male" formControlName="gender" class="ml-3"> Male
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="other" formControlName="gender" class="ml-3"> Other
-        </label>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label" style="margin-right: 10px;"><strong>I cycle: </strong></label>
-        <label class="radio-inline">
-            <input type="radio" value="daily" formControlName="cyclingFrequency"> Daily
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="weekly" formControlName="cyclingFrequency" class="ml-3"> Weekly
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="monthly" formControlName="cyclingFrequency" class="ml-3"> Monthly
-        </label>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label" style="margin-right: 10px;"><strong>I prefer: </strong></label>
-        <label class="radio-inline">
-            <input type="radio" value="road" formControlName="cyclingCategory"> Road
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="gravel" formControlName="cyclingCategory" class="ml-3"> Gravel
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="mountain" formControlName="cyclingCategory" class="ml-3"> Mountain
-        </label>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label" style="margin-right: 10px;"><strong>My skill level: </strong></label>
-        <label class="radio-inline">
-            <input type="radio" value="beginner" formControlName="skillLevel"> Beginner
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="intermediate" formControlName="skillLevel" class="ml-3"> Intermediate
-        </label>
-        <label class="radio-inline">
-            <input type="radio" value="advanced" formControlName="skillLevel" class="ml-3"> Advanced
-        </label>
-    </div>
-
-    <app-text-input 
-        [formControl]='registerForm.controls["password"]'
-        [label]='"Password"'
-        [type]='"password"'>
-    </app-text-input>
-    <app-text-input 
-        [formControl]='registerForm.controls["confirmPassword"]'
-        [label]='"Confirm Password"'
-        [type]='"password"'>
-    </app-text-input>
 
     <div class="row" *ngIf="validationErrors.length > 0">
         <ul class="text-danger">
@@ -101,10 +140,11 @@
     </div>
 
     <div class="form-group text-center">
-        <button [disabled]='!registerForm.valid' class="btn btn-success mr-2" type="submit">Register</button>
-        <button class="btn btn-warning mr-2" (click)="cancel()" type="button">Cancel</button>
+        <button [disabled]='!registerForm.valid' class="btn btn-info btn-lg mr-2" type="submit">Register</button>
+        <button class="btn btn-warning btn-lg mr-2" (click)="cancel()" type="button">Cancel</button>
     </div>
 
-    <!-- <p>Form value: {{registerForm.value | json}}</p>
-    <p>Form status: {{registerForm.status | json}}</p> -->
+    <p>Form value: {{registerForm.value | json}}</p>
+    <p>Form status: {{registerForm.status | json}}</p>
 </form>
+</div>

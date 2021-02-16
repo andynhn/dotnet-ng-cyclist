@@ -1,3 +1,5 @@
+<div class="container mt-3">
+
 <div class="row mb-4">
     <div class="btn-group" name="container">
         <div *ngIf="pageParams.container=='Unread'; then unreadFilled else unreadOutline"></div>
@@ -24,12 +26,12 @@
         </ng-template>
         <div *ngIf="pageParams.container=='Outbox'; then outboxFilled else outboxOutline"></div>
         <ng-template #outboxFilled>
-            <button class="btn btn-secondary btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+            <button class="btn btn-info btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
                 <i class="fa fa-paper-plane"></i> Outbox
             </button>
         </ng-template>
         <ng-template #outboxOutline>
-            <button class="btn btn-outline-secondary btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
+            <button class="btn btn-outline-info btn-sm" btnRadio="Outbox" [(ngModel)]="pageParams.container" (click)="loadMessages()">
                 <i class="fa fa-paper-plane"></i> Outbox
             </button>
         </ng-template>
@@ -92,7 +94,8 @@
                     <strong>{{message.senderUsername | titlecase}}</strong>
                 </div>
             </td>
-            <td>{{message.messageSent | timeago}}</td> 
+            <td>
+                {{message.messageSent | date:"LLL dd, yyyy"}} at {{message.messageSent | date:"h:mm aa"}}</td> 
             <td>
                 <button (click)="$event.stopPropagation()" (click)="deleteMessage(message.id)" class="btn btn-danger btn-sm">Delete</button>
             </td>
@@ -100,3 +103,4 @@
     </table>
 </div>
 
+</div>

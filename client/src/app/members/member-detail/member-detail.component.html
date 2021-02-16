@@ -1,3 +1,4 @@
+<div class="container mt-3">
 <div class="row">
     <div class="col-4">
         <div class="card">
@@ -12,7 +13,7 @@
                 </div>
                 <div>
                     <strong>Location:</strong>
-                    <p>{{member.city}}, {{member.country}}</p>
+                    <p>{{member.city | titlecase}}, {{member.state | titlecase}}</p>
                 </div>
                 <div>
                     <strong>Age:</strong>
@@ -29,9 +30,9 @@
             </div>
             <div class="card-footer">
                 <div class="btn-group d-flex">
-                    <button 
+                    <button *ngIf="memberTabs.tabs[3].active !== true"
                         class="btn btn-success"
-                        (click)="selectTab(3)">Message
+                        (click)="selectTab(3)">Message {{member.firstName | titlecase}}
                     </button>
                 </div>
             </div>
@@ -42,19 +43,31 @@
             <tab heading='About {{member.firstName | titlecase}}' (selectTab)="onTabActivated($event)">
                 <h4>Description</h4>
                 <p>{{member.introduction}}</p>
-                <h4>Cycling Preferences</h4>
+                <h4 class="mt-3">Cycling Preferences</h4>
                 <table class="table">
                     <tr>
                         <td><strong>Cycling Frequency:</strong></td>
-                        <td>{{member.cyclingFrequency | titlecase}}</td>
+                        <td *ngFor="let item of cyclingFrequency">
+                            <span *ngIf="item === member.cyclingFrequency; then cyclingFrequencySelection else otherCyclingFrequencySelection"></span>
+                            <ng-template #cyclingFrequencySelection><strong>{{member.cyclingFrequency | uppercase}}</strong></ng-template>
+                            <ng-template #otherCyclingFrequencySelection><small>{{item}}</small></ng-template>
+                        </td>
                     </tr>
                     <tr>
-                        <td><strong>Preferred cycling category:</strong></td>
-                        <td>{{member.cyclingCategory | titlecase}}</td>
+                        <td><strong>Preferred Cycling Surface:</strong></td>
+                        <td *ngFor="let item of cyclingCategory">
+                            <span *ngIf="item === member.cyclingCategory; then cyclingCategorySelection else otherCyclingCategorySelection"></span>
+                            <ng-template #cyclingCategorySelection><strong>{{member.cyclingCategory | uppercase}}</strong></ng-template>
+                            <ng-template #otherCyclingCategorySelection><small>{{item}}</small></ng-template>
+                        </td>
                     </tr>
                     <tr>
-                        <td><strong>Cycling skill level:</strong></td>
-                        <td>{{member.skillLevel |titlecase}}</td>
+                        <td><strong>Cycling Skill Level:</strong></td>
+                        <td *ngFor="let item of skillLevel">
+                            <span *ngIf="item === member.skillLevel; then skillLevelSelection else otherSkillLevelSelection"></span>
+                            <ng-template #skillLevelSelection><strong>{{member.skillLevel | uppercase}}</strong></ng-template>
+                            <ng-template #otherSkillLevelSelection><small>{{item}}</small></ng-template>
+                        </td>
                     </tr>
                 </table>
             </tab>
@@ -78,4 +91,5 @@
             </tab>
         </tabset>
     </div>
+</div>
 </div>
