@@ -152,10 +152,10 @@ namespace API.Data
                 query = query.Where(u => u.SkillLevel == userParams.SkillLevel);
             if (userParams.NameSearch.ToLower() != "all" && userParams.NameSearch.ToLower() != null)
                 query = query.Where(u => (u.FirstName + u.LastName).Contains(userParams.NameSearch.ToLower()));
-            if (userParams.State.ToLower() != "all")
-                query = query.Where(u => u.State == userParams.State.ToLower());
-            if (userParams.City.ToLower() != "all")
-                query = query.Where(u => u.City == userParams.City.ToLower());
+            if (userParams.State != "all")
+                query = query.Where(u => u.State == userParams.State);
+            if (userParams.City != "all")
+                query = query.Where(u => u.City == userParams.City);
             
             // If the user wants to filter users by age, calculate minimum age and maximum age filtering
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
@@ -169,6 +169,10 @@ namespace API.Data
                 "createdAt" => query.OrderByDescending(u => u.CreatedAt),
                 "aToZ" => query.OrderBy(u => u.FirstName),
                 "zToA" => query.OrderByDescending(u => u.FirstName),
+                "cityA" => query.OrderBy(u => u.City),
+                "cityD" => query.OrderByDescending(u => u.City),
+                "stateA" => query.OrderBy(u => u.State),
+                "stateD" => query.OrderByDescending(u => u.State),
                 _ => query.OrderByDescending(u => u.LastActive)
             };
 

@@ -20,8 +20,8 @@ export class DiscoverMembersComponent implements OnInit {
   userParams: UserParams;
   genderList = [
     {value: 'all', display: ''},
-    {value: 'male', display: 'Male'},
-    {value: 'female', display: 'Female'}
+    {value: 'female', display: 'Female'},
+    {value: 'male', display: 'Male'}
   ];
   cyclingFrequency = [
     {value: 'all', display: ''},

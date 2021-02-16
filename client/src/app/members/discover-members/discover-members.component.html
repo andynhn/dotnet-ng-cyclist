@@ -157,6 +157,42 @@
                                     (click)="loadMembers()"
                                     btnRadio="zToA">Name: Z to A</button>
                             </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="cityA">City: A to Z</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="cityD">City: Z to A</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="stateA">State: A to Z</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userParams.orderBy"
+                                    (click)="loadMembers()"
+                                    btnRadio="stateD">State: Z to A</button>
+                            </li>
                         </ul>
                     </div>
                 </div>

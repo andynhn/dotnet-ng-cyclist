@@ -53,8 +53,6 @@ namespace API.Controllers
 
             // convert these to lowercase before saving.
             user.UserName = registerDto.Username.ToLower();
-            user.State = registerDto.State.ToLower();
-            user.City = registerDto.City.ToLower();
 
             // creates user and saves changes into DB with ASPNET identity's user manager
             var result = await _userManager.CreateAsync(user, registerDto.Password);

@@ -134,8 +134,14 @@ namespace API.Controllers
 
             // use automapper to map the memberUpdateDto information to the user we returned from the UserRepository.
             _mapper.Map(memberUpdateDto, user);
-            // modify the UpdatedAt property.
+            // Update these properties before saving to the DB.
             user.UpdatedAt = DateTime.UtcNow;
+            user.FirstName = user.FirstName.ToLower();
+            user.LastName = user.LastName.ToLower();
+            user.CyclingFrequency = user.CyclingFrequency.ToLower();
+            user.CyclingCategory = user.CyclingCategory.ToLower();
+            user.SkillLevel = user.SkillLevel.ToLower();
+
             // Update the database with the new changes.
             _unitOfWork.UserRepository.Update(user);
 

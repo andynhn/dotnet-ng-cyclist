@@ -92,16 +92,26 @@ export class MembersService {
     if (member) {
       return of(member);
     }
-    return this.http.get<Member>(this.baseUrl + 'users/' + username);
+    return this.http.get<Member>(this.baseUrl + 'users/' + username).pipe();
   }
 
+  /**
+   * Primary method for updating member properties.
+   * First, do a lower case transformation on the text input fields so that it's lower case in the db.
+   * We do another check in the back end to verify.
+   * Then, we update it via the API, but we after the response comes back, we need to update the members array when we update a member.
+   * @param member The member to be updated
+   */
   updateMember(member: Member) {
-    // need to update the members array when we update a member.
+    // the following member properties are text inputs, so let's convert to lower.
+    member.firstName = member.firstName.toLowerCase();
+    member.lastName = member.lastName.toLowerCase();
+    // Then, we update it via the API, but we after the response comes back, we need to update the members array when we update a member.
     return this.http.put(this.baseUrl + 'users', member).pipe(
       map(() => {
         // find the index of the member we just updated.
         const index = this.members.indexOf(member);
-        // then update members array so that it has the new changes to that member.
+        // then update members array so that it has the new changes for that member.
         this.members[index] = member;
       })
     );

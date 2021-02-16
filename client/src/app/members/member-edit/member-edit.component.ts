@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -21,6 +22,10 @@ export class MemberEditComponent implements OnInit {
   skillLevel: string[] = ['beginner', 'intermediate', 'advanced'];
   cyclingFrequency: string[] = ['daily', 'weekly', 'monthly'];
   cyclingCategory: string[] = ['road', 'gravel', 'mountain'];
+  states: object;
+  cities: string[] = [];
+  selectedState = '';
+  loading = false;
 
   // HostListener lets us access our browser everts. This notifies user that the form is unsaved if they close the browser
   @HostListener('window:beforeunload', ['$event']) unloadNotification($event: any) {
@@ -29,24 +34,66 @@ export class MemberEditComponent implements OnInit {
     }
   }
 
-  constructor(private accountService: AccountService, private memberService: MembersService, private toastr: ToastrService) {
+  constructor(private accountService: AccountService,
+              private memberService: MembersService,
+              private toastr: ToastrService,
+              private http: HttpClient) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
    }
 
   ngOnInit(): void {
+    this.getCityStates();
     this.loadMember();
   }
 
+  getCityStates(): any {
+    this.http.get('../../assets/cityStates.json').subscribe(data => {
+      console.log(data);
+      console.log(this.selectedState);
+      this.states = data;
+      console.log(this.cities);
+    });
+  }
+
+  changeState(data) {
+    console.log(data);
+    if (!data) {
+      console.log('no data here')
+      this.selectedState = '';
+    }
+    if (data) {
+      this.selectedState = data;
+      console.log('made it here');
+      this.cities = this.states[data];
+    }
+  }
+
   loadMember() {
-    this.memberService.getMember(this.user.username).subscribe(member => {
-      this.member = member;
+    this.memberService.getMember(this.user.username).subscribe(m => {
+      // should come back as lower case, so for the Member Edit feature, we want to display their data as Title case.
+      // later, when they save, we transform back to lower.
+      m.firstName = m.firstName.charAt(0).toUpperCase() + m.firstName.toLowerCase().slice(1);
+      m.lastName = m.lastName.charAt(0).toUpperCase() + m.lastName.toLowerCase().slice(1);
+      this.selectedState = m.state;
+      console.log(this.selectedState);
+      // then set the member variable to the modified resposne from the service.
+      this.member = m;
+      // need this for initial load of page.
+      this.cities = this.states[this.selectedState];
+      console.log(this.member.city);
+      this.loading = false;
     });
   }
 
   updateMember() {
+    // set loading to true to hide the edit form while these API calls are being made.
+    this.loading = true;
     this.memberService.updateMember(this.member).subscribe(() => {
       this.toastr.success('Profile updated successfully');
       this.editForm.reset(this.member); // reset the editForm template after update.
+      // Finally, we need to laod the member again so that the edit form has the
+      // updated information when it's done saving.
+      this.loadMember();
     });
   }
 
