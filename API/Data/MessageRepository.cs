@@ -68,7 +68,6 @@ namespace API.Data
                 .FirstOrDefaultAsync(x => x.Name == groupName);
         }
 
-        // TO DO: PENDING CLIENT-SIDE INTEGRATION
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
         {
             var query = _context.Messages

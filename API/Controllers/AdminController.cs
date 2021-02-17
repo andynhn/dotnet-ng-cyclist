@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -29,21 +31,13 @@ namespace API.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("users-with-roles")]
-        public async Task<ActionResult> GetUsersWithRoles()
+        public async Task<ActionResult> GetUsersWithRoles([FromQuery] UserManageParams userManageParams)
         {
-            var users = await _userManager.Users
-                .Include(r => r.UserRoles)
-                .ThenInclude(r => r.Role)
-                .OrderBy(u => u.UserName)
-                .Select(u => new
-                {
-                    u.Id,
-                    Username = u.UserName,
-                    Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
-                })
-                .ToListAsync();
+            var usersWithRoles = await _unitOfWork.AdminRepository.GetUsersWithRoles(userManageParams);
 
-            return Ok(users);
+            Response.AddPaginationHeader(usersWithRoles.CurrentPage, usersWithRoles.PageSize, usersWithRoles.TotalCount, usersWithRoles.TotalPages);
+
+            return Ok(usersWithRoles);
         }
 
         [Authorize(Policy = "RequireAdminRole")]

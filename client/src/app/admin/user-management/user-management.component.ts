@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { RolesModalComponent } from 'src/app/modals/roles-modal/roles-modal.component';
+import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
+import { UserManageParams } from 'src/app/_models/userManageParams';
 import { AdminService } from 'src/app/_services/admin.service';
 
 @Component({
@@ -9,20 +11,40 @@ import { AdminService } from 'src/app/_services/admin.service';
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css']
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, OnDestroy {
   users: Partial<User[]>;
   bsModalRef: BsModalRef;
+  pagination: Pagination;
+  userManageParams: UserManageParams;
+  loading = false;
 
-  constructor(private adminService: AdminService, private modalService: BsModalService) { }
+
+  constructor(private adminService: AdminService,
+              private modalService: BsModalService) {
+                this.userManageParams = this.adminService.getUserManageParams();
+              }
 
   ngOnInit(): void {
     this.getUsersWithRoles();
   }
 
   getUsersWithRoles() {
-    this.adminService.getUsersWithRoles().subscribe(users => {
-      this.users = users;
+    this.loading = true;
+    // for pagination, need to set the page params with the params we defined in userManageParams
+    this.adminService.setUserManageParams(this.userManageParams);
+    this.adminService.getUsersWithRoles(this.userManageParams).subscribe(response => {
+      this.users = response.result;
+      this.pagination = response.pagination;
+      console.log(response);
+      this.loading = false;
     });
+  }
+
+  pageChanged(event: any) {
+    console.log(event);
+    this.userManageParams.pageNumber = event.page;
+    this.adminService.setUserManageParams(this.userManageParams);
+    this.getUsersWithRoles();
   }
 
   openRolesModal(user: User) {
@@ -74,4 +96,8 @@ export class UserManagementComponent implements OnInit {
     return roles;
   }
 
+
+  ngOnDestroy() {
+    this.adminService.resetUserManageParams();
+  }
 }

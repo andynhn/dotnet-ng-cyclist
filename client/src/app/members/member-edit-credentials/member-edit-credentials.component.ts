@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ViewCompileResult } from '@angular/compiler/src/view_compiler/view_compiler';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -15,7 +15,7 @@ import { MembersService } from 'src/app/_services/members.service';
   templateUrl: './member-edit-credentials.component.html',
   styleUrls: ['./member-edit-credentials.component.css']
 })
-export class MemberEditCredentialsComponent implements OnInit {
+export class MemberEditCredentialsComponent implements OnInit, OnDestroy {
   editCredsForm: FormGroup;
   member: Member;
   user: User;
@@ -92,6 +92,11 @@ export class MemberEditCredentialsComponent implements OnInit {
   }
 
   cancel() {
+    this.validationErrors = [];
     this.router.navigateByUrl(`/member/edit`);
+  }
+
+  ngOnDestroy() {
+    this.validationErrors = [];
   }
 }

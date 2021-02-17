@@ -1,13 +1,37 @@
-<div class="row">
-    <table class="table">
+<div class="d-flex justify-content-center" *ngIf="pagination && !loading && users?.length !== 0">
+    <pagination 
+        [boundaryLinks]="true" 
+        [totalItems]="pagination.totalItems"
+        [itemsPerPage]="pagination.itemsPerPage"
+        [maxSize]="10"
+        [(ngModel)]="pagination.currentPage"
+        (pageChanged)="pageChanged($event)" 
+        previousText="&lsaquo;" 
+        nextText="&rsaquo;" 
+        firstText="&laquo;" 
+        lastText="&raquo;" >
+    </pagination>
+</div>
+<div class="row" *ngIf="users?.length > 0">
+    <table class="table" *ngIf="!loading">
         <tr>
             <th style="width: 30%">Username</th>
             <th style="width: 40%">Active roles</th>
             <th style="width: 30%"></th>
         </tr>
         <tr *ngFor="let user of users">
-            <td>{{user.username}}</td>
-            <td>{{user.roles}}</td>
+            <td>
+                <a type="button" 
+                    class="text-success"
+                    routerLink='{{"/members/" + user.username}}'>
+                    {{user.username}}
+                </a>
+            </td>
+            <td>
+                <span *ngFor="let role of user.roles">
+                    {{role}} 
+                </span>
+            </td>
             <td><button (click)="openRolesModal(user)" class="btn btn-info">Edit Roles</button></td>
         </tr>
     </table>

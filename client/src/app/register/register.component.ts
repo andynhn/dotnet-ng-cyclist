@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -10,7 +10,7 @@ import { AccountService } from '../_services/account.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   @Output() cancelRegisterEmitToLandingFromRegister = new EventEmitter ();
   registerForm: FormGroup;
   maxDate: Date;
@@ -94,13 +94,24 @@ export class RegisterComponent implements OnInit {
 
   register() {
     this.accountService.register(this.registerForm.value).subscribe(response => {
+      this.toastr.success('Sign up successful. Welcome!');
       this.router.navigateByUrl('/home');
     }, error => {
+      // TODO: Eventually remove the validation errors or build this out.
+      // currently toastr service is displaying validation errors
+      // from the error interceptor. A bit redundant to do it here
+      // simply to display the text within an HTML tag. Revisit this.
       this.validationErrors = error;
     });
   }
 
   cancel() {
+    // reset to an empty array when leaving.
+    this.validationErrors = [];
     this.cancelRegisterEmitToLandingFromRegister.emit(false);
+  }
+
+  ngOnDestroy() {
+    this.validationErrors = [];
   }
 }

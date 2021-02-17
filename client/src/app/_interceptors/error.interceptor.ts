@@ -24,9 +24,10 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error) {
+          // TODO: Revisit this and refactor to make it clearer.
           switch (error.status) {
             case 400:
-              // check if the are multiple errors (an errors array)
+              // FIRST, check if the are multiple errors (an errors array)
               if (error.error.errors) {
                 // ASPNET validation errors known as model state errors
                 const modelStateErrors = [];
@@ -40,6 +41,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                   Need to add es2018 to lib in tsconfig.json to use flat() for now.
                 */
                 throw modelStateErrors.flat();
+              // SECOND, check if the error.error is an OBJECT
               } else if (typeof(error.error) === 'object') {
                 /*
                   Need this else if for when the error.error is an object. Specifically, that will be a bad request.
@@ -47,7 +49,6 @@ export class ErrorInterceptor implements HttpInterceptor {
                   Postman validates that these HTTP responses are accurately "400 Bad Reequest, etc.", even though statusText says OK.
                   Instead of displaying error.statusText here (which would be misleading),
                   display the actual hard-coded string in the toastr notifcation for now...
-                  TODO: REVISIT THIS.
                 */
                 // big nested object here, so need to go in a few to display the description.
                 // But this will display errors when user makes mistakes in changing password.
@@ -68,15 +69,17 @@ export class ErrorInterceptor implements HttpInterceptor {
                 } else {
                   this.toastr.error('Bad Request', error.status);
                 }
+              // THIRD, Check if error.error just has the specific error text.
+              // if so display. Otherwise, send the default "could not process"
               } else {
                 console.log('made it here')
                 // If error.error is not an object, then display the specific error text here.
                 if (typeof(error.error) === 'string') {
                   this.toastr.error(error.error, error.status);
+                } else {
+                  // If we make it here, this is the default bad request error for everythinge else
+                  this.toastr.error('Could not process your request', 'Bad Request');
                 }
-
-                // Default bad request error for everythinge else
-                this.toastr.error('Could not process your request', 'Bad Request');
               }
               break;
 

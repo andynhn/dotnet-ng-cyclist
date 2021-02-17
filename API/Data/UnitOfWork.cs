@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
+using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Data
 {
@@ -20,8 +22,10 @@ namespace API.Data
     {
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        public UnitOfWork(DataContext context, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        public UnitOfWork(DataContext context, IMapper mapper, UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
             _mapper = mapper;
         }
@@ -32,6 +36,8 @@ namespace API.Data
         public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
 
         public IPhotoRepository PhotoRepository => new PhotoRepository(_context);
+
+        public IAdminRepository AdminRepository => new AdminRepository(_context, _mapper, _userManager);
 
 
         /// <summary>
