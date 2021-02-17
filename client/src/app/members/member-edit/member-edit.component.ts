@@ -43,7 +43,6 @@ export class MemberEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCityStates();
-    this.loadMember();
   }
 
   getCityStates(): any {
@@ -52,6 +51,9 @@ export class MemberEditComponent implements OnInit {
       console.log(this.selectedState);
       this.states = data;
       console.log(this.cities);
+      // call load member here so that city states json gets loaded in time. 
+      // Need to get the list of cities for the form.
+      this.loadMember();
     });
   }
 
@@ -78,7 +80,8 @@ export class MemberEditComponent implements OnInit {
       console.log(this.selectedState);
       // then set the member variable to the modified resposne from the service.
       this.member = m;
-      // need this for initial load of page.
+      // Essential for initial loading of page and preparing the edit form.
+      // Cities from json file should have loaded, so now we can assign it.
       this.cities = this.states[this.selectedState];
       console.log(this.member.city);
       this.loading = false;

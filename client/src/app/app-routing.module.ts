@@ -8,6 +8,7 @@ import { HomeComponent } from './home/home.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { DiscoverMembersComponent } from './members/discover-members/discover-members.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MemberEditCredentialsComponent } from './members/member-edit-credentials/member-edit-credentials.component';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { AdminGuard } from './_guards/admin.guard';
 import { AuthGuard } from './_guards/auth.guard';
@@ -27,6 +28,7 @@ const routes: Routes = [
       { path: 'discover', component: DiscoverMembersComponent },
       { path: 'members/:username', component: MemberDetailComponent, resolve: {member: MemberDetailResolver} },
       { path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard] },
+      { path: 'member/edit-credentials', component: MemberEditCredentialsComponent },
       { path: 'chat', component: ChatComponent },
       // add new paths that need need Auth protection within this children node.
       { path: 'admin', component: AdminPanelComponent, canActivate: [AdminGuard]}

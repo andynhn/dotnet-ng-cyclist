@@ -31,6 +31,7 @@ import { RolesModalComponent } from './modals/roles-modal/roles-modal.component'
 import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
+import { MemberEditCredentialsComponent } from './members/member-edit-credentials/member-edit-credentials.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { MemberMessagesComponent } from './members/member-messages/member-messag
     RolesModalComponent,
     ConfirmDialogComponent,
     PhotoEditorComponent,
-    MemberMessagesComponent
+    MemberMessagesComponent,
+    MemberEditCredentialsComponent
   ],
   imports: [
     BrowserModule,

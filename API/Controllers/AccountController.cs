@@ -6,10 +6,12 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API.Controllers
 {
@@ -26,8 +28,10 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, IMapper mapper, IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
             _mapper = mapper;
@@ -98,7 +102,7 @@ namespace API.Controllers
             var result = await _signInManager
                 .CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if(!result.Succeeded) return Unauthorized();
+            if (!result.Succeeded) return Unauthorized();
 
             return new UserDto
             {
@@ -108,6 +112,34 @@ namespace API.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName
             };
+        }
+
+        // route api/account/updateCredentials
+        [HttpPost("updateCredentials")]
+        public async Task<ActionResult> UpdateCredentials(CredentialsUpdateDto credentialsUpdateDto)
+        {
+            // get the current user from the Claims Principal.
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
+
+            // confirm that they provided a correct current password.
+            var confirmPassword = await _signInManager
+                .CheckPasswordSignInAsync(user, credentialsUpdateDto.Password, false);
+            // if not, return unauthorized with the appropriate message.
+            if (!confirmPassword.Succeeded) return Unauthorized("Current password is incorrect.");
+
+            // if they made it, use ASPNET Identity User Manager to reset the password
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, credentialsUpdateDto.NewPassword);
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // (ASPNET Identity should do this automatically...look into this) Update the database with the new changes.
+            _unitOfWork.UserRepository.Update(user);
+            // save changes to the db then return 204NoContent.
+            if (await _unitOfWork.Complete()) return NoContent();
+            // return 400BadRequest if all fails.
+            return BadRequest("Failed to update password");
         }
 
         private async Task<bool> UserExists(string username)

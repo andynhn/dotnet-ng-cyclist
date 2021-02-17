@@ -117,6 +117,15 @@ export class MembersService {
     );
   }
 
+  /**
+   * Method to update the user's password.
+   * Makes an API call to the account controller
+   * @param model user's password and new password
+   */
+  updateMemberCredentials(model: any) {
+    return this.http.post(this.baseUrl + 'account/updateCredentials', model);
+  }
+
 
 
 

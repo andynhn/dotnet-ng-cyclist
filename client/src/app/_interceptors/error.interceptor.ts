@@ -28,7 +28,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             case 400:
               // check if the are multiple errors (an errors array)
               if (error.error.errors) {
-                // ASPNET validatino errors known as model state errors
+                // ASPNET validation errors known as model state errors
                 const modelStateErrors = [];
                 for (const key in error.error.errors) {
                   if (error.error.errors[key]) {
@@ -49,19 +49,62 @@ export class ErrorInterceptor implements HttpInterceptor {
                   display the actual hard-coded string in the toastr notifcation for now...
                   TODO: REVISIT THIS.
                 */
-                this.toastr.error('Bad Request', error.status);
+                // big nested object here, so need to go in a few to display the description.
+                // But this will display errors when user makes mistakes in changing password.
+                // This is specifically accessing the 'description' key value in the error.error object,
+                // which in this case has 1 error object with 2 objects with keys of 'code' and 'description'
+                if (Object.keys(error.error).length === 1) {
+                  // Loop through that first (and only) object within error.error
+                  for (const [key, value] of Object.entries(error.error)) {
+                    // this object should have some objects within it.
+                    // For change password, know for sure it has "code" and "description" keys.
+                    // Descriptino is what we want to display in the toast message. So loop through those objects.
+                    for (const [key2, value2 ] of Object.entries(error.error[key])) {
+                      if (key2.toString() === 'description') {
+                        this.toastr.error(value2.toString(), 'Bad Request');
+                      }
+                    }
+                  }
+                } else {
+                  this.toastr.error('Bad Request', error.status);
+                }
               } else {
+                console.log('made it here')
                 // If error.error is not an object, then display the specific error text here.
-                this.toastr.error(error.error, error.status);
+                if (typeof(error.error) === 'string') {
+                  this.toastr.error(error.error, error.status);
+                }
+
+                // Default bad request error for everythinge else
+                this.toastr.error('Could not process your request', 'Bad Request');
               }
               break;
 
             case 401:
-              this.toastr.error('Unauthorized', error.status);
+              if (error.error.errors) {
+                console.log('made it here')
+                const modelStateErrors = [];
+                for (const key in error.error.errors) {
+                  if (error.error.errors[key]) {
+                    modelStateErrors.push(error.error.errors[key]);
+                  }
+                }
+                throw modelStateErrors.flat();
+              } else if (typeof(error.error) === 'object') {
+                // typically will make it here if login is unauthorized
+                console.log('made it here')
+                this.toastr.error('Access denied', 'Unauthorized');
+              } else if (typeof(error.error) === 'string'){
+                console.log('made it here');
+                this.toastr.error(error.error, 'Unauthorized');
+              } else {
+                // Default 401 Unauthorized error for everythinge else
+                this.toastr.error('Access denied', 'Unauthorized');
+              }
               break;
 
             case 404:
-              // for not found, navigate directly to our custom Not Found component.
+              // Default 404 not found is to navigate directly to our custom Not Found component.
               this.router.navigateByUrl('/not-found');
               break;
 
@@ -73,6 +116,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               break;
 
             default:
+              // default for any other errors that pop up
               this.toastr.error('Something unexpected went wrong');
               console.log(error);
               break;

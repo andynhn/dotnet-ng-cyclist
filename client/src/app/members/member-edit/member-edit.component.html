@@ -48,7 +48,10 @@
             <tab heading='About'>
                 <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
                     <div *ngIf="!loading">
-                        <div class="form-inline">
+                        <div class="d-flex justify-content-between">
+                            <a type="button" routerLink="/member/edit-credentials">Change Password</a>
+                        </div>
+                        <div class="form-inline mt-2">
                             <label for="firstName" class="mt-1">First Name: </label>
                             <input [(ngModel)]="member.firstName" type="text" name="firstName" class="form-control mx-2 mt-1" required>
                             <label for="lastName" class="mt-1 ml-2">Last Name: </label>
@@ -69,7 +72,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="pl-0 col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12" *ngIf="selectedState !== ''">
+                        <div class="pl-0 col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12" *ngIf="selectedState !== '' && this.cities && this.cities.length > 0">
                             <label for="city" class="mr-2 mb-0 mt-1">City: </label>
                             <select [(ngModel)]="member.city" name="city" class="form-control" required>
                                 <option value="" selected>Select a city...</option>

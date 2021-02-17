@@ -36,7 +36,9 @@ namespace API.Extensions
                 .AddRoleManager<RoleManager<AppRole>>() // Role Manager and the Type that it's going to use
                 .AddSignInManager<SignInManager<AppUser>>() // Sign in Manager and the Type that it's going to use
                 .AddRoleValidator<RoleValidator<AppRole>>() // Role Validator and the type that it needs to use
-                .AddEntityFrameworkStores<DataContext>();   // DataContext so that it sets up the DB with all the tables that we need for the dotnet identity tables.
+                .AddEntityFrameworkStores<DataContext>()   // DataContext so that it sets up the DB with all the tables that we need for the dotnet identity tables.
+                // since we AddIdentityCore and not AddDefaultIdentity, we don't have the default token providers, so we need to add them.
+                .AddDefaultTokenProviders();    // token provider needed for password resets, change meail, etc.
 
             // Configure authentication so that we can use JSON Web Tokens.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
