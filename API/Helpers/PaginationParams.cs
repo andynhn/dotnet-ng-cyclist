@@ -5,8 +5,8 @@ namespace API.Helpers
         can both inherit from in order to get access to pagination properties
     */
     /// <summary>
-    /// Params for pagination that the UserParams and LikesParams
-    /// can both inherit from in order to get access to pagination properties
+    /// Params for pagination that the UserParams
+    /// can inherit from in order to get access to pagination properties
     /// </summary>
     public class PaginationParams
     {

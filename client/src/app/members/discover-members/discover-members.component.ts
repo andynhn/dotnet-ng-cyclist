@@ -103,6 +103,7 @@ export class DiscoverMembersComponent implements OnInit {
    * then loadMembers again.
    */
   resetFilters() {
+    // reset the userParams in this component with fresh params from the service.
     this.userParams = this.memberService.resetUserParams();
     this.loadMembers();
   }

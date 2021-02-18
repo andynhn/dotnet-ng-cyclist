@@ -1,4 +1,18 @@
-<div class='row'>
+<div class="d-flex justify-content-center" *ngIf="pagination && !loading && photos?.length !== 0">
+    <pagination 
+        [boundaryLinks]="true" 
+        [totalItems]="pagination.totalItems"
+        [itemsPerPage]="pagination.itemsPerPage"
+        [maxSize]="10"
+        [(ngModel)]="pagination.currentPage"
+        (pageChanged)="pageChanged($event)" 
+        previousText="&lsaquo;" 
+        nextText="&rsaquo;" 
+        firstText="&laquo;" 
+        lastText="&raquo;" >
+    </pagination>
+</div>
+<div class='row' *ngIf="photos?.length > 0 && !loading">
     <div class='col-sm-2' *ngFor='let photo of photos'>
         <h4>{{photo.username}}</h4>
         <img src='{{photo.url}}' class='img-thumbnail p-1'

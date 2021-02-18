@@ -51,8 +51,7 @@ export class MemberEditComponent implements OnInit {
       console.log(this.selectedState);
       this.states = data;
       console.log(this.cities);
-      // call load member here so that city states json gets loaded in time. 
-      // Need to get the list of cities for the form.
+      // call load member here so that city states json gets loaded in time. Form needs this data.
       this.loadMember();
     });
   }
@@ -72,18 +71,36 @@ export class MemberEditComponent implements OnInit {
 
   loadMember() {
     this.memberService.getMember(this.user.username).subscribe(m => {
-      // should come back as lower case, so for the Member Edit feature, we want to display their data as Title case.
-      // later, when they save, we transform back to lower.
-      m.firstName = m.firstName.charAt(0).toUpperCase() + m.firstName.toLowerCase().slice(1);
-      m.lastName = m.lastName.charAt(0).toUpperCase() + m.lastName.toLowerCase().slice(1);
-      this.selectedState = m.state;
-      console.log(this.selectedState);
-      // then set the member variable to the modified resposne from the service.
+      // FOR LOOP primarily for skipping the main Admin, which doesn't need the text transformations on some data.
+      //  Need to skip for now because normal users must provide first and last name on registration.
+      // Primary seeded Admin does not, so this form will crash for them. Prevent crashing by skipping text transformations.
+      for (const role of this.user.roles) {
+        // check if the role is 'Admin'
+        if (role === 'Admin') {
+          // if 'Admin', check if it's the primary admin.
+          if (this.user.username.toLowerCase() === 'admin') {
+            // if it's the main Admin, break out of this for loop. No need to transfrom data for the form. Just return the member data.
+            break;
+          } else {
+            // if an Admin, but not the main admin, it means they are a normal member as well. So continue/skip this loop interation.
+            continue;
+          }
+        // If NOT an admin role....most normal users will skip straight here (only have one role as a member)
+        } else {
+          // Title case transformations for displaying on the form
+          m.firstName = m.firstName.charAt(0).toUpperCase() + m.firstName.toLowerCase().slice(1);
+          m.lastName = m.lastName.charAt(0).toUpperCase() + m.lastName.toLowerCase().slice(1);
+          // selectedState variable needed for dynamic hiding/displaying of city dropdown
+          this.selectedState = m.state;
+          console.log(this.selectedState);
+          // Cities from json file should have loaded, so now we can assign it. This will dynamically fill cities dropdown with...
+          // ...a list of cities for that particular state.
+          this.cities = this.states[this.selectedState];
+        }
+      }
+
+      // FINALLY, set the member variable to the response from the service.
       this.member = m;
-      // Essential for initial loading of page and preparing the edit form.
-      // Cities from json file should have loaded, so now we can assign it.
-      this.cities = this.states[this.selectedState];
-      console.log(this.member.city);
       this.loading = false;
     });
   }

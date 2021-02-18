@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
@@ -31,8 +33,22 @@ namespace API.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("users-with-roles")]
-        public async Task<ActionResult> GetUsersWithRoles([FromQuery] UserManageParams userManageParams)
+        public async Task<ActionResult<IEnumerable<UserWithRolesDto>>> GetUsersWithRoles([FromQuery] UserManageParams userManageParams)
         {
+            if (string.IsNullOrEmpty(userManageParams.UsernameSearch))
+            {
+                userManageParams.UsernameSearch = "";
+            } 
+            else 
+            {
+                // transform the results from username search.
+                userManageParams.UsernameSearch = userManageParams.UsernameSearch.Trim().ToLower();
+                if (userManageParams.UsernameSearch.Length > 30)
+                {
+                    // set max length of Username search to 30. only return 30 characters if greater than max length.
+                    userManageParams.UsernameSearch = userManageParams.UsernameSearch.Substring(0, 30);
+                }
+            }
             var usersWithRoles = await _unitOfWork.AdminRepository.GetUsersWithRoles(userManageParams);
 
             Response.AddPaginationHeader(usersWithRoles.CurrentPage, usersWithRoles.PageSize, usersWithRoles.TotalCount, usersWithRoles.TotalPages);
@@ -71,11 +87,13 @@ namespace API.Controllers
 
         [Authorize(Policy = "ModeratePhotoRole")]
         [HttpGet("photos-to-moderate")]
-        public async Task<ActionResult> GetPhotosForModeration()
+        public async Task<ActionResult<IEnumerable<PhotoForApprovalDto>>> GetPhotosForModeration([FromQuery] PhotoManageParams photoManageParams)
         {
-            var photos = await _unitOfWork.PhotoRepository.GetUnapprovedPhotos();
+            var photosForModeration = await _unitOfWork.PhotoRepository.GetUnapprovedPhotos(photoManageParams);
 
-            return Ok(photos);
+            Response.AddPaginationHeader(photosForModeration.CurrentPage, photosForModeration.PageSize, photosForModeration.TotalCount, photosForModeration.TotalPages);
+
+            return Ok(photosForModeration);
         }
 
         [Authorize(Policy = "ModeratePhotoRole")]

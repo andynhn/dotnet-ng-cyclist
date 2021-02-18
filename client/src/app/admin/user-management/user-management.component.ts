@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ToastrService } from 'ngx-toastr';
 import { RolesModalComponent } from 'src/app/modals/roles-modal/roles-modal.component';
 import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
@@ -12,20 +13,44 @@ import { AdminService } from 'src/app/_services/admin.service';
   styleUrls: ['./user-management.component.css']
 })
 export class UserManagementComponent implements OnInit, OnDestroy {
-  users: Partial<User[]>;
+  users: Partial<User[]>; // Partial because only has part of the parameters for a User object.
   bsModalRef: BsModalRef;
   pagination: Pagination;
   userManageParams: UserManageParams;
   loading = false;
+  rolesList = [
+    {value: 'Admin', display: 'Admin', isChecked: false },
+    {value: 'Moderator', display: 'Moderator', isChecked: false },
+    {value: 'Member', display: 'Member', isChecked: false }
+  ];
+  selectedRoles = [];
+  selectedRoleValues = [];
 
 
   constructor(private adminService: AdminService,
-              private modalService: BsModalService) {
+              private modalService: BsModalService,
+              private toastr: ToastrService) {
                 this.userManageParams = this.adminService.getUserManageParams();
               }
 
   ngOnInit(): void {
     this.getUsersWithRoles();
+    this.getSelectedRoles();
+  }
+
+  changeSelection() {
+    this.getSelectedRoles();
+  }
+  getSelectedRoles() {
+    this.selectedRoleValues = [];
+    this.selectedRoles = this.rolesList.filter((value, index) => {
+      return value.isChecked;
+    });
+    for (const role of this.selectedRoles) {
+      this.selectedRoleValues.push(role.value)
+    }
+    this.userManageParams.roles = this.selectedRoleValues;
+    
   }
 
   getUsersWithRoles() {
@@ -61,8 +86,11 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         roles: [...values.filter(el => el.checked === true).map(el => el.name)]
       };
       if (rolesToUpdate) {
-        this.adminService.updateUserRoles(user.username, rolesToUpdate.roles).subscribe(() => {
+        this.adminService.updateUserRoles(user.username, rolesToUpdate.roles).subscribe(response => {
           user.roles = [...rolesToUpdate.roles];
+          this.toastr.success('Successfully updated user roles');
+        }, error => {
+          this.toastr.error(error, 'Encountered an error while updating roles');
         });
       }
     });
@@ -96,6 +124,23 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     return roles;
   }
 
+  /**
+   * method to reset filters on the user management page.
+   * pass in this.user so that it gets set to what the page was initialized at.
+   * then loadMembers again.
+   */
+  resetFilters() {
+    console.log('reset filters');
+    // reset the userManageParms in this component with fresh params from the service.
+    this.userManageParams = this.adminService.resetUserManageParams();
+    // need to reset these 'isChecked' to false.
+    this.rolesList = [
+      {value: 'Admin', display: 'Admin', isChecked: false },
+      {value: 'Moderator', display: 'Moderator', isChecked: false },
+      {value: 'Member', display: 'Member', isChecked: false }
+    ];
+    this.getUsersWithRoles();
+  }
 
   ngOnDestroy() {
     this.adminService.resetUserManageParams();

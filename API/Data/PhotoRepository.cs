@@ -3,7 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
@@ -29,19 +32,21 @@ namespace API.Data
                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<PhotoForApprovalDto>> GetUnapprovedPhotos()
+        public async Task<PagedList<PhotoForApprovalDto>> GetUnapprovedPhotos(PhotoManageParams photoManageParams)
         {
-            return await _context.Photos
+            var query = _context.Photos
                 .IgnoreQueryFilters()
                 .Where(p => p.IsApproved == false)
                 .Select(u => new PhotoForApprovalDto
-                    {
-                        Id = u.Id,
-                        Username = u.AppUser.UserName,
-                        Url = u.Url,
-                        IsApproved = u.IsApproved
-                    })
-                .ToListAsync();
+                {
+                    Id = u.Id,
+                    Username = u.AppUser.UserName,
+                    Url = u.Url,
+                    IsApproved = u.IsApproved
+                })
+                .AsQueryable();
+            
+            return await PagedList<PhotoForApprovalDto>.CreateAsync(query, photoManageParams.PageNumber, photoManageParams.PageSize);
         }
 
         public void RemovePhoto(Photo photo)

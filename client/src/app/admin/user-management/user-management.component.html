@@ -1,38 +1,145 @@
-<div class="d-flex justify-content-center" *ngIf="pagination && !loading && users?.length !== 0">
-    <pagination 
-        [boundaryLinks]="true" 
-        [totalItems]="pagination.totalItems"
-        [itemsPerPage]="pagination.itemsPerPage"
-        [maxSize]="10"
-        [(ngModel)]="pagination.currentPage"
-        (pageChanged)="pageChanged($event)" 
-        previousText="&lsaquo;" 
-        nextText="&rsaquo;" 
-        firstText="&laquo;" 
-        lastText="&raquo;" >
-    </pagination>
-</div>
-<div class="row" *ngIf="users?.length > 0">
-    <table class="table" *ngIf="!loading">
-        <tr>
-            <th style="width: 30%">Username</th>
-            <th style="width: 40%">Active roles</th>
-            <th style="width: 30%"></th>
-        </tr>
-        <tr *ngFor="let user of users">
-            <td>
-                <a type="button" 
-                    class="text-success"
-                    routerLink='{{"/members/" + user.username}}'>
-                    {{user.username}}
-                </a>
-            </td>
-            <td>
-                <span *ngFor="let role of user.roles">
-                    {{role}} 
-                </span>
-            </td>
-            <td><button (click)="openRolesModal(user)" class="btn btn-info">Edit Roles</button></td>
-        </tr>
-    </table>
+<div class="container-fluid">
+    <form #form="ngForm" class="mb-1" (ngSubmit)="getUsersWithRoles()" autocomplete="off">
+        <div class="row">
+            <!-- SIDE BAR -->
+            <nav class="col-xl-2 col-lg-2 col-md-3 bg-light sidebar" >
+                <div class="sidebar-sticky">
+                    <h5 class="mt-3">Filters</h5>
+                    <hr>
+                    <!-- RESET FILTERS BUTTON -->
+                    <div class="my-2">
+                        <div class="form-row text-center">
+                            <div class="col">
+                                <a (click)="resetFilters()" class="btn btn-danger text-white" type="button">Reset Filters</a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <ul class="nav flex-column">
+                        <div class="form-row">
+                            <div class="col">
+                                <li class="nav-item">
+                                    <label class="mb-0">Search Username: </label>
+                                    <input type="text" class="form-control form-control-sm" name="usernameSearch" [(ngModel)]="userManageParams.usernameSearch" maxlength="30">
+                                </li>
+                                <li class="nav-item mt-1">
+                                    <label class="mb-0">Roles: </label>
+                                    <div class="form-inline" *ngFor="let role of rolesList">
+                                        <input [(ngModel)]="role.isChecked" (change)="changeSelection()" type="checkbox" class="form-control form-control-sm mr-1" name="roles" [value]="role.value"> {{role.display}}
+                                    </div>
+                                </li>
+                            </div>
+                        </div>
+                    </ul>
+                    <hr>
+                    <!-- APPLY FILTERS BUTTON -->
+                    <div class="form-row text-center my-3">
+                        <div class="col">
+                            <button [disabled]="!form.dirty" class="btn btn-primary" type="submit">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- MAIN CONTENT TO THE RIGHT OF SIDEBAR -->
+            <main *ngIf="!loading" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div>
+                        <h3>Users</h3>
+                        <span *ngIf="pagination?.totalItems > 0 && pagination?.totalItems != 1">
+                            <h6>Returned {{pagination?.totalItems}} users.</h6>
+                        </span>
+                        <span *ngIf="pagination?.totalItems == 1">
+                            <h6>Returned {{pagination?.totalItems}} user.</h6>
+                        </span>
+                        <span *ngIf="pagination?.totalItems == 0">
+                            <h6>Sorry! We didn't find any users that met those parameters.</h6>
+                        </span>
+                    </div>
+                    <!-- SORT DROPDOWN -->
+                    <div class="btn-group float-right" dropdown>
+                        <button id="button-animated" 
+                            dropdownToggle  type="button" 
+                            class="btn btn-info dropdown-toggle" 
+                            aria-controls="dropdown-animated">Sort <span class="caret"></span>
+                        </button>
+                        <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-animated">
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userManageParams.orderBy"
+                                    (click)="getUsersWithRoles()"
+                                    btnRadio="aToZ">Username: A to Z</button>
+                            </li>
+                            <li role="menuitem">
+                                <button 
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userManageParams.orderBy"
+                                    (click)="getUsersWithRoles()"
+                                    btnRadio="zToA">Username: Z to A</button>
+                            </li>
+                            <li role="menuitem">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-info btn-sm dropdown-item" 
+                                    name="orderBy" 
+                                    [(ngModel)]="userManageParams.orderBy"
+                                    (click)="getUsersWithRoles()"
+                                    btnRadio="createdAt">Newest Members</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <div class="container">
+                    <div class="row" *ngIf="!loading">
+                        <div class="col">
+                            <div *ngIf="users?.length > 0">
+                                <table class="table">
+                                    <tr>
+                                        <th style="width: 30%">Username</th>
+                                        <th style="width: 40%">Active roles</th>
+                                        <th style="width: 30%"></th>
+                                    </tr>
+                                    <tr *ngFor="let user of users">
+                                        <td>
+                                            <a type="button" 
+                                                class="text-success"
+                                                routerLink='{{"/members/" + user.username}}'>
+                                                {{user.username}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span *ngFor="let role of user.roles">
+                                                {{role}} 
+                                            </span>
+                                        </td>
+                                        <td><a type="button" (click)="openRolesModal(user)" class="btn btn-info text-white">Edit Roles</a></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </form>
+    <!-- PAGINATION -->
+    <div class="d-flex justify-content-center" *ngIf="pagination && !loading && users?.length !== 0">
+        <pagination 
+            [boundaryLinks]="true" 
+            [totalItems]="pagination.totalItems"
+            [itemsPerPage]="pagination.itemsPerPage"
+            [maxSize]="10"
+            [(ngModel)]="pagination.currentPage"
+            (pageChanged)="pageChanged($event)" 
+            previousText="&lsaquo;" 
+            nextText="&rsaquo;" 
+            firstText="&laquo;" 
+            lastText="&raquo;" >
+        </pagination>
+    </div>
 </div>

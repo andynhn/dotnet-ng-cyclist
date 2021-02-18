@@ -3,7 +3,7 @@
     <form #form="ngForm" class="mb-1" (ngSubmit)="loadMembers()" autocomplete="off">
         <div class="row">
             <!-- START SIDE BAR -->
-            <nav class="col-xl-2 col-lg-2 col-md-3 bg-light sidebar" *ngIf="!loading">
+            <nav class="col-xl-2 col-lg-2 col-md-3 bg-light sidebar">
                 <div class="sidebar-sticky">
                     <h5 class="mt-3">Filters</h5>
                     <hr>
@@ -11,7 +11,7 @@
                     <div class="my-2">
                         <div class="form-row text-center">
                             <div class="col">
-                                <button [disabled]="!form.dirty" (click)="resetFilters()" class="btn btn-danger" type="submit">Reset Filters</button>
+                                <a (click)="resetFilters()" class="btn btn-danger text-white" type="button">Reset Filters</a>
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
             </nav>
 
             <!-- PAGE TITLE TO THE RIGHT OF SIDE BAR AND ABOVE MAIN CONTENT -->
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <main *ngIf="!loading" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <div class="mt-3">
                         <h3>Discover cyclists</h3>
@@ -211,7 +211,6 @@
             </main>
         </div>
     </form>
-    <!-- END SIDE BAR -->
 
     <!-- PAGINATION -->
     <div class="d-flex justify-content-center" *ngIf="pagination && pagination?.totalItems != 0 && !loading">
