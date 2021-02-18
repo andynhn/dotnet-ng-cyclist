@@ -50,7 +50,6 @@ export class MemberEditComponent implements OnInit {
       console.log(data);
       console.log(this.selectedState);
       this.states = data;
-      console.log(this.cities);
       // call load member here so that city states json gets loaded in time. Form needs this data.
       this.loadMember();
     });

@@ -22,7 +22,7 @@ export class MembersService {
   constructor(private http: HttpClient, private accountService: AccountService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => {
       this.user = user;
-      this.userParams = new UserParams(user);
+      this.userParams = new UserParams();
     });
   }
 
@@ -134,29 +134,18 @@ export class MembersService {
   }
 
   setUserParams(params: UserParams) {
-    // set to "all" in these scenarios in order to implement member cache functionality
-    // and more easily read the cache (avoid multiple dashes in a row when certain params are empty) (see getMembers()).
-    if (params.gender !== 'female' && params.gender !== 'male') {
-      params.gender = 'all';
-    }
-    if (params.city === '' || params.city === null || params.city === undefined) {
-      params.city = 'all';
-    }
-    if (params.state === '' || params.state === null || params.state === undefined) {
-      params.state = 'all';
-    }
-    if (params.nameSearch === '' || params.nameSearch === null || params.nameSearch === undefined) {
-      params.nameSearch = 'all';
-    }
     this.userParams = params;
   }
 
   resetUserParams() {
-    this.userParams = new UserParams(this.user);
+    this.userParams = new UserParams();
     return this.userParams;
   }
 
 
+  resetMemberCache() {
+    this.memberCache = new Map();
+  }
 
   setMainPhoto(photoId: number) {
     return this.http.put(this.baseUrl + 'users/set-main-photo/' + photoId, {});

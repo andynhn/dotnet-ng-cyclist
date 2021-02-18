@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Pagination } from 'src/app/_models/pagination';
 import { Photo } from 'src/app/_models/photo';
@@ -10,7 +10,7 @@ import { AdminService } from 'src/app/_services/admin.service';
   templateUrl: './photo-management.component.html',
   styleUrls: ['./photo-management.component.css']
 })
-export class PhotoManagementComponent implements OnInit {
+export class PhotoManagementComponent implements OnInit, OnDestroy {
   photos: Photo[];
   pagination: Pagination;
   photoManageParams: PhotoManageParams;
@@ -61,4 +61,8 @@ export class PhotoManagementComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.adminService.resetPhotosForModerationCache();
+    this.adminService.resetPhotoManageParams();
+  }
 }

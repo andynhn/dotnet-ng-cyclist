@@ -61,20 +61,8 @@ namespace API.Controllers
             */
             userParams.CurrentUsername = User.GetUsername();
 
-            // if nothing selected for that userParams, default to a value.
-            if (string.IsNullOrEmpty(userParams.Gender))
-                userParams.Gender = "all";
-            if (string.IsNullOrEmpty(userParams.CyclingFrequency))
-                userParams.CyclingFrequency = "all";
-            if (string.IsNullOrEmpty(userParams.CyclingCategory))
-                userParams.CyclingCategory = "all";
-            if (string.IsNullOrEmpty(userParams.SkillLevel))
-                userParams.SkillLevel = "all";
-            if (string.IsNullOrEmpty(userParams.NameSearch))
-            {
-                userParams.NameSearch = "all";
-            } 
-            else 
+            // make sure. can only do transformations if not null or empty.
+            if (!string.IsNullOrEmpty(userParams.NameSearch)) 
             {
                 userParams.NameSearch = userParams.NameSearch.Trim().ToLower();
                 if (userParams.NameSearch.Length > 30)
@@ -83,10 +71,6 @@ namespace API.Controllers
                     userParams.NameSearch = userParams.NameSearch.Substring(0, 30);
                 }
             }
-            if (string.IsNullOrEmpty(userParams.State))
-                userParams.State = "all";
-            if (string.IsNullOrEmpty(userParams.City))
-                userParams.City = "all";
 
             // Get a PagedList of filtered users based on the userParams
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);

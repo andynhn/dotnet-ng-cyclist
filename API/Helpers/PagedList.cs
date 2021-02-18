@@ -35,6 +35,9 @@ namespace API.Helpers
         public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var count = await source.CountAsync();
+            // source will have a list of results from the query.
+            // E.g.: If page 3 and pagesize 10, we want to skip results from page 2 and 1. So "Skip" would skip 20 results
+            // from the total results then we "take" the page size of items (10 items in this example) then return it to a list.
             var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
 

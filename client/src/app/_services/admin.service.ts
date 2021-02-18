@@ -107,6 +107,10 @@ export class AdminService {
     return this.userManageParams;
   }
 
+  resetUsersWithRolesCache() {
+    this.usersWithRolesCache = new Map();
+  }
+
 
   // -------------MANAGE PHOTOS-----------------
 
@@ -166,5 +170,9 @@ export class AdminService {
 
   resetPhotoManageParams() {
     this.photoManageParams = new PhotoManageParams();
+  }
+
+  resetPhotosForModerationCache() {
+    this.photosForModerationCache = new Map();
   }
 }

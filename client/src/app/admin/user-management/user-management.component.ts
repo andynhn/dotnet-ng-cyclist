@@ -53,23 +53,42 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     
   }
 
+
+  /**
+   * Method for getting users with roles from the service.
+   * Called each time an admin submits Search Filter form.
+   * This should only be used for the initial load of users from a given search query.
+   * This should NOT be used within the pageChanged() method for loading members for a new page of the same search.
+   * Pagination relies on unique logic that tracks pageNumber given the previous number, etc.
+   * Using this method to load users for page change will cause issues.
+   */
   getUsersWithRoles() {
     this.loading = true;
-    // for pagination, need to set the page params with the params we defined in userManageParams
+    // set to 1 here for when user makes a new search but while on a different page of an existing search
+    // Pagination logic is set to skip (currentPage - 1 * pageSize) of the total query results.
+    // If user makes new search while on a page > 1, pagination will have issues and return faulty data
+    this.userManageParams.pageNumber = 1;
     this.adminService.setUserManageParams(this.userManageParams);
     this.adminService.getUsersWithRoles(this.userManageParams).subscribe(response => {
       this.users = response.result;
       this.pagination = response.pagination;
-      console.log(response);
       this.loading = false;
     });
   }
 
   pageChanged(event: any) {
+    this.loading = true;
     console.log(event);
     this.userManageParams.pageNumber = event.page;
     this.adminService.setUserManageParams(this.userManageParams);
-    this.getUsersWithRoles();
+    // get users with roles with the new parameters. Only changed parameter should be pageNumber.
+    // server logic gets all results from the query, but uses pageNumber to "Skip" results in
+    // the list depending on the pageNumber passed in.
+    this.adminService.getUsersWithRoles(this.userManageParams).subscribe(response => {
+      this.users = response.result;
+      this.pagination = response.pagination;
+      this.loading = false;
+    });
   }
 
   openRolesModal(user: User) {
@@ -143,6 +162,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.adminService.resetUsersWithRolesCache();
     this.adminService.resetUserManageParams();
   }
 }

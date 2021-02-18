@@ -141,20 +141,21 @@ namespace API.Data
 
             // with the given userParams, filter out the logged in user from the list.
             query = query.Where(u => u.UserName != userParams.CurrentUsername);
-            // filter by these categories only if the user provided a filter.
-            if (userParams.Gender.ToLower() != "all") 
+            
+            // filter by these categories only if the user provided a filter (not null or empty)
+            if (!string.IsNullOrEmpty(userParams.Gender)) 
                 query = query.Where(u => u.Gender == userParams.Gender);
-            if (userParams.CyclingFrequency.ToLower() != "all") 
+            if (!string.IsNullOrEmpty(userParams.CyclingFrequency)) 
                 query = query.Where(u => u.CyclingFrequency == userParams.CyclingFrequency);
-            if (userParams.CyclingCategory.ToLower() != "all") 
+            if (!string.IsNullOrEmpty(userParams.CyclingCategory)) 
                 query = query.Where(u => u.CyclingCategory == userParams.CyclingCategory);
-            if (userParams.SkillLevel.ToLower() != "all")
+            if (!string.IsNullOrEmpty(userParams.SkillLevel))
                 query = query.Where(u => u.SkillLevel == userParams.SkillLevel);
-            if (userParams.NameSearch.ToLower() != "all" && userParams.NameSearch.ToLower() != null)
+            if (!string.IsNullOrEmpty(userParams.NameSearch))
                 query = query.Where(u => (u.FirstName + u.LastName).Contains(userParams.NameSearch.ToLower()));
-            if (userParams.State != "all")
+            if (!string.IsNullOrEmpty(userParams.State))
                 query = query.Where(u => u.State == userParams.State);
-            if (userParams.City != "all")
+            if (!string.IsNullOrEmpty(userParams.City))
                 query = query.Where(u => u.City == userParams.City);
             
             // If the user wants to filter users by age, calculate minimum age and maximum age filtering
