@@ -42,9 +42,26 @@ namespace API.Data
                     Id = u.Id,
                     Username = u.AppUser.UserName,
                     Url = u.Url,
-                    IsApproved = u.IsApproved
+                    IsApproved = u.IsApproved,
+                    State = u.AppUser.State,
+                    City = u.AppUser.City,
+                    LastActive = u.AppUser.LastActive
                 })
                 .AsQueryable();
+            
+            if (!string.IsNullOrEmpty(photoManageParams.UsernameSearch))
+                query = query.Where(u => u.Username.Contains(photoManageParams.UsernameSearch.ToLower()));
+            if (!string.IsNullOrEmpty(photoManageParams.State))
+                query = query.Where(u => u.State == photoManageParams.State);
+            if (!string.IsNullOrEmpty(photoManageParams.City))
+                query = query.Where(u => u.City == photoManageParams.City);
+
+            query = photoManageParams.OrderBy switch
+            {
+                "aToZ" => query.OrderBy(u => u.Username),
+                "zToA" => query.OrderByDescending(u => u.Username),
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
             
             return await PagedList<PhotoForApprovalDto>.CreateAsync(query, photoManageParams.PageNumber, photoManageParams.PageSize);
         }

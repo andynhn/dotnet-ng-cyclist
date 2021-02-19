@@ -4,6 +4,6 @@ export class UserManageParams {
     pageSize = 15;
     usernameSearch = '';
     roles = [];
-    orderBy = 'lastActive';
+    orderBy = 'aToZ';
     // directly modify how many messages appear on each page of pagination module
 }

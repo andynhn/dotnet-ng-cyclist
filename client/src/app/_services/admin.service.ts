@@ -133,6 +133,15 @@ export class AdminService {
     // append any additional params here if need to later on
     // params = params.append('newParam', usrManageParams.aNewParam)
 
+    photoManageParams.usernameSearch = photoManageParams.usernameSearch.trim().toLowerCase();
+    params = params.append('usernameSearch', photoManageParams.usernameSearch.length <= 30
+      ? photoManageParams.usernameSearch
+      : photoManageParams.usernameSearch.substring(0, 30));
+    params = params.append('state', photoManageParams.state);
+    params = params.append('city', photoManageParams.city);
+    params = params.append('orderBy', photoManageParams.orderBy);
+    console.log(params);
+
     return getPaginatedResult<Photo[]>(this.baseUrl + 'admin/photos-to-moderate', params, this.http).pipe(
       map(paginatedResult => {
         console.log(paginatedResult);
@@ -170,6 +179,7 @@ export class AdminService {
 
   resetPhotoManageParams() {
     this.photoManageParams = new PhotoManageParams();
+    return this.photoManageParams;
   }
 
   resetPhotosForModerationCache() {

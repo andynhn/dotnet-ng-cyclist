@@ -35,11 +35,7 @@ namespace API.Controllers
         [HttpGet("users-with-roles")]
         public async Task<ActionResult<IEnumerable<UserWithRolesDto>>> GetUsersWithRoles([FromQuery] UserManageParams userManageParams)
         {
-            if (string.IsNullOrEmpty(userManageParams.UsernameSearch))
-            {
-                userManageParams.UsernameSearch = "";
-            } 
-            else 
+            if (!string.IsNullOrEmpty(userManageParams.UsernameSearch))
             {
                 // transform the results from username search.
                 userManageParams.UsernameSearch = userManageParams.UsernameSearch.Trim().ToLower();
@@ -89,6 +85,15 @@ namespace API.Controllers
         [HttpGet("photos-to-moderate")]
         public async Task<ActionResult<IEnumerable<PhotoForApprovalDto>>> GetPhotosForModeration([FromQuery] PhotoManageParams photoManageParams)
         {
+            if (!string.IsNullOrEmpty(photoManageParams.UsernameSearch))
+            {
+                photoManageParams.UsernameSearch = photoManageParams.UsernameSearch.Trim().ToLower();
+                if (photoManageParams.UsernameSearch.Length > 30)
+                {
+                    photoManageParams.UsernameSearch = photoManageParams.UsernameSearch.Substring(0, 30);
+                }
+            } 
+
             var photosForModeration = await _unitOfWork.PhotoRepository.GetUnapprovedPhotos(photoManageParams);
 
             Response.AddPaginationHeader(photosForModeration.CurrentPage, photosForModeration.PageSize, photosForModeration.TotalCount, photosForModeration.TotalPages);
@@ -115,9 +120,9 @@ namespace API.Controllers
             if (!user.Photos.Any(x => x.IsMain)) photo.IsMain = true;
 
             // save changes to the db after updating the photo.
-            await _unitOfWork.Complete();
+            if (await _unitOfWork.Complete()) return Ok();
 
-            return Ok();
+            return BadRequest("Problem approving photo");
         }
 
         [Authorize(Policy = "ModeratePhotoRole")]
@@ -126,6 +131,9 @@ namespace API.Controllers
         {
             // get the photo
             var photo = await _unitOfWork.PhotoRepository.GetPhotoById(photoId);
+
+            // return notfound if the photo is null.
+            if (photo == null) return NotFound();
 
             // If the photo is on cloudinary (has a PublicId for cloudinary)
             if (photo.PublicId != null)
@@ -146,9 +154,9 @@ namespace API.Controllers
             }
 
             // save changes to the db after removing the photo.
-            await _unitOfWork.Complete();
+            if (await _unitOfWork.Complete()) return Ok();
 
-            return Ok();
+            return BadRequest("Failed to reject and remove the photo");
         }
     }
 }
