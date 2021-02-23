@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
@@ -40,22 +41,38 @@ namespace API.SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
+
             // pass in the other user name (via a query string) with the key of user to get it into this variable.
             var otherUser = httpContext.Request.Query["user"].ToString();
+
+            // initialize the memberChatParams that are needed to get messages from the repo for scrolled pagination.
+            var memberChatParams = new MemberChatParams {
+                PageNumber = 1,
+                PageSize = 10,          // SCROLLED PAGE SIZE
+                RecipientUsername = otherUser
+            };
+
             // the group that a pair of users belong to.
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
             var group = await AddToGroup(groupName);
             await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
 
+            // get messages using GetMessageThread method from repo. (original method, consider removing)
+            // TODO: Revisit whether this method is necessary anymore. Functionality has been moved to GetScrolledMessageThread()
             var messages = await _unitOfWork.MessageRepository
                 .GetMessageThread(Context.User.GetUsername(), otherUser);
 
+            // get messages using GetScrolledMessageThread method from repo (for scrolled pagination)
+            var messages2 = await _unitOfWork.MessageRepository
+                .GetScrolledMessageThread(Context.User.GetUsername(), otherUser, memberChatParams);
+
             // check to see if changes in this step. If there are, then save them to the DB here, not within the message repo itself.
-            // the unitOfWork class is responsible for saving to DB, not the repository, because we are implementing the unit of work framework.
+            // the unitOfWork class is responsible for saving to DB
             if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
-            await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
+            // send the response back to the caller
+            await Clients.Caller.SendAsync("ReceiveMessageThread", messages2);
         }
 
         /// <summary>
@@ -70,7 +87,26 @@ namespace API.SignalR
         }
 
         /// <summary>
-        /// Method to send a message using the Signal R Hub.
+        /// Primary method for loading more messages when user scrolls to the top of a chat box, aka infinite scrolling.
+        /// </summary>
+        /// <returns>
+        /// A paged list of messages. Client-side will append this new set of messages to the existing set it already has.
+        /// </returns>
+        public async Task GetMoreMessages(MemberChatParams memberChatParams)
+        {
+            var username = Context.User.GetUsername();
+            var sender = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+            var recipient = await _unitOfWork.UserRepository.GetUserByUsernameAsync(memberChatParams.RecipientUsername);
+            if (recipient == null) throw new HubException("Not found user");
+
+            var messages = await _unitOfWork.MessageRepository
+                .GetScrolledMessageThread(Context.User.GetUsername(), memberChatParams.RecipientUsername, memberChatParams);
+
+            await Clients.Caller.SendAsync("ReceivedMessageThread", messages);
+        }
+
+        /// <summary>
+        /// Primary method for sending a message using the Signal R Hub.
         /// Invoked client-side with 'this.hubConnection.invoke('SendMessage', {recipientUsername: username, content})'
         /// </summary>
         public async Task SendMessage(CreateMessageDto createMessageDto)
@@ -100,7 +136,7 @@ namespace API.SignalR
             // get the group from the group name.
             var group = await _unitOfWork.MessageRepository.GetMessageGroup(groupName);
 
-            // if there are any connections in the gruop where the username is the same as the recipient name 
+            // if there are any connections in the group where the username is the same as the recipient name 
             // (aka, the recipient of the message is connected to the app and logged in, 
             // update the DateRead for that message as well, since they are actively accessing the message)
             if (group.Connections.Any(x => x.Username == recipient.UserName))
@@ -120,6 +156,7 @@ namespace API.SignalR
 
             _unitOfWork.MessageRepository.AddMessage(message);
 
+            // after done saving to the db, send the new message asynchronously to the group
             if (await _unitOfWork.Complete())
                 await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
         }

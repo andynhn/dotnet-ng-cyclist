@@ -18,15 +18,19 @@ import { PresenceService } from 'src/app/_services/presence.service';
   styleUrls: ['./member-detail.component.css']
 })
 export class MemberDetailComponent implements OnInit, OnDestroy {
-  // access the #memberTabs tag that we specified in the tabset in the html.
-  // static so that it does not react to component changes
+  /*
+    Access the #memberTabs tag that we specified in the HTML tabset.
+    Static so that it does not react to component changes.
+  */
   @ViewChild('memberTabs', {static: true}) memberTabs: TabsetComponent;
   member: Member;
-  galleryOptions: NgxGalleryOptions[];
-  galleryImages: NgxGalleryImage[];
-  activeTab: TabDirective;
-  messages: Message[] = [];
-  user: User;
+  user: User;         // the current user
+  galleryOptions: NgxGalleryOptions[];    // for displaying a photo gallery
+  galleryImages: NgxGalleryImage[];       // for displaying a photo gallery
+  activeTab: TabDirective;    // the active tab within the tabset
+  messages: Message[] = [];   // array of messages
+
+  // variables that help with HTML for loop that displays the user's selections for these categories.
   cyclingFrequency = ['daily', 'weekly', 'monthly'];
   cyclingCategory = ['road', 'gravel', 'mountain'];
   skillLevel = ['beginner', 'intermediate', 'advanced'];
@@ -37,25 +41,31 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
               private router: Router,
               private memberService: MembersService,
               private toastr: ToastrService) {
-    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+                // initialize some variables here
+                this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user); // get current user from AccountService
+                this.router.routeReuseStrategy.shouldReuseRoute = () => false;    // set to false to prevent some routing issues
   }
 
   ngOnInit(): void {
-    // by using Router resolvers like this, we don't need to check "*ngIf='member'" exists on component load for the messages tab feature.
-    // we get the member data prior to the component being initialized, from the route. (see member-detailed.resolver.ts)
-    // make sure to remove that *ngIf conditional when using this, otherwise, will cause errors.
-    // need this for feature that directly accesses Message tab on profile load.
+    /*
+      By using Router resolvers like this, we don't need to check "*ngIf='member'" on component load for the messages tab feature.
+      We get the member data prior to the component being initialized, from the route. (see member-detailed.resolver.ts)
+      make sure to remove any existing *ngIf conditionals when using this, otherwise, will cause errors.
+      Need this for feature that directly accesses 'Messages' tab on profile load from the discover members component member cards.
+    */
     this.route.data.subscribe(data => {
       this.member = data.member; // guaranteed to have the member in the route
     });
 
-    // determines which tab to route us to. if query params for tab is 3, go to messages tab.
-    // specifically use this when we click on the message icon from the member card component.
+    /*
+      Determines which tab to route us to. If query params for tab is 3, go to messages tab.
+      Specifically use this when we click on the message icon from the member card component within the discover members component.
+    */
     this.route.queryParams.subscribe(params => {
       params.tab ? this.selectTab(params.tab) : this.selectTab(0);
     });
 
+    // initialize the photo gallery that displays a member's photos.
     this.galleryOptions = [
       {
         width: '500px',
@@ -82,32 +92,36 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     return imageUrls;
   }
 
+  /**
+   * Method to make an API call to load the message thread. No longer used with Signal R chat hub.
+   */
   loadMessages() {
     this.messageService.getMessageThread(this.member.username).subscribe(messages => {
       this.messages = messages;
     });
   }
 
+  /**
+   * Primary method for setting a tab's active property to true if it is clicked.
+   */
   selectTab(tabId: number) {
     this.memberTabs.tabs[tabId].active = true;
     // in html, we hardcoded 3 to access the message tab. (tabs are like an index in the tabset array.)
   }
 
-  // method that helps get messages only when that tab is activated
+  /**
+   * Primary method for getting messages for the 'Messages' tab, only if that tab is activated.
+   */
   onTabActivated(data: TabDirective) {
     this.activeTab = data;
     if (this.activeTab.heading === 'Messages' && this.messages.length === 0) {
-      this.messageService.createHubConnection(this.user, this.member.username);
-      // createHubConnection will update any null dateReads for messages.
-      // the messageThread$ observable should have the updated list with the updated messages
+      this.messageService.createHubConnection(this.user, this.member.username);  // NOTE: this will update any null dateReads for messages.
     } else {
-      // stop the hub connection if they are not on that tab
-      this.messageService.stopHubConnection();
+      this.messageService.stopHubConnection();             // stop the hub connection if they are not on that tab
     }
   }
 
   ngOnDestroy(): void {
-    // stop the hub connection if they leave the component
-    this.messageService.stopHubConnection();
+    this.messageService.stopHubConnection();                // stop the hub connection if they leave the component
   }
 }
