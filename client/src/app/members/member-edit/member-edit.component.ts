@@ -108,6 +108,10 @@ export class MemberEditComponent implements OnInit {
     // set loading to true to hide the edit form while these API calls are being made.
     this.loading = true;
     this.memberService.updateMember(this.member).subscribe(() => {
+      this.user.firstName = this.member.firstName;
+      this.user.lastName = this.member.lastName;
+      // updates both our current user observable and our properties inside local storage.
+      this.accountService.setCurrentUser(this.user);
       this.toastr.success('Profile updated successfully');
       this.editForm.reset(this.member); // reset the editForm template after update.
       // Finally, we need to laod the member again so that the edit form has the

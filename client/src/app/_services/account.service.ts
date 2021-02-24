@@ -116,6 +116,7 @@ export class AccountService {
   logout() {
     localStorage.removeItem('user');
     this.messageService.resetPageParams();  // destroy the messages cache for the inbox/outbox/unread tab.
+    this.messageService.resetUnreadMessagesCount();
     this.currentUserSource.next(null);
     this.presence.stopHubConnection();
     // signalR auto disconnnects user from hub when user closes browser, moves to another website, etc.

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Group } from '../_models/group';
@@ -55,7 +55,9 @@ export class MessageService {
   hubMessageReceivedFlag: boolean;  // tracks if logged in user received a message while 2 users are live in a chat hub
   mostRecentRecipientUsername: string;  // tracks the username of the recent message sent whiel 2 users are live in a chat hub.
 
-
+  // **PROPERTIES THAT HELP TRACK UNREAD MESSAGES COUNT FOR DISPLAYING IN THE NAV BAR
+  private unreadMessagesCount = new ReplaySubject<number>(1);
+  unreadMessages$ = this.unreadMessagesCount.asObservable();
 
   constructor(private http: HttpClient,
               private loadingService: LoadingService) {
@@ -381,4 +383,70 @@ export class MessageService {
     this.messageCache = new Map();       // reset the messageCache map that helps with caching loaded messages.
   }
 
+
+  // ------------------------------------------------------------------------------------------------------------------------------------
+  // -------------------------------METHODS RELATED TO DISPLAYING AN UNREAD MESSAGES COUNTER IN NAV BAR----------------------------------
+  // ------------------------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Primary method to access the API to get the count of unread messages directly
+   */
+  getUnreadMessagesCountApi() {
+    return this.http.get<number>(this.baseUrl + 'messages/unread').pipe(
+      map(response => {
+        console.log(response);
+        this.unreadMessagesCount.next(response);
+        return response;
+      })
+    );
+  }
+  getUnreadMessagesCount(): number {
+    let count: number;
+    this.unreadMessages$.pipe(take(1)).subscribe(initialCount => count = initialCount);
+    return count;
+  }
+  /**
+   * Decrement the unread messages counter by 1
+   */
+  decrementUnreadMessagesCount(): void {
+    this.unreadMessages$.pipe(take(1)).subscribe(initialCount => {
+      this.unreadMessagesCount.next(initialCount--);
+    });
+  }
+  /**
+   * Decrease the unread messages count by a provided value
+   */
+  decreaseUnreadMessagesCountByValue(value: number): void {
+    this.unreadMessages$.pipe(take(1)).subscribe(initialCount => {
+      this.unreadMessagesCount.next(initialCount - value);
+    });
+  }
+  /**
+   * Increment the unread messages counter by 1
+   */
+  incrementUnreadMessagesCount(): void {
+    this.unreadMessages$.pipe(take(1)).subscribe(initialCount => {
+      this.unreadMessagesCount.next(initialCount++);
+    });
+  }
+  /**
+   * Increase the unread messages counter by a provided value
+   */
+  increaseUnreadMessagesCountByValue(value: number): void {
+    this.unreadMessages$.pipe(take(1)).subscribe(initialCount => {
+      this.unreadMessagesCount.next(initialCount + value);
+    });
+  }
+  /**
+   * Exactly set the unread messages counter by a provided value
+   */
+  setUnreadMessagesCount(value: number): void {
+    this.unreadMessagesCount.next(value);
+  }
+  /**
+   * Reset the unread messages counter to 0
+   */
+  resetUnreadMessagesCount(): void {
+    this.unreadMessagesCount.next(null);
+  }
 }

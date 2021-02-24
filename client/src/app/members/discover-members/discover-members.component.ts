@@ -6,6 +6,7 @@ import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
 import { UserParams } from 'src/app/_models/userParams';
 import { MembersService } from 'src/app/_services/members.service';
+import { MessageService } from 'src/app/_services/message.service';
 
 @Component({
   selector: 'app-discover-members',
@@ -46,12 +47,21 @@ export class DiscoverMembersComponent implements OnInit, OnDestroy {
   loading = false;
   selectedState = '';
 
-  constructor(private memberService: MembersService, private http: HttpClient) {
+  constructor(private memberService: MembersService, private http: HttpClient, private messageService: MessageService) {
     this.userParams = this.memberService.getUserParams();
   }
 
   ngOnInit(): void {
     this.getCityStates();
+    this.fetchUnreadMessagesCount();
+  }
+
+  fetchUnreadMessagesCount(): void {
+    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
+      console.log(response);
+    }, error => {
+      console.log(error);
+    });
   }
 
   getCityStates(): any {

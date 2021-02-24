@@ -9,7 +9,7 @@
         <ng-container *ngIf="accountService.currentUser$ | async" >
           <!-- use conditionals in the ng-container -->
           <li class="nav-item">
-            <a class="nav-link" routerLink='/home' routerLinkActive='active' [routerLinkActive]="['text-success']"><i class='fa fa-inbox mr-1'></i></a>
+            <a class="nav-link" routerLink='/home' routerLinkActive='active' [routerLinkActive]="['text-success']"><i class='fa fa-inbox mr-1'></i> <sup *ngIf="(messageService.unreadMessages$ | async) as unreadCount">{{unreadCount}}</sup></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink='/discover' routerLinkActive='active' [routerLinkActive]="['text-success']"><i class='fa fa-search mr-1'></i></a>

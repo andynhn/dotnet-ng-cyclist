@@ -49,7 +49,7 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
                 this.memberChatParams = this.messageService.getMemberChatParams();
    }
 
-   ngOnInit(): void {}
+  ngOnInit(): void {}
 
    /**
     * Logic within ngfterViewChecked is for auto-scroll to bottom when accessing "Messages" tab or while chatting live.
@@ -167,24 +167,47 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
   /**
    * Primary method for auto-scrolling chat box to the bottom (near most recent messages) under specific conditions.
    * Accessed within ngAfterViewChecked, so we have some conditions in place before it proceeds with logic.
+   * This method only gets called if: this.activeTabC.heading === 'Messages' && this.scrollBottomCount === 0.
+   * Note that we increment this.scrollBottomCount within the method to prevent this from continuously getting invoked.
    */
   scrollToBottom(): void {
     /*
       First, we need to see if the messages have been returned from the asynchronous message hub invocation from within the message
       service method "createHubConnection()". The "messageThreadLoaded$" observable is set to TRUE in that method after it's done.
     */
-    this.messageService.messageThreadLoaded$.pipe(take(1)).subscribe(m => this.messageThreadLoaded = m);
-    if (this.messageThreadLoaded === true) { // Check if "messageThreadLoaded$" is TRUE. If FALSE, the messages are not loaded, so exit out.
-      /*
-        Eventually we'll hit this code block, no matter how long it takes for the messages to come back from the hub.
-        This does the scrolling...
-      */
-      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-      this.scrollBottomCount++;  // increment to prevent subsequent invocation within ngAfterViewChecked() while within the "Messages" tab.
+    this.messageService.messageThreadLoaded$.pipe(take(1)).subscribe(m => {
+      this.messageThreadLoaded = m;
+      if (this.messageThreadLoaded === true) { // Check if TRUE. If FALSE, the messages are not loaded, so exit out.
+        /*
+          Eventually we'll hit this code block, no matter how long it takes for the messages to come back from the hub.
+          This does the scrolling...
+        */
+        this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+        this.scrollBottomCount++;  // Important: to prevent subsequent invocation within ngAfterViewChecked() while on "Messages" tab.
+        console.log(`this.scrollBottomCount AFTER SCROLL: ${this.scrollBottomCount}`)
+        console.log(`this.messageThreadloaded AFTER SCROLL: ${this.messageThreadLoaded}`)
 
-      console.log(`this.scrollBottomCount AFTER SCROLL: ${this.scrollBottomCount}`)
-      console.log(`this.messageThreadloaded AFTER SCROLL: ${this.messageThreadLoaded}`)
-    }
+        /*
+          messageThreadLoaded is true after createHubConnection returns a set of messages,
+          That process also updates DateRead for unread messages. So we can update the unread messages counter now.
+          We want unread messages counter to decrease by the number of unread messages that the user has for this member's profile.
+          NOTE: Even if unreadMessages > messages initially loaded in chat box (e.g. 20 unread but only 15 returned initially in chat box)
+          the unread messages counter should still decrease by 20 because this method gets the unread count from the server.
+          In createHubConnection() that loads the initial scrolledMessages, the repo will set all unreadMessages in that thread to UtcNow.
+          Current functionality will assume that the user "sees" all previously unread messages if they visit that chat box.
+          NOTE2: Adding this here slightly slows down initially loading of chat tab.
+        */
+        this.fetchUnreadMessagesCount();
+      }
+    });
+  }
+
+  fetchUnreadMessagesCount(): void {
+    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
+      console.log(response);
+    }, error => {
+      console.log(error);
+    });
   }
 
   sendMessage(): void {

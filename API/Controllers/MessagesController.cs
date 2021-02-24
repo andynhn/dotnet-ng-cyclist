@@ -38,7 +38,21 @@ namespace API.Controllers
 
             Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
 
-            return Ok(messages); // TODO: Revisit if need to return ok here.
+            return Ok(messages);
+        }
+
+        /// <summary>
+        /// Asynchronously get's users unread messages count
+        /// Route: "api/messages/unread"
+        /// </summary>
+        /// <returns>
+        /// Count of unread messages
+        /// </returns>
+        [HttpGet("unread")]
+        public async Task<ActionResult<int>> GetUnreadMessagesCountForUser()
+        {
+            var unreadMessagesCount = await _unitOfWork.MessageRepository.GetUnreadMessagesCountForUser(User.GetUsername());
+            return Ok(unreadMessagesCount);
         }
 
         [HttpDelete("{id}")]

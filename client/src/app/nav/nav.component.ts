@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../_services/account.service';
+import { MessageService } from '../_services/message.service';
 
 @Component({
   selector: 'app-nav',
@@ -13,7 +14,10 @@ export class NavComponent implements OnInit {
 
   // make accountService PUBLIC so that we can use it within our nav.component.html file
   // we want to access the currentUser$ observable from our accountService inside our nav.component.html file to make use of the async pipe
-  constructor(public accountService: AccountService, private router: Router, private toastr: ToastrService) { }
+  constructor(public accountService: AccountService,
+              private router: Router,
+              private toastr: ToastrService,
+              public messageService: MessageService) { }
 
   ngOnInit(): void {
   }

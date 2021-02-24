@@ -95,6 +95,20 @@ namespace API.Data
                 .Include(x => x.Connections)
                 .FirstOrDefaultAsync(x => x.Name == groupName);
         }
+
+        /// <summary>
+        /// Asynchronously gets unread message count for a user
+        /// </summary>
+        /// <param name="groupName">The message group name</param>
+        public async Task<int> GetUnreadMessagesCountForUser(string username)
+        {
+            // Get messages where recipient is the current user, they are not deleted by the user, and the date read is null.
+            // Send back the count of those results.
+            return await _context.Messages
+                .Where(m => m.RecipientUsername == username && m.RecipientDeleted == false && m.DateRead == null)
+                .CountAsync();
+        }
+
         /// <summary>
         /// Asynchronously gets messages for a user, given a set of messageParams 
         /// </summary>

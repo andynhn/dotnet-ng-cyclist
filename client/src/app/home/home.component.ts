@@ -31,6 +31,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadMessages();
+    this.fetchUnreadMessagesCount();
+  }
+
+  fetchUnreadMessagesCount(): void {
+    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
+      console.log(response);
+    }, error => {
+      console.log(error);
+    });
   }
 
   loadMessages() {
@@ -38,9 +47,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.messageService.setPageParams(this.pageParams);
     this.messageService.getMessages(this.pageParams).subscribe(response => {
-      // console.log(response);
       this.messages = response.result;
       this.pagination = response.pagination;
+      if (this.pageParams.container === 'Unread') {
+        this.messageService.setUnreadMessagesCount(response.pagination.totalItems);
+      }
       this.loading = false; // quick way to hide messages here until they are finished loading. Fixes issue with photos out of sync
     }, error => {
       console.log(error);
