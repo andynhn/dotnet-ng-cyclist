@@ -37,7 +37,15 @@ namespace API.Helpers
                 .ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => 
                     src.Sender.Photos.FirstOrDefault(x => x.IsMain).Url))
                 .ForMember(dest => dest.RecipientPhotoUrl, opt => opt.MapFrom(src => 
-                    src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
+                    src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(dest => dest.SenderFirstName, opt => opt.MapFrom(src => 
+                    src.Sender.FirstName))
+                .ForMember(dest => dest.SenderLastName, opt => opt.MapFrom(src => 
+                    src.Sender.LastName))
+                .ForMember(dest => dest.RecipientFirstName, opt => opt.MapFrom(src => 
+                    src.Recipient.FirstName))
+                .ForMember(dest => dest.RecipientLastName, opt => opt.MapFrom(src => 
+                    src.Recipient.LastName));
         }
     }
 }

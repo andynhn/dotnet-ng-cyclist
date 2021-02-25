@@ -99,7 +99,8 @@ namespace API.Controllers
             // get the current user's username from the Claims Principal
             var currentUsername = User.GetUsername();
             // set current user to true if the user being fetched is the current logged in user.
-            return await _unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username);
+            var member = await _unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username);
+            return Ok(member);
         }
 
         /// <summary>

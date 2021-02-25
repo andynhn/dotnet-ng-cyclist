@@ -85,13 +85,13 @@
                     <img class="img-circle rounded-circle mr-2" 
                         src="{{message.recipientPhotoUrl || './assets/user.png'}}" 
                         alt="{{message.recipientUsername}}">
-                    <strong>{{message.recipientUsername}}</strong>
+                    {{message.recipientFirstName | titlecase}} {{message.recipientLastName | titlecase}}
                 </div>
                 <div *ngIf="pageParams.container !== 'Outbox'">
                     <img class="img-circle rounded-circle mr-2" 
                         src="{{message.senderPhotoUrl || './assets/user.png'}}" 
                         alt="{{message.senderUsername}}">
-                    <strong>{{message.senderUsername}}</strong>
+                    {{message.senderFirstName | titlecase}} {{message.senderLastName | titlecase}}
                 </div>
             </td>
             <td>

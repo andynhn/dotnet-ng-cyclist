@@ -3,14 +3,14 @@
         <img src="{{memberFromMemberCardComponent.photoUrl || './assets/user.png'}}" alt="{{memberFromMemberCardComponent.firstName}}" class="card-img-top">
         <ul class="list-inline member-icons animate text-center">
             <li class="list-inline-item">
-                <button class="btn btn-primary" 
+                <button class="btn btn-success" 
                     type="button" 
                     routerLink='/members/{{memberFromMemberCardComponent.username}}'>
                         <i class="fa fa-user"></i>
                 </button>
             </li>
             <li class="list-inline-item">
-                <button class="btn btn-primary" 
+                <button class="btn btn-success" 
                     type="button"
                     routerLink="/members/{{memberFromMemberCardComponent.username}}" 
                     [queryParams]='{tab: 3}'>
@@ -24,7 +24,7 @@
             <span [class.is-online]="(presence.onlineUsers$ | async).includes(memberFromMemberCardComponent.username)">
                 <i class="fa fa-user-circle mr-2"></i>
             </span>
-            {{memberFromMemberCardComponent.firstName | titlecase}}, {{memberFromMemberCardComponent.age}}
+            {{memberFromMemberCardComponent.firstName | titlecase}}
         </h6>
         <p class="card-text text-muted text-center">{{memberFromMemberCardComponent.city | titlecase}}, {{memberFromMemberCardComponent.state | titlecase}}</p>
     </div>

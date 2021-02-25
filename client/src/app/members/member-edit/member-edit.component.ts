@@ -68,6 +68,10 @@ export class MemberEditComponent implements OnInit {
     }
   }
 
+  /**
+   * Primary method for getting member details for the member-edit component.
+   * NOTE: This gets data for all tabs in the page (About and Edit Photos)
+   */
   loadMember() {
     this.memberService.getMember(this.user.username).subscribe(m => {
       // FOR LOOP primarily for skipping the main Admin, which doesn't need the text transformations on some data.
@@ -95,6 +99,23 @@ export class MemberEditComponent implements OnInit {
           // Cities from json file should have loaded, so now we can assign it. This will dynamically fill cities dropdown with...
           // ...a list of cities for that particular state.
           this.cities = this.states[this.selectedState];
+
+          // Within the edit photo page, we want the user's photos to show their Main photo FIRST. So sort the array of photos.
+          let shouldSkip = false;
+          console.log(m.photos)
+          m.photos.forEach((photoObject, i) => {
+            if (shouldSkip) {
+              return;
+            }
+            if (photoObject.isMain === true) {
+              m.photos.splice(i, 1);
+              m.photos.unshift(photoObject);
+              console.log(photoObject);
+              shouldSkip = true;
+            }
+            console.log('still in loop');
+          });
+          console.log(m.photos);
         }
       }
 
