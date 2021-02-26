@@ -1,6 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
+import { IntroModalComponent } from '../modals/intro-modal/intro-modal.component';
 import { Message } from '../_models/message';
 import { PageParams } from '../_models/pageParams';
 import { Pagination } from '../_models/pagination';
@@ -20,18 +23,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   pagination: Pagination;
   pageParams: PageParams;
   loading = false;
+  bsModalRef: BsModalRef;
+  isNewUser = false;
 
   constructor(public accountService: AccountService,
+              private modalService: BsModalService,
+              private router: Router,
               private toastr: ToastrService,
               private messageService: MessageService,
               private confirmService: ConfirmService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
     this.pageParams = this.messageService.getPageParams();
+    const navigation = this.router.getCurrentNavigation();
+    this.isNewUser = navigation?.extras?.state?.isNewUser;
    }
 
   ngOnInit(): void {
-    this.loadMessages();
-    this.fetchUnreadMessagesCount();
+    // If the user just registered, display the Intro modal and skip the standard init methods for this component.
+    if (this.isNewUser === true) {
+      this.openIntroModal(this.user);
+      this.isNewUser = false;
+    } else {
+      this.loadMessages();
+      this.fetchUnreadMessagesCount();
+    }
   }
 
   fetchUnreadMessagesCount(): void {
@@ -40,6 +55,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, error => {
       console.log(error);
     });
+  }
+
+  openIntroModal(user: User) {
+    const config = {
+      class: 'modal-dialog-centered',
+      initialState: {
+        user
+      }
+    }
+    this.bsModalRef = this.modalService.show(IntroModalComponent, config);
   }
 
   loadMessages() {

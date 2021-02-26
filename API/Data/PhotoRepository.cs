@@ -25,6 +25,9 @@ namespace API.Data
             _context = context;
         }
 
+        /// <summary>
+        /// Primary repo method for getting a photo by id
+        /// </summary>
         public async Task<Photo> GetPhotoById(int id)
         {
             return await _context.Photos
@@ -32,6 +35,9 @@ namespace API.Data
                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
+        /// <summary>
+        /// Primary repo method forgetting a paged list of unapproved photos
+        /// </summary>
         public async Task<PagedList<PhotoForApprovalDto>> GetUnapprovedPhotos(PhotoManageParams photoManageParams)
         {
             var query = _context.Photos
@@ -66,6 +72,9 @@ namespace API.Data
             return await PagedList<PhotoForApprovalDto>.CreateAsync(query, photoManageParams.PageNumber, photoManageParams.PageSize);
         }
 
+        /// <summary>
+        /// Primary repo method for removing a photo from the data context
+        /// </summary>
         public void RemovePhoto(Photo photo)
         {
             _context.Photos.Remove(photo);

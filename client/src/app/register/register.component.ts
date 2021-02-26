@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../_services/account.service';
 
@@ -11,7 +11,7 @@ import { AccountService } from '../_services/account.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-  @Output() cancelRegisterEmitToLandingFromRegister = new EventEmitter ();
+  @Output() cancelRegisterEmitToLandingFromRegister = new EventEmitter();
   registerForm: FormGroup;
   maxDate: Date;
   validationErrors: string[] = [];
@@ -94,8 +94,14 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   register() {
     this.accountService.register(this.registerForm.value).subscribe(response => {
-      this.toastr.success('Sign up successful. Welcome!');
-      this.router.navigateByUrl('/home');
+      /*
+        We want to display new users an "Introduction" modal with some details on the site.
+        We use the navigation extras to send a 'state' and a key 'isNewUser' set to true.
+        In the home component, the local 'isNewUser' variable is set to the navigation extras value for 'isNewUser', if that value exists.
+        'isNewUser' in the home component is default to false. If true, it will display the introduction modal.
+      */
+      const navigationExtras: NavigationExtras = {state: {isNewUser: true}};
+      this.router.navigateByUrl('/home', navigationExtras);
     }, error => {
       // TODO: Eventually remove the validation errors or build this out.
       // currently toastr service is displaying validation errors

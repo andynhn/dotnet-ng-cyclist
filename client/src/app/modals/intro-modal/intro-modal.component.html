@@ -1,0 +1,18 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Welcome {{user.firstName | titlecase}}!</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <p>Thank you for registering! You've reached the <strong>HOME</strong> page (<i class="fa fa-inbox"></i>), which contains your messages inbox. Once you start chatting with other users, individual messages will be sorted here.</p>
+    <h5><strong><i class="fa fa-gear"></i> Customize</strong></h5>
+    <p>Click on your profile picture dropdown to access the <strong>EDIT PROFILE</strong> page. Customize your bio to allow others on the site to learn more about you.</p>
+    <h5><strong><i class="fa fa-search"></i> Discover</strong></h5>
+    <p>Navigate to the <strong>DISCOVER</strong> page (<i class="fa fa-search"></i>) to discover other cyclists. Search by location, cycling preferences, and more.</p>
+    <h5><strong><i class="fa fa-commenting"></i> Chat</strong></h5>
+    <p>When you find cyclists that you're interested in connecting with, check out their profile and start chatting!</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="bsModalRef.hide()">Let's get started</button>
+</div>

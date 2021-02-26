@@ -50,7 +50,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.selectedRoleValues.push(role.value)
     }
     this.userManageParams.roles = this.selectedRoleValues;
-    
   }
 
 

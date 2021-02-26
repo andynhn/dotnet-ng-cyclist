@@ -3,6 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace API.DTOs
 {
+    /*
+        Data Transfer Object used to help display messages between users in the chat thread
+    */
+    /// <summary>
+    /// Data Transfer Object used to help display messages between users in the chat thread
+    /// </summary>
     public class MessageDto
     {
         public int Id { get; set; }

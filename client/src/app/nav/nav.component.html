@@ -1,7 +1,7 @@
 <nav>
   <header class="navbar navbar-expand navbar-dark bg-primary flex-column flex-md-row bd-navbar">
     <!-- BRAND -->
-    <a class="navbar-brand mr-0 mr-md-2" href="#">Saddle Up Cyclists!</a>
+    <a class="navbar-brand mr-0 mr-md-2" href="#"><i class="fa fa-bicycle"></i>&nbsp;<i class="fa fa-bicycle fa-rotate"></i></a>
   
     <!-- NAVBAR SCROLL -->
     <div class="navbar-nav-scroll">
@@ -36,9 +36,9 @@
           <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}">
         </a>
         <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu >
-            <a type="button" class="dropdown-item" routerLink='/member/edit'>Edit Profile</a>
+            <a type="button" class="dropdown-item" routerLink='/member/edit'><i class="fa fa-gear mr-1"></i> Edit Profile</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="logout()" href="#">Logout</a>
+            <a class="dropdown-item" (click)="logout()" href="#"><i class="fa fa-sign-out mr-1"></i> Logout</a>
         </div>
       </div>
   

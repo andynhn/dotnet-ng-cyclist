@@ -2,6 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs
 {
+    /*
+        Data Transfer Object to help user's update their password. Takes the current password and the new password
+    */
+    /// <summary>
+    /// Data Transfer Object to help user's update their password. Takes the current password and the new password
+    /// </summary>
     public class CredentialsUpdateDto
     {
         [Required]

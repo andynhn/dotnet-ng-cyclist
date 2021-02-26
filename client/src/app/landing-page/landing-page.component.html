@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="!registerMode">
+    <div *ngIf="!registerMode && !customizeMode && !discoverMode && !chatMode">
         <main role="main">
 
             <!-- Main jumbotron for a primary marketing message or call to action -->
@@ -8,7 +8,7 @@
                     <div class="col-lg-6 col-md-9 col-sm-12 col-xs-12">
                         <h1 class="display-5 text-white"><strong>Saddle up cyclists!</strong></h1>
                         <h4 class="text-white my-lg-4 my-md-3 my-sm-2">Sign up today to meet new cylists in your area, plan rides, and more!</h4>
-                        <button (click)="registerToggle()" class="btn btn-info btn-lg mr-2">Sign up</button>
+                        <button (click)="registerToggle()" class="btn btn-success btn-lg mr-2">Sign up</button>
                     </div>
                 </div>
             </div>
@@ -18,18 +18,18 @@
                 <div class="row">
                 <div class="col-md-4">
                     <h3>Customize</h3>
-                    <p>Create a profile detaling how often you cycle, your preferred cycling surface (road, gravel, or mountain), and your cycling skill-level.</p>
-                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    <p>Create a profile detailing how often you cycle, your preferred cycling surface (road, gravel, or mountain), and your cycling skill-level.</p>
+                    <p><a class="btn btn-info text-white" type="button" role="button" (click)="customizeToggle()">View details &raquo;</a></p>
                 </div>
                 <div class="col-md-4">
                     <h3>Discover</h3>
                     <p>Discover other cyclists in your area. Or search for cyclists that match your rider profile. </p>
-                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    <p><a class="btn btn-info text-white" type="button"  role="button" (click)="discoverToggle()" >View details &raquo;</a></p>
                 </div>
                 <div class="col-md-4">
                     <h3>Chat</h3>
                     <p>Send private messages and plan a bike ride!</p>
-                    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    <p><a class="btn btn-info text-white" type="button" role="button" (click)="chatToggle()" >View details &raquo;</a></p>
                 </div>
                 </div>
         
@@ -56,6 +56,38 @@
                 </app-register>
                 <!-- () to send data. data emitted from cancelRegisterEmitToLandingFromRegister emits a boolean from child to parent component. -->
                 <!-- This lets us trigger the cancelRegisterMode method in the parent component -->
+            </div>
+        </div>
+    </div>
+    <div *ngIf="customizeMode" class="container">
+        <div class="row justify-content-center">
+            <div>
+                <app-landing-customize
+                    (cancelCustomizeEmitToLandingFromCustomize)="cancelCustomizeMode($event)"
+                    (cancelCustomizeEmitToLandingFromCustomizeLoadDiscover)="cancelCustomizeModeLoadDiscover($event)">
+                </app-landing-customize>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="discoverMode" class="container">
+        <div class="row justify-content-center">
+            <div>
+                <app-landing-discover
+                    (cancelDiscoverEmitToLandingFromDiscover)="cancelDiscoverMode($event)"
+                    (cancelDiscoverEmitToLandingFromDiscoverLoadChat)="cancelDiscoverModeLoadChat($event)"
+                    (cancelDiscoverEmitToLandingFromDiscoverLoadCustomize)="cancelDiscoverModeLoadCustomize($event)">
+                </app-landing-discover>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="chatMode" class="container">
+        <div class="row justify-content-center">
+            <div>
+                <app-landing-chat
+                    (cancelChatEmitToLandingFromChat)="cancelChatMode($event)"
+                    (cancelChatEmitToLandingFromChatLoadRegister)="cancelChatModeLoadRegister($event)"
+                    (cancelChatEmitToLandingFromChatLoadRegisterLoadDiscover)="cancelChatModeLoadDiscover($event)">
+                </app-landing-chat>
             </div>
         </div>
     </div>

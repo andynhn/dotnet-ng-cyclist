@@ -23,6 +23,9 @@ namespace API.Data
             _context = context;
         }
 
+        /// <summary>
+        /// Primary repo method for getting users with roles for admins
+        /// </summary>
         public async Task<PagedList<UserWithRolesDto>> GetUsersWithRoles(UserManageParams userManageParams)
         {
             var query = _userManager.Users

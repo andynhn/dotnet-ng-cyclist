@@ -55,6 +55,9 @@ namespace API.Controllers
             return Ok(unreadMessagesCount);
         }
 
+        /// <summary>
+        /// HTTP Delete method that asynchronously deletes a message
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMessage(int id)
         {
@@ -81,6 +84,7 @@ namespace API.Controllers
             // We save database changes here.
             if (await _unitOfWork.Complete()) return Ok();
 
+            // if everything fails, return bad request
             return BadRequest("Problem deleting the message");
         }
 

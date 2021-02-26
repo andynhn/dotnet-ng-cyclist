@@ -51,24 +51,38 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            // front-end checks exist, but add these checks just in case.
+            if (registerDto.Username == null || registerDto.Password == null || registerDto.FirstName == null
+                || registerDto.LastName == null || registerDto.State == null || registerDto.City == null 
+                || registerDto.DateOfBirth.ToShortDateString() == null || registerDto.Gender == null
+                || registerDto.CyclingCategory == null || registerDto.CyclingFrequency == null 
+                || registerDto.SkillLevel == null)
+                return BadRequest("Please complete the registration form");
+
+            // return bad request if the requested username already exists
             if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
 
+            // map the registerDto data to a user object
             var user = _mapper.Map<AppUser>(registerDto);
 
-            // convert these to lowercase before saving.
+            // front-end checks exist, but just in case, convert these to lowercase before saving.
             user.UserName = registerDto.Username.ToLower();
+            user.FirstName = registerDto.FirstName.ToLower();
+            user.LastName = registerDto.LastName.ToLower();
 
             // creates user and saves changes into DB with ASPNET identity's user manager
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
+            // if there were problems saving, retrun bad request with the errors
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            // give the user a Role (member role for normal users);
+            // If successful, give the user a Role (defualt to a member role for normal users);
             var roleResults = await _userManager.AddToRoleAsync(user, "Member");
 
+            // if there were problems creating the roles, return bad request with errors.
             if (!roleResults.Succeeded) return BadRequest(result.Errors);
 
-            // now return the username with the JSON Web Token (JWT)
+            // Finally, return the user with the JSON Web Token (JWT)
             return new UserDto
             {
                 Username = user.UserName,
@@ -91,11 +105,13 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            // _context.Users does not have photos attached, so we need to Include that.
+            if (loginDto.Username == null || loginDto.Password == null) return BadRequest("Please provide your username and password");
+            // _context.Users does not have photos attached to a user, so we need to Include that.
             var user = await _userManager.Users
                 .Include(p => p.Photos)
                 .SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
 
+            // if no user exists with that username, return unauthorized
             if (user == null) return Unauthorized("Invalid username");
 
             // check the user's credentials using ASPNET identiy's sign in manager
@@ -114,6 +130,14 @@ namespace API.Controllers
             };
         }
 
+
+        /*
+            HttpPost API for updatinga user's password.
+        */
+        /// <summary>
+        /// HttpPost API for updatinga user's password.
+        /// </summary>
+        /// <param name="credentialsUpdateDto">DTO that contains the current password and new password</param>
         // route api/account/updateCredentials
         [HttpPost("updateCredentials")]
         public async Task<ActionResult> UpdateCredentials(CredentialsUpdateDto credentialsUpdateDto)
@@ -124,24 +148,32 @@ namespace API.Controllers
             // confirm that they provided a correct current password.
             var confirmPassword = await _signInManager
                 .CheckPasswordSignInAsync(user, credentialsUpdateDto.Password, false);
+
             // if not, return unauthorized with the appropriate message.
             if (!confirmPassword.Succeeded) return Unauthorized("Current password is incorrect.");
 
             // if they made it, use ASPNET Identity User Manager to reset the password
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, credentialsUpdateDto.NewPassword);
+
+            // if it failed reseting the password, return bad request with errors.
             if (!result.Succeeded) return BadRequest(result.Errors);
 
             user.UpdatedAt = DateTime.UtcNow;
 
-            // (ASPNET Identity should do this automatically...look into this) Update the database with the new changes.
+            // ASPNET Identity should auto-save the new password, but update the database with the other changes
             _unitOfWork.UserRepository.Update(user);
-            // save changes to the db then return 204NoContent.
+
+            // Then save changes to the db and return 204NoContent.
             if (await _unitOfWork.Complete()) return NoContent();
+
             // return 400BadRequest if all fails.
             return BadRequest("Failed to update password");
         }
 
+        /// <summary>
+        /// Private method to check if the username already exists
+        /// </summary>
         private async Task<bool> UserExists(string username)
         {
             return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower());

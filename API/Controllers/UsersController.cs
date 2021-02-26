@@ -259,6 +259,7 @@ namespace API.Controllers
             // save changes to the db. Then return 200Ok
             if (await _unitOfWork.Complete()) return Ok();
 
+            // if everything fails, return bad request
             return BadRequest("Failed to delete the photo");
         }
     }

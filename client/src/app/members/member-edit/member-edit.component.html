@@ -1,14 +1,14 @@
 <div class="container mt-3">
 <div class="row" *ngIf="member">
-    <div class="col-xl-4 col-lg-4 col-md-12">
+    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-xs-12">
         <h3>Your profile</h3>
     </div>
-    <div class="col-xl-8 col-lg-8 col-md-12">
+    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
         <div class="alert alert-info" *ngIf="editForm.dirty && !loading">
             <strong>Information: </strong>You have made changes. Any unsaved changes will be lost.
         </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12">
+    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-xs-12">
         <div class="card">
             <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.firstName}}" 
                 class="card-img-top img-thumbnail">
@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-8 col-lg-8 col-md-12">
+    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
         <tabset class="member-tabset">
             <tab heading='About'>
                 <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
@@ -51,11 +51,19 @@
                         <div class="d-flex justify-content-between">
                             <a type="button" routerLink="/member/edit-credentials">Change Password</a>
                         </div>
-                        <div class="form-inline mt-2">
-                            <label for="firstName" class="mt-1">First Name: </label>
-                            <input [(ngModel)]="member.firstName" type="text" name="firstName" class="form-control mx-2 mt-1" required>
-                            <label for="lastName" class="mt-1 ml-2">Last Name: </label>
-                            <input [(ngModel)]="member.lastName" type="text" name="lastName" class="form-control mx-2 mt-1" required>
+                        <div class="row mt-2">
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-inline">
+                                    <label for="firstName" class="mt-1 mr-2">First Name: </label>
+                                    <input [(ngModel)]="member.firstName" type="text" name="firstName" class="form-control mt-1" style="width: 70%" required>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-inline">
+                                    <label for="lastName" class="mt-1 mr-2">Last Name: </label>
+                                    <input [(ngModel)]="member.lastName" type="text" name="lastName" class="form-control mt-1" style="width: 70%" required>
+                                </div>
+                            </div>
                         </div>
                         <h5 class="mt-2"><strong>Description:</strong></h5>
                         <textarea [(ngModel)]="member.introduction" name="introduction" rows="5" class="form-control"></textarea>

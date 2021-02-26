@@ -30,7 +30,7 @@ namespace API.Data
             _mapper = mapper;
         }
 
-        // Below are the primary repositories in the app. Unit of work will access them and be the primary method of communication.
+        // Below are the primary repositories in the app. Unit of work will access them and be the primary means of communication.
         public IUserRepository UserRepository => new UserRepository(_context, _mapper);
 
         public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);

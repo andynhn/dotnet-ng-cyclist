@@ -1,6 +1,6 @@
 <div class="container mt-3">
 <div class="row">
-    <div class="col-4">
+    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-xs-12">
         <div class="card">
             <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.firstName}}" 
                 class="card-img-top img-thumbnail">
@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="col-8">
+    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
         <tabset class="member-tabset" #memberTabs>
             <tab heading='About {{member.firstName | titlecase}}' (selectTab)="onTabActivated($event)">
                 <h4>Description</h4>
