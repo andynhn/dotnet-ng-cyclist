@@ -51,7 +51,9 @@ export class MessageService {
   private allMessagesLoadedFlag = new BehaviorSubject<boolean>(false);  // tracks if all messages have been returned (scrolled to very top)
   allMessagesLoadedFlag$ = this.allMessagesLoadedFlag.asObservable();
 
-  // **PROPERTIES THAT HELP WITH AUTO-SCROLL TO BOTTOM OF CHAT WHEN MESSAGE RECEIVED AND USER IS SCROLLED WITHIN CERTAIN SECTION OF CHAT BOX
+  // **PROPERTIES THAT HELP WITH AUTO-SCROLL TO BOTTOM OF CHAT BOX WHEN 2 USERS ARE SIMULTANEOUSLY LIVE CHATTING
+  private messagesLengthThatRequiresScrolling = new BehaviorSubject<number>(0); // tracks the number of loaded messages for scrolling logic
+  messagesLengthThatRequiresScrolling$ = this.messagesLengthThatRequiresScrolling.asObservable();
   hubMessageReceivedFlag: boolean;  // tracks if logged in user received a message while 2 users are live in a chat hub
   mostRecentRecipientUsername: string;  // tracks the username of the recent message sent whiel 2 users are live in a chat hub.
 
@@ -124,7 +126,8 @@ export class MessageService {
       this.messageThread$.pipe(take(1)).subscribe(messages => {
         this.messageThreadSource.next([...messages, message]);  // add the message to the end of the message thread list (order matters)
         this.hubMessageReceivedFlag = true; // set to true to help with scroll bottom logic (auto-scroll or display button to scroll bottom)
-        this.mostRecentRecipientUsername = message.recipientUsername; // only have this logic apply to recipient. Sender has separate logic.
+        this.mostRecentRecipientUsername = message.recipientUsername; // track who the message recipient is for scrolling logic
+        this.messagesLengthThatRequiresScrolling.next(messages.length); // track the length of the current messageThreadSource for scrolling
       });
     });
 
@@ -448,5 +451,19 @@ export class MessageService {
    */
   resetUnreadMessagesCount(): void {
     this.unreadMessagesCount.next(null);
+  }
+
+
+
+
+
+
+  getMessageGroupsByUsername() {
+    return this.http.get<[]>(this.baseUrl + 'messages/message-groups').pipe(
+      map(response => {
+        console.log(response);
+        return response;
+      })
+    );
   }
 }

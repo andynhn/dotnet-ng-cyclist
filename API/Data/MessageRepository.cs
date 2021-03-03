@@ -71,6 +71,25 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Asynchronously get the group from the connection id
+        /// </summary>
+        public async Task<IEnumerable<Group>> GetMessageGroupsByUsername(string username)
+        {
+            var query = _context.Groups.AsQueryable();
+            // Group names are hyphen-separated keys of the two user's usernames, ordered alphabetically e.g. janesmith-johnsmith
+            // A user's username could be at the front or the end, depending on the other user. So make a query that 
+            // searches for if the given username is at the beginning or the end of the group name key
+            query = from e in query 
+                    where EF.Functions.Like(e.Name, $"%-{username}") // where it ends in ".....-username"
+                        || EF.Functions.Like(e.Name, $"{username}-%")  // where it starts with "username-....."
+                        || EF.Functions.Like(e.Name, $"-{username}-%")  // for in the future, if we expand to group chat using this same framework (more than 2 users)
+                    select e;
+
+            return await query.ToListAsync();
+
+        }
+
+        /// <summary>
         /// Asynchronously get a message from the data context, given the message id.
         /// </summary>
         /// <param name="id">The message id</param>

@@ -181,5 +181,20 @@ namespace API.Data
             return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
                 userParams.PageNumber, userParams.PageSize);
         }
+        /// <summary>
+        /// Main method to get a list of members that a user has a message gruop with.
+        /// For a facebook-messenger style page that shows users on left and chat box on right.
+        /// From the array of usernames, return the users as MemberDtos with those usernames.
+        /// </summary>
+        public async Task<IEnumerable<MemberDto>> GetMembersForChatAsync(IEnumerable<string> usernames)
+        {
+            return await _context.Users
+                .Include(p => p.Photos)
+                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                .Where(u => usernames.Contains(u.Username))
+                .OrderByDescending(u => u.LastActive)
+                .ToListAsync();
+        }
+
     }
 }

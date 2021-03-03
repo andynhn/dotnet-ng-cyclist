@@ -2,133 +2,137 @@
 <!-- reactive forms -->
 <form [formGroup]='registerForm' (ngSubmit)="registerForm.valid && register()" method="post" autocomplete="off" class="mt-5">
     <h3 class="text-center text-primary mb-3">Sign up</h3>
-    <div class="form-row mb-2 d-flex justify-content-center">
-        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-12">
-            <app-text-input 
-                [formControl]='registerForm.controls["username"]'
-                [label]='"Username"'>
-            </app-text-input>
+    <div class="mb-3">
+        <div class="form-row mb-1 d-flex justify-content-center">
+            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-12">
+                <app-text-input 
+                    [formControl]='registerForm.controls["username"]'
+                    [label]='"Username"'>
+                </app-text-input>
+            </div>
         </div>
-    </div>
-    <div class="form-row mb-2 d-flex justify-content-center">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <app-text-input 
-                [formControl]='registerForm.controls["firstName"]'
-                [label]='"First Name"'>
-            </app-text-input>
+        <div class="form-row mb-1 d-flex justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <app-text-input 
+                    [formControl]='registerForm.controls["firstName"]'
+                    [label]='"First Name"'>
+                </app-text-input>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <app-text-input 
+                    [formControl]='registerForm.controls["lastName"]'
+                    [label]='"Last Name"'>
+                </app-text-input>
+            </div>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <app-text-input 
-                [formControl]='registerForm.controls["lastName"]'
-                [label]='"Last Name"'>
-            </app-text-input>
+        <div class="form-row mb-1 d-flex justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <!-- created a form with a reusable text input component -->
+                <app-date-input
+                    [formControl]='registerForm.controls["dateOfBirth"]'
+                    [label]='"Date Of Birth"'
+                    [maxDate]="maxDate">
+                </app-date-input>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="form-group-row">
+                    <select formControlName="gender" name="gender" class="form-control" required>
+                        <option value="">Select gender...</option>
+                        <option *ngFor="let gender of genders" [value]="gender" >
+                            {{gender | titlecase}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="form-row mb-2 d-flex justify-content-center">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <!-- created a form with a reusable text input component -->
-            <app-date-input
-                [formControl]='registerForm.controls["dateOfBirth"]'
-                [label]='"Date Of Birth"'
-                [maxDate]="maxDate">
-            </app-date-input>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <div class="form-group-row">
-                <select formControlName="gender" name="gender" class="form-control" required>
-                    <option value="">Select gender...</option>
-                    <option *ngFor="let gender of genders" [value]="gender" >
-                        {{gender | titlecase}}
+        <div class="form-row mb-2 d-flex justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <select formControlName="state" name="state" class="form-control" (change)="changeState($event.target.value)" required>
+                    <option value="" selected>Select state...</option>
+                    <option *ngFor="let state of states | keyvalue" [value]="state.key" >
+                        {{state.key}}
                     </option>
                 </select>
             </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div *ngIf="selectedState !== ''">
+                    <select formControlName="city" name="city" class="form-control">
+                        <option value="" selected>Select city...</option>
+                        <option *ngFor="let city of cities" [value]="city" >
+                            {{city}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="form-row mb-2 d-flex justify-content-center">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <select formControlName="state" name="state" class="form-control" (change)="changeState($event.target.value)" required>
-                <option value="" selected>Select state...</option>
-                <option *ngFor="let state of states | keyvalue" [value]="state.key" >
-                    {{state.key}}
-                </option>
-            </select>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <div *ngIf="selectedState !== ''">
-                <select formControlName="city" name="city" class="form-control">
-                    <option value="" selected>Select city...</option>
-                    <option *ngFor="let city of cities" [value]="city" >
-                        {{city}}
-                    </option>
-                </select>
+        <div class="form-row mt-1 d-flex justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <app-text-input 
+                    [formControl]='registerForm.controls["password"]'
+                    [label]='"Password"'
+                    [type]='"password"'>
+                </app-text-input>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <app-text-input 
+                    [formControl]='registerForm.controls["confirmPassword"]'
+                    [label]='"Confirm Password"'
+                    [type]='"password"'>
+                </app-text-input>
             </div>
         </div>
     </div>
 
-    <div class="form-row d-flex justify-content-center">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <app-text-input 
-                [formControl]='registerForm.controls["password"]'
-                [label]='"Password"'
-                [type]='"password"'>
-            </app-text-input>
+    <div class="my-4">
+        <div class="form-row d-flex justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" style="margin-right: 10px;"><strong>I cycle: </strong></label>
+                    <label class="radio-inline">
+                        <input type="radio" value="daily" formControlName="cyclingFrequency"> Daily
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="weekly" formControlName="cyclingFrequency" class="ml-3"> Weekly
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="monthly" formControlName="cyclingFrequency" class="ml-3"> Monthly
+                    </label>
+                </div>
+            </div>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <app-text-input 
-                [formControl]='registerForm.controls["confirmPassword"]'
-                [label]='"Confirm Password"'
-                [type]='"password"'>
-            </app-text-input>
+        <div class="form-row d-flex justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" style="margin-right: 10px;"><strong>Preferred surface: </strong></label>
+                    <label class="radio-inline">
+                        <input type="radio" value="road" formControlName="cyclingCategory"> Road
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="gravel" formControlName="cyclingCategory" class="ml-3"> Gravel
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="mountain" formControlName="cyclingCategory" class="ml-3"> Mountain
+                    </label>
+                </div>
+            </div>
         </div>
-    </div>
+        <div class="form-row d-flex justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" style="margin-right: 10px;"><strong>Skill level: </strong></label>
+                    <label class="radio-inline">
+                        <input type="radio" value="beginner" formControlName="skillLevel"> Beginner
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="intermediate" formControlName="skillLevel" class="ml-3"> Intermediate
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="advanced" formControlName="skillLevel" class="ml-3"> Advanced
+                    </label>
+                </div>
+            </div>
+        </div>
 
-    <div class="form-row d-flex justify-content-center">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="form-group">
-                <label class="control-label" style="margin-right: 10px;"><strong>I cycle: </strong></label>
-                <label class="radio-inline">
-                    <input type="radio" value="daily" formControlName="cyclingFrequency"> Daily
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="weekly" formControlName="cyclingFrequency" class="ml-3"> Weekly
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="monthly" formControlName="cyclingFrequency" class="ml-3"> Monthly
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-row d-flex justify-content-center">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="form-group">
-                <label class="control-label" style="margin-right: 10px;"><strong>Preferred surface: </strong></label>
-                <label class="radio-inline">
-                    <input type="radio" value="road" formControlName="cyclingCategory"> Road
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="gravel" formControlName="cyclingCategory" class="ml-3"> Gravel
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="mountain" formControlName="cyclingCategory" class="ml-3"> Mountain
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-row d-flex justify-content-center">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="form-group">
-                <label class="control-label" style="margin-right: 10px;"><strong>Skill level: </strong></label>
-                <label class="radio-inline">
-                    <input type="radio" value="beginner" formControlName="skillLevel"> Beginner
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="intermediate" formControlName="skillLevel" class="ml-3"> Intermediate
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" value="advanced" formControlName="skillLevel" class="ml-3"> Advanced
-                </label>
-            </div>
-        </div>
     </div>
 
     <hr>

@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="!registerMode && !customizeMode && !discoverMode && !chatMode">
+    <div *ngIf="!registerMode">
         <main role="main">
 
             <!-- Main jumbotron for a primary marketing message or call to action -->
@@ -12,32 +12,62 @@
                     </div>
                 </div>
             </div>
-      
-            <div class="container">
-              <!-- Example row of columns -->
-                <div class="row">
-                <div class="col-md-4">
-                    <h3>Customize</h3>
-                    <p>Create a profile detailing how often you cycle, your preferred cycling surface (road, gravel, or mountain), and your cycling skill-level.</p>
-                    <p><a class="btn btn-info text-white" type="button" role="button" (click)="customizeToggle()">View details &raquo;</a></p>
+
+            <!-- Marketing messaging and featurettes
+            ================================================== -->
+            <!-- Wrap the rest of the page in another container to center all the content. -->
+
+            <div class="container marketing">
+
+                <!-- START THE FEATURETTES -->
+
+                <hr class="featurette-divider my-5">
+
+                <div class="row featurette">
+                    <div class="col-md-4">
+                        <h2 class="featurette-heading">Customize your profile</h2>
+                        <p class="lead">Let others know a little bit about you. Your interests, favorite routes in your area, how often you ride, and your skill-level...this helps others discover your profile and connect.</p>
+                    </div>
+                    <div class="col-md-8">
+                        <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg> -->
+                        <img src="../../assets/cyclist_edit_profile.jpg" alt="cyclist edit profile page" style="border: 2px solid #2C3E50; border-radius: 3px;" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto">
+
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h3>Discover</h3>
-                    <p>Discover other cyclists in your area. Or search for cyclists that match your rider profile. </p>
-                    <p><a class="btn btn-info text-white" type="button"  role="button" (click)="discoverToggle()" >View details &raquo;</a></p>
+
+                <hr class="featurette-divider my-5">
+
+                <div class="row featurette">
+                    <div class="col-md-4 order-md-2">
+                        <h2 class="featurette-heading">Discover other cyclists.</h2>
+                        <p class="lead">Use the discover page to search for cyclists in your area. Filter by skill-level, cycling frequency, and more.</p>
+                    </div>
+                    <div class="col-md-8 order-md-1">
+                        <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg> -->
+                        <img src="../../assets/cyclist_discover.jpg" alt="discover other cyclists" style="border: 2px solid #2C3E50; border-radius: 3px;" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto">
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h3>Chat</h3>
-                    <p>Send private messages and plan a bike ride!</p>
-                    <p><a class="btn btn-info text-white" type="button" role="button" (click)="chatToggle()" >View details &raquo;</a></p>
+
+                <hr class="featurette-divider my-5">
+
+                <div class="row featurette">
+                    <div class="col-md-5">
+                        <h2 class="featurette-heading">Connect, chat, and plan a ride!</h2>
+                        <p class="lead">If you find someone you're interested in connecting with, send them a message and plan a ride!</p>
+                    </div>
+                    <div class="col-md-7">
+                        <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg> -->
+                        <img src="../../assets/cyclist_chat.jpg" alt="chat box" style="border: 2px solid #2C3E50; border-radius: 3px;" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto">
+                    </div>
                 </div>
-                </div>
-        
-                <hr>
-      
-            </div> <!-- /container -->
-      
+
+                <hr class="featurette-divider my-5">
+
+                <!-- /END THE FEATURETTES -->
+
+            </div><!-- /.container -->
         </main>
+
       
         <footer class="container">
         <p>By Andy N.H. Nguyen - <a href="https://andynhn.me">andynhn.me</a></p>
@@ -56,38 +86,6 @@
                 </app-register>
                 <!-- () to send data. data emitted from cancelRegisterEmitToLandingFromRegister emits a boolean from child to parent component. -->
                 <!-- This lets us trigger the cancelRegisterMode method in the parent component -->
-            </div>
-        </div>
-    </div>
-    <div *ngIf="customizeMode" class="container">
-        <div class="row justify-content-center">
-            <div>
-                <app-landing-customize
-                    (cancelCustomizeEmitToLandingFromCustomize)="cancelCustomizeMode($event)"
-                    (cancelCustomizeEmitToLandingFromCustomizeLoadDiscover)="cancelCustomizeModeLoadDiscover($event)">
-                </app-landing-customize>
-            </div>
-        </div>
-    </div>
-    <div *ngIf="discoverMode" class="container">
-        <div class="row justify-content-center">
-            <div>
-                <app-landing-discover
-                    (cancelDiscoverEmitToLandingFromDiscover)="cancelDiscoverMode($event)"
-                    (cancelDiscoverEmitToLandingFromDiscoverLoadChat)="cancelDiscoverModeLoadChat($event)"
-                    (cancelDiscoverEmitToLandingFromDiscoverLoadCustomize)="cancelDiscoverModeLoadCustomize($event)">
-                </app-landing-discover>
-            </div>
-        </div>
-    </div>
-    <div *ngIf="chatMode" class="container">
-        <div class="row justify-content-center">
-            <div>
-                <app-landing-chat
-                    (cancelChatEmitToLandingFromChat)="cancelChatMode($event)"
-                    (cancelChatEmitToLandingFromChatLoadRegister)="cancelChatModeLoadRegister($event)"
-                    (cancelChatEmitToLandingFromChatLoadRegisterLoadDiscover)="cancelChatModeLoadDiscover($event)">
-                </app-landing-chat>
             </div>
         </div>
     </div>

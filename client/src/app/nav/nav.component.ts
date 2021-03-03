@@ -35,5 +35,6 @@ export class NavComponent implements OnInit {
     this.accountService.logout();
     // navigate back to the root route.
     this.router.navigateByUrl('/');
+    this.toastr.success('You are logged out. To protect your information, please close your browser.');
   }
 }

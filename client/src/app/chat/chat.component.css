@@ -1,0 +1,32 @@
+.chat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.img-circle {
+    max-height: 40px;
+}
+  
+.table-hover tbody tr:hover td  
+{  
+    background-color: #0095a057;  
+} 
+
+
+.animate {
+    transition: all 0.3s ease-in-out;
+}
+
+@keyFrames fa-blink {
+	0% {opacity: 1;}
+	100% {opacity: 0.4;}
+}
+.is-online {
+	animation: fa-blink 1.2s linear infinite;
+	color: rgb(1, 189, 42);
+}
+.is-selected {
+    font-weight: bold;
+    background-color: #0095a057;
+}

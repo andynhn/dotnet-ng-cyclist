@@ -1,3 +1,53 @@
-<p>chat works!</p>
 <!-- TODO: Build out chat component. Goal is to display all of the user's 
     active chat sessions in 1 vertically tabbed page, similar to facebook messenger -->
+
+<div *ngIf="!loading" class="container-fluid">
+    <div class="row">
+        <!-- START SIDE BAR -->
+        <nav class="col-xl-3 col-lg-3 col-md-4 bg-light sidebar">
+            <div class="mt-3 mb-5">
+                <div *ngIf="otherMembers.length === 0" style="height: 100vh;">
+                    <h5>Check out the Discover <i class="fa fa-search"></i> page to connect with other cyclists. 
+                        <br><br> Once you start chatting, new message threads will show up here.
+                        <br><br> You can also chat with a user directly on their profile page.
+                    </h5>
+                </div>
+                <div style="overflow: scroll; height: 90vh; padding-bottom: 0px;" *ngIf="otherMembers.length > 0">
+                    <table class="table table-hover" style="cursor: pointer; width: 100%;">
+                        <tbody>
+                            <tr *ngFor="let member of otherMembers" (click)="getMemberChat(member)" class="my-2 py-1" style='width: 100%'  [class.is-selected]="selectedMember === member">
+                                <td>
+                                    <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.username}}" class="img-circle rounded-circle mr-2">
+                                    <span [class.is-online]="(presence.onlineUsers$ | async).includes(member.username)" *ngIf="(presence.onlineUsers$ | async).includes(member.username)">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                    {{member.firstName | titlecase}} {{member.lastName | titlecase}} 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </nav>
+
+        <!-- PAGE TITLE TO THE RIGHT OF SIDE BAR AND ABOVE MAIN CONTENT -->
+        <main role="main" class="col-xl-9 col-lg-9 col-md-8 ml-sm-auto px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div class="mt-3">
+                    <span *ngIf="selectedMember">
+                        <div class="row ml-3">
+                            <img src="{{selectedMember.photoUrl || './assets/user.png'}}" alt="{{selectedMember.username}}" class="img-circle rounded-circle mr-2">
+                            <h3>{{selectedMember.firstName | titlecase}} {{selectedMember.lastName | titlecase}}</h3>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="selectedChat">
+                <app-member-messages
+                    [username]="selectedMember.username"
+                    [activePageC]="activePage">
+                </app-member-messages>
+            </div>
+        </main>
+    </div>
+</div>

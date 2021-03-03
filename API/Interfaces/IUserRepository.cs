@@ -18,5 +18,6 @@ namespace API.Interfaces
         // need to ignore the query filter for photos for the current user...
         Task<MemberDto> GetMemberAsync(string username, bool? isCurrentUser);
         Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
+        Task<IEnumerable<MemberDto>> GetMembersForChatAsync(IEnumerable<string> usernames);
     }
 }

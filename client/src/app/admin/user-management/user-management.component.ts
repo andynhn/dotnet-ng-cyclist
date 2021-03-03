@@ -47,7 +47,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       return value.isChecked;
     });
     for (const role of this.selectedRoles) {
-      this.selectedRoleValues.push(role.value)
+      this.selectedRoleValues.push(role.value);
     }
     this.userManageParams.roles = this.selectedRoleValues;
   }

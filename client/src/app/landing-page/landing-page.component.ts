@@ -11,9 +11,6 @@ import { AccountService } from '../_services/account.service';
 })
 export class LandingPageComponent implements OnInit {
   registerMode = false;
-  customizeMode = false;
-  discoverMode = false;
-  chatMode = false;
   user: User;
 
   constructor(private accountService: AccountService, private router: Router) {
@@ -33,50 +30,6 @@ export class LandingPageComponent implements OnInit {
   }
   cancelRegisterMode(event: boolean): void {
     this.registerMode = event;
-  }
-
-
-  customizeToggle(): void {
-    this.customizeMode = !this.customizeMode;
-  }
-  cancelCustomizeMode(event: boolean): void {
-    this.customizeMode = event;
-  }
-  cancelCustomizeModeLoadDiscover(event: boolean): void {
-    this.customizeMode = event;
-    this.discoverMode = !this.discoverMode;
-  }
-
-
-  discoverToggle(): void {
-    this.discoverMode = !this.discoverMode;
-  }
-  cancelDiscoverMode(event: boolean): void {
-    this.discoverMode = event;
-  }
-  cancelDiscoverModeLoadChat(event: boolean): void {
-    this.discoverMode = event;
-    this.chatMode = !this.chatMode;
-  }
-  cancelDiscoverModeLoadCustomize(event: boolean): void {
-    this.discoverMode = event;
-    this.customizeMode = !this.customizeMode;
-  }
-
-
-  chatToggle(): void {
-    this.chatMode = !this.chatMode;
-  }
-  cancelChatMode(event: boolean): void {
-    this.chatMode = event;
-  }
-  cancelChatModeLoadRegister(event: boolean): void {
-    this.chatMode = event;
-    this.registerMode = !this.registerMode;
-  }
-  cancelChatModeLoadDiscover(event: boolean): void {
-    this.chatMode = event;
-    this.discoverMode = !this.discoverMode;
   }
 
 }

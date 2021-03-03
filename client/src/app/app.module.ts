@@ -33,9 +33,6 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 import { MemberEditCredentialsComponent } from './members/member-edit-credentials/member-edit-credentials.component';
 import { IntroModalComponent } from './modals/intro-modal/intro-modal.component';
-import { LandingCustomizeComponent } from './landing-details/landing-customize/landing-customize.component';
-import { LandingDiscoverComponent } from './landing-details/landing-discover/landing-discover.component';
-import { LandingChatComponent } from './landing-details/landing-chat/landing-chat.component';
 
 @NgModule({
   declarations: [
@@ -62,10 +59,7 @@ import { LandingChatComponent } from './landing-details/landing-chat/landing-cha
     PhotoEditorComponent,
     MemberMessagesComponent,
     MemberEditCredentialsComponent,
-    IntroModalComponent,
-    LandingCustomizeComponent,
-    LandingDiscoverComponent,
-    LandingChatComponent
+    IntroModalComponent
   ],
   imports: [
     BrowserModule,

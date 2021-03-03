@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
@@ -86,6 +87,35 @@ namespace API.Controllers
 
             // if everything fails, return bad request
             return BadRequest("Problem deleting the message");
+        }
+
+
+        [HttpGet("message-groups")]
+        public async Task<ActionResult> GetMembersFromMessageGroupsByUsername() 
+        {
+            var username = User.GetUsername();
+            var messageGroups = await _unitOfWork.MessageRepository.GetMessageGroupsByUsername(username);
+            // from the message groups, 
+            var otherUsernames = new List<string>();
+            string replacement = "";
+            // \\b gives the word boundaries. 
+            string patternStart = $"\\b{username}-\\b"; // To find where the username is at the start of the groupName key (hyphen-separated usernames)
+            string patternEnd = $"\\b-{username}\\b";   // to find where the username is at the end of the groupName key (hyphen-separated usernames)
+            string patternMiddle = $"\\b-{username}-\\b";   // to find where username is in the middle of the groupName key (currently not used. But including to prep for potential group chat feature under this same framework)
+
+            foreach (var group in messageGroups)
+            {
+                var groupName = group.Name.ToString();
+                groupName = Regex.Replace(groupName, patternStart, replacement, RegexOptions.IgnoreCase);   // remove current user from names where it is at the front
+                groupName = Regex.Replace(groupName, patternEnd, replacement, RegexOptions.IgnoreCase); // remove currernt user from names where it is at the end.
+                groupName = Regex.Replace(groupName, patternMiddle, replacement, RegexOptions.IgnoreCase);
+                otherUsernames.Add(groupName);
+            }
+
+            var otherMembers = await _unitOfWork.UserRepository.GetMembersForChatAsync(otherUsernames);
+
+            // ultimately we want to return a list of MemberDto to help display a facebook messenger-styled chat page.
+            return Ok(otherMembers);
         }
 
     }

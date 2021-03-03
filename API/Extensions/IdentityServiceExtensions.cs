@@ -31,6 +31,7 @@ namespace API.Extensions
             services.AddIdentityCore<AppUser>(opt => 
             {
                 opt.Password.RequireNonAlphanumeric = false;
+                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";  // only letters or digits. 
             })
                 .AddRoles<AppRole>()
                 .AddRoleManager<RoleManager<AppRole>>() // Role Manager and the Type that it's going to use

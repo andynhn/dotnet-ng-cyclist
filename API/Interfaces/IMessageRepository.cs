@@ -13,6 +13,7 @@ namespace API.Interfaces
         void RemoveConnection(Connection connection);
         Task<Connection> GetConnection(string connectionId);
         Task<Group> GetMessageGroup(string groupName);
+        Task<IEnumerable<Group>> GetMessageGroupsByUsername(string username);
         Task<Group> GetGroupForConnection(string connnectionId);
 
 
