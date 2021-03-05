@@ -52,6 +52,7 @@ namespace API.SignalR
                 RecipientUsername = otherUser
             };
 
+            // TODO: Consider adding a check here to see if they exist first.
             // the group that a pair of users belong to.
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
@@ -68,7 +69,6 @@ namespace API.SignalR
                 .GetScrolledMessageThread(Context.User.GetUsername(), otherUser, memberChatParams);
 
             // check to see if changes in this step. If there are, then save them to the DB here, not within the message repo itself.
-            // the unitOfWork class is responsible for saving to DB
             if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
             // send the response back to the caller

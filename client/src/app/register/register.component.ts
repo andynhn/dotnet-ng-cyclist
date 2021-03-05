@@ -40,23 +40,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
   getCityStates(): any {
     this.loading = true;
     this.http.get('../../assets/cityStates.json').subscribe(data => {
-      console.log(data);
-      console.log(this.selectedState);
       this.states = data;
       this.loading = false;
-      console.log(this.cities);
     });
   }
 
   changeState(data) {
-    console.log(data);
     if (!data) {
-      console.log('no data here')
       this.selectedState = '';
     }
     if (data) {
       this.selectedState = data;
-      console.log('made it here');
       this.cities = this.states[data];
     }
   }

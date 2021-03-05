@@ -36,10 +36,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.activePage = 'Chat';
     this.messageService.getMessageGroupsByUsername().subscribe(response => {
       this.otherMembers = response;
-      console.log(this.otherMembers);
       this.loading = false;
     });
-    console.log(this.activePage);
   }
 
   getMemberChat(member): void {

@@ -93,6 +93,90 @@ namespace API.Controllers
             return Ok(await _userManager.GetRolesAsync(user));
         }
 
+
+        /// <summary>
+        /// Primary route for admin's to delete a user. Only admin roles can access this route.
+        /// </summary>
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpDelete("delete-user/{username}")]
+        public async Task<ActionResult> DeleteUser(string username)
+        {
+            // get the user to delete from the given username.
+            var user = await _userManager.FindByNameAsync(username);
+            // return not found if the user does not exist.
+            if (user == null) return NotFound("Could not find user");
+
+            // 1. Delete all their photos
+            var photos = await _unitOfWork.PhotoRepository.GetUsersPhotos(username);
+            if (photos.Count() > 0)
+            {
+                foreach (var photo in photos)
+                {
+                    // remove from cloudinary
+                    if (photo.PublicId != null) 
+                    {
+                        var r = await _photoService.DeletePhotoAsync(photo.PublicId);
+                        if (r.Error != null) return BadRequest(r.Error.Message);
+                    }
+                    // tell EF to track for removal from db
+                    user.Photos.Remove(photo);
+                }
+            }
+
+            // 2. Delete all messages that are connected to them
+            var allMessages = await _unitOfWork.MessageRepository.GetAllUsersMessages(username);
+            if (allMessages.Count() > 0)
+            {
+                // no need to check if sender deleted or recipient deleted here. Just delete it no matter what.
+                _unitOfWork.MessageRepository.DeleteMessages(allMessages);
+            }
+
+            // 3. Delete their message groups and any remaining connections on that group (should remove automatically when they leave a hub)
+            // but in case there are any existing hubs with this username and connection.
+            var groups = await _unitOfWork.MessageRepository.GetMessageGroupsByUsername(username);
+            if (groups.Count() > 0)
+            {
+                // Delete connections associated with the group (revisit this)
+                foreach (var group in groups) 
+                {
+                    var connection = group.Connections.FirstOrDefault();
+                    if (connection != null) 
+                    {
+                        _unitOfWork.MessageRepository.RemoveConnection(connection);
+                    }
+                }
+                // after deleting connections associated with the username, delete the message groups.
+                _unitOfWork.MessageRepository.DeleteMessageGroups(groups);
+            }
+            
+
+            // 4. Now, use ASPNET Identity. Delete their roles.
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Count() > 0)
+            {
+                // Then remove the user from all roles.
+                var deleteRolesResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                if (!deleteRolesResult.Succeeded) return BadRequest("Failed to remove user roles");
+            }
+
+            // 5...and finally delete the user.
+            var result = await _userManager.DeleteAsync(user);
+            // ASPNET identity takes care of saving the db changes for us
+            // if it didn't succeed, return bad request
+            if (!result.Succeeded) return BadRequest("Failed to delete user");
+
+            // check if _unitOfWork has changes (other than ASPNET Identity)
+            if (_unitOfWork.HasChanges())
+            {
+                // save if the changes exist
+                if (await _unitOfWork.Complete()) return Ok();
+                // if issues with this, return bad request
+                return BadRequest("Something went wrong when trying to save changes after deleting a user");
+            }
+            // if we make it here, no EF changes were made. Delete was successful.
+            return Ok(); 
+        }
+
         /// <summary>
         /// Primary route for admin's and moderators to get photos to moderate. Only admin and moderator roles can access this route.
         /// </summary>

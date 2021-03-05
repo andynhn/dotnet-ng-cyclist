@@ -53,9 +53,7 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
     this.adminService.getPhotosForApproval(this.photoManageParams).subscribe(response => {
       this.photos = response.result;
       this.pagination = response.pagination;
-      console.log(response.result);
       this.loading = false;
-      console.log(this.photos);
     }, error => {
       console.log(error);
     });
@@ -68,15 +66,12 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
     this.adminService.getPhotosForApproval(this.photoManageParams).subscribe(response => {
       this.photos = response.result;
       this.pagination = response.pagination;
-      console.log(response.result);
       this.loading = false;
     });
   }
 
   changeState(data) {
-    console.log(data);
     if (!data) {
-      console.log('no state selected')
       // if no state selected, reset data that userParams.city relies on.
       this.selectedState = '';
       this.cities = [];
@@ -84,9 +79,7 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
     }
     if (data) {
       this.selectedState = data;
-      console.log('made it here');
       this.cities = this.states[this.selectedState];
-      console.log(this.cities)
     }
   }
 
@@ -98,14 +91,13 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.adminService.approvePhoto(photoId).subscribe(() => {
       // this.photos.splice(this.photos.findIndex(p => p.id === photoId), 1);
-      // then get the updated list of photos. 
-      // TODO: Revisit Caching for this page. Find an efficient way to cache photos for approval, remove photos via approve/reject,
+      // then get the updated list of photos.
+      // TODO: Revisit Caching for this page (above). Find an efficient way to cache photos for approval, remove photos via approve/reject,
       // and update pagination to accurately reflect changes.
       this.adminService.resetPhotosForModerationCache();
       this.adminService.getPhotosForApproval(this.photoManageParams).subscribe(response => {
         this.photos = response.result;
         this.pagination = response.pagination;
-        console.log(response.result);
         this.loading = false;
       });
 
@@ -124,7 +116,6 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
       this.adminService.getPhotosForApproval(this.photoManageParams).subscribe(response => {
         this.photos = response.result;
         this.pagination = response.pagination;
-        console.log(response.result);
         this.loading = false;
       });
 
@@ -140,6 +131,8 @@ export class PhotoManagementComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.selectedState = '';
+    // TODO: Revisit Caching for this page. Find an efficient way to cache photos for approval, remove photos via approve/reject,
+    // and update pagination to accurately reflect changes.
     // this.adminService.resetPhotosForModerationCache();
     this.adminService.resetPhotoManageParams();
   }

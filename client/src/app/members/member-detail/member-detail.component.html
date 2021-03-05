@@ -9,7 +9,7 @@
                     <span [class.is-online]="(presence.onlineUsers$ | async).includes(member.username)">
                         <i class="fa fa-user-circle mr-2"></i>
                     </span>
-                    <span>{{member.firstName | titlecase}} {{member.lastName || '' | titlecase}}</span>
+                    <span>{{member.firstName || '' | titlecase}} {{member.lastName || '' | titlecase}}</span>
                 </div>
                 <div>
                     <strong>Location:</strong>
@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <strong>Age:</strong>
-                    <p>{{member.age}}</p>
+                    <p>{{member.age || ''}}</p>
                 </div>
                 <div>
                     <strong>Last Active:</strong>

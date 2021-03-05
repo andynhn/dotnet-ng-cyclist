@@ -32,10 +32,13 @@ namespace API.Helpers
             var userId = resultContext.HttpContext.User.GetUserId();
             // get unit of work repository
             var unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
-            // get user from repository using username from claims principal
+            // get user from repository using userId from claims principal
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
-            // set LastActive to Utc Now.
-            user.LastActive = DateTime.UtcNow;
+            // if a user exists, update the last active to now (e.g. when a user deletes their account);
+            if (user != null) {
+                // set LastActive to Utc Now.
+                user.LastActive = DateTime.UtcNow;
+            }
             // async save to repository.
             await unitOfWork.Complete();
         }

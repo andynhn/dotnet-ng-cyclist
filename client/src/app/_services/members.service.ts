@@ -32,7 +32,6 @@ export class MembersService {
    * @param userParams Params that the user passes to filter the list of users.
    */
   getMembers(userParams: UserParams) {
-    console.log(Object.values(userParams).join('-'));
     /**
      * "key" that stores the userParams so that we can keep track of user activity for caching
      * the key is just the params separated by a hyphen. Idea is for faster loading on on routes that we've already loaded.
@@ -53,7 +52,6 @@ export class MembersService {
     params = params.append('cyclingFrequency', userParams.cyclingFrequency);
     params = params.append('cyclingCategory', userParams.cyclingCategory);
     params = params.append('skillLevel', userParams.skillLevel);
-    console.log(userParams.nameSearch);
     userParams.nameSearch = userParams.nameSearch.trim().toLowerCase();
     params = params.append('nameSearch', userParams.nameSearch.length <= 30
       ? userParams.nameSearch
@@ -61,8 +59,6 @@ export class MembersService {
     params = params.append('state', userParams.state);
     params = params.append('city', userParams.city);
     params = params.append('orderBy', userParams.orderBy);
-    console.log(userParams.nameSearch);
-    console.log(params);
 
     // If it passes the above caching functionality, then go to the api, which hits our loading interceptor.
     // Then upon return, add that key params route to the memberCache map.
@@ -84,14 +80,17 @@ export class MembersService {
    * then the FIND method finds the first instance of the user we want, based on the username passed in.
    */
   getMember(username: string) {
-    const member = [...this.memberCache.values()]
-      .reduce((arr, elem) => arr.concat(elem.result), [])
-      .find((member: Member) => member.username === username);
+    // NOTE: TODO: We used to get the member from the member cache. BUT, there could be issues for the edge case where a profile is deleted
+    // but a different member is logged in and has that deleted profile cached. They would see the profile, but it should be deleted.
+    // So let's bypass getting the member from the cache for now. Make the api call for all instead.
+    // const member = [...this.memberCache.values()]
+    //   .reduce((arr, elem) => arr.concat(elem.result), [])
+    //   .find((member: Member) => member.username === username);
 
     // if we find the member in our cache, bypass the loading spinner in the loading interceptor.
-    if (member) {
-      return of(member);
-    }
+    // if (member) {
+    //   return of(member);
+    // }
     return this.http.get<Member>(this.baseUrl + 'users/' + username).pipe();
   }
 

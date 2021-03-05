@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
+import { DeleteUserModalComponent } from 'src/app/modals/delete-user-modal/delete-user-modal.component';
 import { RolesModalComponent } from 'src/app/modals/roles-modal/roles-modal.component';
 import { Pagination } from 'src/app/_models/pagination';
 import { User } from 'src/app/_models/user';
 import { UserManageParams } from 'src/app/_models/userManageParams';
 import { AdminService } from 'src/app/_services/admin.service';
+import { PresenceService } from 'src/app/_services/presence.service';
 
 @Component({
   selector: 'app-user-management',
@@ -29,6 +31,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   constructor(private adminService: AdminService,
               private modalService: BsModalService,
+              public presence: PresenceService,
               private toastr: ToastrService) {
                 this.userManageParams = this.adminService.getUserManageParams();
               }
@@ -77,7 +80,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   pageChanged(event: any) {
     this.loading = true;
-    console.log(event);
     this.userManageParams.pageNumber = event.page;
     this.adminService.setUserManageParams(this.userManageParams);
     // get users with roles with the new parameters. Only changed parameter should be pageNumber.
@@ -87,6 +89,28 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.users = response.result;
       this.pagination = response.pagination;
       this.loading = false;
+    });
+  }
+
+  openDeleteUserModal(user: User) {
+    const config = {
+      class: 'modal-dialog-centered',
+      initialState: {
+        user
+      }
+    };
+    this.bsModalRef = this.modalService.show(DeleteUserModalComponent, config);
+    this.bsModalRef.content.deleteSelectedUser.subscribe(response => {
+      if (response) {
+        const usernameToDelete = user.username;
+        this.adminService.deleteUser(usernameToDelete).subscribe(() => {
+          this.users.splice(this.users.findIndex(u => u.username === usernameToDelete), 1); // remove the user from the page.
+          this.pagination.totalItems--;
+          this.toastr.success(`The user "${usernameToDelete}" has been deleted. I hope you know what you are doing...`);
+        }, error => {
+          this.toastr.error(error, 'Encountered an error while trying to delete a user');
+        });
+      }
     });
   }
 
@@ -148,7 +172,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
    * then loadMembers again.
    */
   resetFilters() {
-    console.log('reset filters');
     // reset the userManageParms in this component with fresh params from the service.
     this.userManageParams = this.adminService.resetUserManageParams();
     // need to reset these 'isChecked' to false.

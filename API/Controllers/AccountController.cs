@@ -29,8 +29,10 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, IMapper mapper, IUnitOfWork unitOfWork)
+        private readonly IPhotoService _photoService;
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IPhotoService photoService, ITokenService tokenService, IMapper mapper, IUnitOfWork unitOfWork)
         {
+            _photoService = photoService;
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -53,9 +55,9 @@ namespace API.Controllers
         {
             // front-end checks exist, but add these checks just in case.
             if (registerDto.Username == null || registerDto.Password == null || registerDto.FirstName == null
-                || registerDto.LastName == null || registerDto.State == null || registerDto.City == null 
+                || registerDto.LastName == null || registerDto.State == null || registerDto.City == null
                 || registerDto.DateOfBirth.ToShortDateString() == null || registerDto.Gender == null
-                || registerDto.CyclingCategory == null || registerDto.CyclingFrequency == null 
+                || registerDto.CyclingCategory == null || registerDto.CyclingFrequency == null
                 || registerDto.SkillLevel == null)
                 return BadRequest("Please complete the registration form");
 
@@ -169,6 +171,87 @@ namespace API.Controllers
 
             // return 400BadRequest if all fails.
             return BadRequest("Failed to update password");
+        }
+
+        /// <summary>
+        /// Primary route for user's to delete their account.
+        /// </summary>
+        [HttpDelete("delete-account")]
+        public async Task<ActionResult> DeleteAccount()
+        {
+            // get the user to delete from the claims principle.
+            var user = await _userManager.FindByNameAsync(User.GetUsername());
+
+            // 1. Delete all their photos
+            var photos = await _unitOfWork.PhotoRepository.GetUsersPhotos(user.UserName);
+            if (photos.Count() > 0)
+            {
+                foreach (var photo in photos)
+                {
+                    // remove from cloudinary
+                    if (photo.PublicId != null)
+                    {
+                        var r = await _photoService.DeletePhotoAsync(photo.PublicId);
+                        if (r.Error != null) return BadRequest(r.Error.Message);
+                    }
+                    // tell EF to track for removal from db
+                    user.Photos.Remove(photo);
+                }
+            }
+
+            // 2. Delete all messages that are connected to them
+            var allMessages = await _unitOfWork.MessageRepository.GetAllUsersMessages(user.UserName);
+            if (allMessages.Count() > 0)
+            {
+                // no need to check if sender deleted or recipient deleted here. Just delete it no matter what.
+                // TODO: in the future see if you can keep the message history, like facebook does with deleted/deactivated profiles. For now, delete the entire profile and all messages.
+                _unitOfWork.MessageRepository.DeleteMessages(allMessages);
+            }
+
+            // 3. Delete their message groups and any remaining connections on that group (should remove automatically when they leave a hub)
+            // but in case there are any existing hubs with this username and connection.
+            var groups = await _unitOfWork.MessageRepository.GetMessageGroupsByUsername(user.UserName);
+            if (groups.Count() > 0)
+            {
+                // Delete connections associated with the group (revisit this)
+                foreach (var group in groups)
+                {
+                    var connection = group.Connections.FirstOrDefault();
+                    if (connection != null)
+                    {
+                        _unitOfWork.MessageRepository.RemoveConnection(connection);
+                    }
+                }
+                // after deleting connections associated with the username, delete the message groups.
+                _unitOfWork.MessageRepository.DeleteMessageGroups(groups);
+            }
+
+
+            // 4. Now, use ASPNET Identity. Delete their roles.
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Count() > 0)
+            {
+                // Then remove the user from all roles.
+                var deleteRolesResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                if (!deleteRolesResult.Succeeded) return BadRequest("Encountered an error while trying to delete your account.");
+            }
+
+            // 5...and finally delete the user.
+            var result = await _userManager.DeleteAsync(user);
+            // ASPNET identity takes care of saving the db changes for us
+            // if it didn't succeed, return bad request
+            if (!result.Succeeded) return BadRequest("Encountered an error while trying to delete your account.");
+
+            // check if _unitOfWork has changes (other than ASPNET Identity)
+            if (_unitOfWork.HasChanges())
+            {
+                // save if the changes exist
+                if (await _unitOfWork.Complete()) return Ok();
+                // if issues with this, return bad request
+                return BadRequest("Encountered an error while trying to delete your account.");
+            }
+            // if we make it here, no EF changes were made. Delete was successful.
+            return Ok();
         }
 
         /// <summary>

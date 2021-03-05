@@ -11,5 +11,6 @@ namespace API.Interfaces
         Task<PagedList<PhotoForApprovalDto>> GetUnapprovedPhotos(PhotoManageParams photoManageParams);
         Task<Photo> GetPhotoById(int id);
         void RemovePhoto(Photo photo);
+        Task<IEnumerable<Photo>> GetUsersPhotos(string username);
     }
 }

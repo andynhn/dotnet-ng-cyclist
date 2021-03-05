@@ -50,8 +50,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   fetchUnreadMessagesCount(): void {
-    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
-      console.log(response);
+    this.messageService.getUnreadMessagesCountApi().subscribe(() => {
     }, error => {
       console.log(error);
     });
@@ -68,7 +67,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadMessages() {
-    console.log('loadMessages home.component.ts');
     this.loading = true;
     this.messageService.setPageParams(this.pageParams);
     this.messageService.getMessages(this.pageParams).subscribe(response => {
@@ -95,7 +93,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   pageChanged(event: any) {
-    console.log(event);
     this.pageParams.pageNumber = event.page;
     this.messageService.setPageParams(this.pageParams);
     this.loadMessages();

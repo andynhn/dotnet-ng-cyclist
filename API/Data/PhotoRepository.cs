@@ -72,6 +72,13 @@ namespace API.Data
             return await PagedList<PhotoForApprovalDto>.CreateAsync(query, photoManageParams.PageNumber, photoManageParams.PageSize);
         }
 
+        public async Task<IEnumerable<Photo>> GetUsersPhotos(string username)
+        {
+            return await _context.Photos
+                .Where(p => p.AppUser.UserName == username)
+                .ToListAsync();            
+        }
+
         /// <summary>
         /// Primary repo method for removing a photo from the data context
         /// </summary>

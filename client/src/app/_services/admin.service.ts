@@ -42,8 +42,6 @@ export class AdminService {
    * to help return this users as a paged list for easier navigation in the UI
    */
   getUsersWithRoles(userManageParams: UserManageParams) {
-    console.log(Object.values(userManageParams).join('-'));
-    // implement caching feature
     // implement cache feature...1) If true, reset cache. Users were modified so need to refetch users list.
     if (this.usersModified === true) {
       this.usersWithRolesCache = new Map();
@@ -70,12 +68,10 @@ export class AdminService {
     // roles are in an array. turn into a comma separated string.
     params = params.append('roles', userManageParams.roles.join(','));
     params = params.append('orderBy', userManageParams.orderBy);
-    console.log(params);
 
     // only returning partial user here. don't need all their info.
     return getPaginatedResult<Partial<User[]>>(this.baseUrl + 'admin/users-with-roles', params, this.http).pipe(
       map(paginatedResult => {
-        console.log(paginatedResult);
         // After we get the new result, set to FALSE so that the check above works. We set it to true on Update or Delete of information.
         this.usersModified = false;
         // now save the result to the membercache, passing a key of parameters from the search.
@@ -92,13 +88,19 @@ export class AdminService {
   }
 
 
+  deleteUser(username: string) {
+    // set usersModified to TRUE so that on getUsersWithRoles, it will reset the cache. Need to refetch from API because changes were made.
+    this.usersModified = true;
+    return this.http.delete(this.baseUrl + 'admin/delete-user/' + username).pipe();
+  }
+
+
   // methods for pagination involved in Admin Panel
   getUserManageParams() {
     return this.userManageParams;
   }
 
   setUserManageParams(params: UserManageParams) {
-    console.log(params);
     this.userManageParams = params;
   }
 
@@ -116,8 +118,6 @@ export class AdminService {
 
 
   getPhotosForApproval(photoManageParams: PhotoManageParams) {
-    console.log(Object.values(photoManageParams).join('-'));
-
     if (this.photosModified === true) {
       this.photosForModerationCache = new Map();
     }
@@ -140,11 +140,9 @@ export class AdminService {
     params = params.append('state', photoManageParams.state);
     params = params.append('city', photoManageParams.city);
     params = params.append('orderBy', photoManageParams.orderBy);
-    console.log(params);
 
     return getPaginatedResult<Photo[]>(this.baseUrl + 'admin/photos-to-moderate', params, this.http).pipe(
       map(paginatedResult => {
-        console.log(paginatedResult);
         // when we get a new result, set modified to FALSE
         this.photosModified = false;
         this.photosForModerationCache.set(Object.values(photoManageParams).join('-'), paginatedResult);
@@ -173,7 +171,6 @@ export class AdminService {
   }
 
   setPhotoManageParams(params: PhotoManageParams) {
-    console.log(params);
     this.photoManageParams = params;
   }
 

@@ -57,8 +57,7 @@ export class DiscoverMembersComponent implements OnInit, OnDestroy {
   }
 
   fetchUnreadMessagesCount(): void {
-    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
-      console.log(response);
+    this.messageService.getUnreadMessagesCountApi().subscribe(() => {
     }, error => {
       console.log(error);
     });
@@ -77,9 +76,7 @@ export class DiscoverMembersComponent implements OnInit, OnDestroy {
   }
 
   changeState(data) {
-    console.log(data);
     if (!data) {
-      console.log('no state selected')
       // if no state selected, reset data that userParams.city relies on.
       this.selectedState = '';
       this.cities = [];
@@ -87,9 +84,7 @@ export class DiscoverMembersComponent implements OnInit, OnDestroy {
     }
     if (data) {
       this.selectedState = data;
-      console.log('made it here');
       this.cities = this.states[this.selectedState];
-      console.log(this.cities)
     }
   }
 

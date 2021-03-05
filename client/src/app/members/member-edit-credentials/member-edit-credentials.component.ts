@@ -44,7 +44,6 @@ export class MemberEditCredentialsComponent implements OnInit, OnDestroy {
       this.toastr.success('Credentials updated successfully');
       this.router.navigateByUrl('/member/edit');
     }, error => {
-      console.log(`We got some errors: ${error}`);
       if (Object.keys(error.error).length === 1) {
         // Loop through that first (and only) object within error.error
         for (const [key, value] of Object.entries(error.error)) {

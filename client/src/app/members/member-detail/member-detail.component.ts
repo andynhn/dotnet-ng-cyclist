@@ -54,6 +54,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
       Need this for feature that directly accesses 'Messages' tab on profile load from the discover members component member cards.
     */
     this.route.data.subscribe(data => {
+      // the api returns a member, if one exists. If not, it redirects to not found, skipping this logic.
       this.member = data.member; // guaranteed to have the member in the route
     });
 

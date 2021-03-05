@@ -49,7 +49,8 @@
                 <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
                     <div *ngIf="!loading">
                         <div class="d-flex justify-content-between">
-                            <a type="button" routerLink="/member/edit-credentials">Change Password</a>
+                            <a type="button" routerLink="/member/edit-credentials" class="btn btn-link">Change Password</a>
+                            <button type="button" (click)="openDeleteUserModal(user)" class="btn btn-link">Delete Account</button>
                         </div>
                         <div class="row mt-2">
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">

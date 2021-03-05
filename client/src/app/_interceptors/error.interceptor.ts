@@ -72,7 +72,6 @@ export class ErrorInterceptor implements HttpInterceptor {
               // THIRD, Check if error.error just has the specific error text.
               // if so display. Otherwise, send the default "could not process"
               } else {
-                console.log('made it here')
                 // If error.error is not an object, then display the specific error text here.
                 if (typeof(error.error) === 'string') {
                   this.toastr.error(error.error, error.status);
@@ -85,7 +84,6 @@ export class ErrorInterceptor implements HttpInterceptor {
 
             case 401:
               if (error.error.errors) {
-                console.log('made it here')
                 const modelStateErrors = [];
                 for (const key in error.error.errors) {
                   if (error.error.errors[key]) {
@@ -95,10 +93,8 @@ export class ErrorInterceptor implements HttpInterceptor {
                 throw modelStateErrors.flat();
               } else if (typeof(error.error) === 'object') {
                 // typically will make it here if login is unauthorized
-                console.log('made it here')
                 this.toastr.error('Access denied', 'Unauthorized');
               } else if (typeof(error.error) === 'string'){
-                console.log('made it here');
                 this.toastr.error(error.error, 'Unauthorized');
               } else {
                 // Default 401 Unauthorized error for everythinge else
@@ -109,6 +105,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             case 404:
               // Default 404 not found is to navigate directly to our custom Not Found component.
               this.router.navigateByUrl('/not-found');
+              this.toastr.error(error.error);
               break;
 
             case 500:
@@ -121,7 +118,6 @@ export class ErrorInterceptor implements HttpInterceptor {
             default:
               // default for any other errors that pop up
               this.toastr.error('Something unexpected went wrong');
-              console.log(error);
               break;
           }
         }

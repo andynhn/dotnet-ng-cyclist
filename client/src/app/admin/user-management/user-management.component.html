@@ -102,10 +102,14 @@
                                     <tr>
                                         <th style="width: 30%">Username</th>
                                         <th style="width: 40%">Active roles</th>
-                                        <th style="width: 30%"></th>
+                                        <th style="width: 15%"></th>
+                                        <th style="width: 15%"></th>
                                     </tr>
                                     <tr *ngFor="let user of users">
                                         <td>
+                                            <span *ngIf="(presence.onlineUsers$ | async).includes(user.username)" [class.is-online]="(presence.onlineUsers$ | async).includes(user.username)">
+                                                <i class="fa fa-user mr-2"></i>
+                                            </span>
                                             <a type="button" 
                                                 class="text-success"
                                                 routerLink='{{"/members/" + user.username}}'>
@@ -118,6 +122,7 @@
                                             </span>
                                         </td>
                                         <td><a type="button" (click)="openRolesModal(user)" class="btn btn-info text-white">Edit Roles</a></td>
+                                        <td><a *ngIf="user.username !== 'admin'" type="button" (click)="openDeleteUserModal(user)" class="btn btn-danger text-white">Delete User</a></td>
                                     </tr>
                                 </table>
                             </div>

@@ -33,6 +33,9 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 import { MemberEditCredentialsComponent } from './members/member-edit-credentials/member-edit-credentials.component';
 import { IntroModalComponent } from './modals/intro-modal/intro-modal.component';
+import { DeleteUserModalComponent } from './modals/delete-user-modal/delete-user-modal.component';
+import { DeleteAccountModalComponent } from './modals/delete-account-modal/delete-account-modal.component';
+import { FilterChatPipe } from './_pipes/filter-chat.pipe';
 
 @NgModule({
   declarations: [
@@ -59,7 +62,10 @@ import { IntroModalComponent } from './modals/intro-modal/intro-modal.component'
     PhotoEditorComponent,
     MemberMessagesComponent,
     MemberEditCredentialsComponent,
-    IntroModalComponent
+    IntroModalComponent,
+    DeleteUserModalComponent,
+    DeleteAccountModalComponent,
+    FilterChatPipe
   ],
   imports: [
     BrowserModule,

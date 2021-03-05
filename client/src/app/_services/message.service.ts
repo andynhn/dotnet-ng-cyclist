@@ -97,14 +97,11 @@ export class MessageService {
 
     // CALLED SERVER-SIDE WITHIN METHOD THAT CREATES THE CONNECTION. LOADS INITIAL SET OF MESSAGES.
     this.hubConnection.on('ReceiveMessageThread', messages => {   // method name must match server-side method in MessageHub.cs
-      console.log(messages);
       if (messages.length < this.memberChatParams.pageSize) { // If returned messages are less than pageSize, all messages have been loaded
         this.allMessagesLoadedFlag.next(true);           // set to true to prevent component 'infinite scrolling' from making more API calls
       }
       this.messageThreadSource.next(messages);           // update the message thread to include the received messages from the server.
       this.messageThreadLoaded.next(true);  // set to true since messages are done loading. Used for auto-scroll bottom in chat on page load
-      console.log('received messages');
-      console.log(messages);
     });
 
     // CALLED SERVER-SIDE WITHIN METHOD THAT 'GETS MORE MESSAGES' FOR USE WITH INFINITE SCROLLING
@@ -118,7 +115,6 @@ export class MessageService {
         this.messageThreadSource.next([...messages, ...m]);  // append messages to front of thread (order matters for 'reverse' scrolling)
       });
       this.messageThreadLoaded.next(true);  // signal that the message thread from the server has finished loading.
-      console.log(messages);
     });
 
     // CALLED SERVER-SIDE WITHIN 'SEND MESSAGE' IF 2 USERS ARE LIVE IN THE SAME MESSAGE GROUP HUB
@@ -283,13 +279,10 @@ export class MessageService {
     */
     if (pageParams.container === 'Unread') {
       this.onUnread++; this.onInbox = 0; this.onOutbox = 0;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     } else if (pageParams.container === 'Inbox') {
       this.onUnread = 0; this.onInbox++; this.onOutbox = 0;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     } else if (pageParams.container === 'Outbox') {
       this.onUnread = 0; this.onInbox = 0; this.onOutbox++;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     }
 
     /*
@@ -299,15 +292,12 @@ export class MessageService {
     if (this.onUnread === 1 && this.onInbox === 0 && this.onOutbox === 0) {
       this.messageCache = new Map();
       this.pageParams.pageNumber = 1;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     } else if (this.onUnread === 0 && this.onInbox === 1 && this.onOutbox === 0) {
       this.messageCache = new Map();
       this.pageParams.pageNumber = 1;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     } else if (this.onUnread === 0 && this.onInbox === 0 && this.onOutbox === 1) {
       this.messageCache = new Map();
       this.pageParams.pageNumber = 1;
-      console.log(`onUnread: ${this.onUnread}, onInbox: ${this.onInbox}, onOutbox: ${this.onOutbox}`);
     }
 
     /*
@@ -323,7 +313,6 @@ export class MessageService {
       If the key exists(a hyphen-separated string of values from the PageParams - pageNumber, pageSize, etc.), return the result
       stored in that key in order to skip the API call.
     */
-    console.log(Object.values(pageParams).join('-'));
     const response = this.messageCache.get(Object.values(pageParams).join('-'));
     if (response) {
       return of(response); // if response is true, it's in the cache, so skip the API call and instead return that response
@@ -397,7 +386,6 @@ export class MessageService {
   getUnreadMessagesCountApi() {
     return this.http.get<number>(this.baseUrl + 'messages/unread').pipe(
       map(response => {
-        console.log(response);
         this.unreadMessagesCount.next(response);
         return response;
       })
@@ -461,7 +449,6 @@ export class MessageService {
   getMessageGroupsByUsername() {
     return this.http.get<[]>(this.baseUrl + 'messages/message-groups').pipe(
       map(response => {
-        console.log(response);
         return response;
       })
     );

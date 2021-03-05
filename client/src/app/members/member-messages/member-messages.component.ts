@@ -83,7 +83,6 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
         Now, the messages chat box will automatically start at the bottom of the chat thread.
       */
       if (this.activeTabC.heading === 'Messages' && this.scrollBottomCount === 0) {
-        console.log('On messages tab. Scrolling to bottom');
         // this.scrollBottomCount gets incremented within the scrollToBottom() method, so this code block will only hit ONCE per tab load.
         this.scrollToBottom();
       }
@@ -171,7 +170,6 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
         Now, the messages chat box will automatically start at the bottom of the chat thread.
       */
       if (this.activePageC === 'Chat' && this.scrollBottomCount === 0) {
-        console.log('On chat page. Scrolling to bottom');
         // this.scrollBottomCount gets incremented within the scrollToBottom() method, so this code block will only hit ONCE per tab load.
         this.scrollToBottom();
       }
@@ -248,7 +246,6 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
       Check if scrollTop is within the range. User is near the top of their scroll container if within this range.
     */
     if (this.scrollBottomCount > 0 && this.myScrollContainer.nativeElement.scrollTop < 25) {
-      console.log('SCROLL TOP');
       this.scrollTopCount++;                // increment scrollTopCount, which could be incremented a few times within this range.
       if (this.scrollTopCount === 1) {      // Since it can increment a few times, we only want to take the first count
         this.messageService.allMessagesLoadedFlag$.pipe(take(1)).subscribe(b => {
@@ -322,8 +319,7 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
   }
 
   fetchUnreadMessagesCount(): void {
-    this.messageService.getUnreadMessagesCountApi().subscribe(response => {
-      console.log(response);
+    this.messageService.getUnreadMessagesCountApi().subscribe(() => {
     }, error => {
       console.log(error);
     });

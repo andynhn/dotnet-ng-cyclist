@@ -49,6 +49,11 @@ namespace API.Data
             _context.Messages.Remove(message);
         }
 
+        public void DeleteMessages(IEnumerable<Message> messages)
+        {
+            _context.Messages.RemoveRange(messages);
+        }
+
         /// <summary>
         /// Asynchronously get a connection, given the connection id, from the data context.
         /// </summary>
@@ -87,6 +92,31 @@ namespace API.Data
 
             return await query.ToListAsync();
 
+        }
+
+        public void DeleteMessageGroups(IEnumerable<Group> groups)
+        {
+            _context.Groups.RemoveRange(groups);
+        }
+
+        public async Task<IEnumerable<Message>> GetAllUsersMessages(string username)
+        {
+            return await _context.Messages
+                .Where(m => m.SenderUsername == username || m.RecipientUsername == username)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Message>> GetAllUsersReceivedMessages(string username)
+        {
+            return await _context.Messages
+                .Where(m => m.RecipientUsername == username)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Message>> GetAllUsersSentMessages(string username)
+        {
+            return await _context.Messages
+                .Where(m => m.SenderUsername == username)
+                .ToListAsync();
         }
 
         /// <summary>

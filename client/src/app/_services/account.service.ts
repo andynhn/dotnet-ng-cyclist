@@ -70,6 +70,10 @@ export class AccountService {
     );
   }
 
+  deleteAccount() {
+    return this.http.delete(this.baseUrl + 'account/delete-account').pipe();
+  }
+
   /**
    * Method that sets the jwt and other useful information in localStorage as the 'user' item.
    * Updates the currentUser$ observable to point to the new user so that we can access this info throughout the app.

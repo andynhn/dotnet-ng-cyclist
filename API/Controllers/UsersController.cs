@@ -100,6 +100,10 @@ namespace API.Controllers
             var currentUsername = User.GetUsername();
             // set current user to true if the user being fetched is the current logged in user.
             var member = await _unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username);
+            if (member == null)
+            {
+                return NotFound("User does not exist"); 
+            }
             return Ok(member);
         }
 

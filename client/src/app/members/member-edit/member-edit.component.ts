@@ -1,8 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
+import { DeleteAccountModalComponent } from 'src/app/modals/delete-account-modal/delete-account-modal.component';
 import { Member } from 'src/app/_models/member';
 import { User } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
@@ -26,6 +29,7 @@ export class MemberEditComponent implements OnInit {
   cities: string[] = [];
   selectedState = '';
   loading = false;
+  bsModalRef: BsModalRef;
 
   // HostListener lets us access our browser everts. This notifies user that the form is unsaved if they close the browser
   @HostListener('window:beforeunload', ['$event']) unloadNotification($event: any) {
@@ -37,6 +41,8 @@ export class MemberEditComponent implements OnInit {
   constructor(private accountService: AccountService,
               private memberService: MembersService,
               private toastr: ToastrService,
+              private modalService: BsModalService,
+              private router: Router,
               private http: HttpClient) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
    }
@@ -47,8 +53,6 @@ export class MemberEditComponent implements OnInit {
 
   getCityStates(): any {
     this.http.get('../../assets/cityStates.json').subscribe(data => {
-      console.log(data);
-      console.log(this.selectedState);
       this.states = data;
       // call load member here so that city states json gets loaded in time. Form needs this data.
       this.loadMember();
@@ -56,16 +60,34 @@ export class MemberEditComponent implements OnInit {
   }
 
   changeState(data) {
-    console.log(data);
     if (!data) {
-      console.log('no data here')
       this.selectedState = '';
     }
     if (data) {
       this.selectedState = data;
-      console.log('made it here');
       this.cities = this.states[data];
     }
+  }
+
+  openDeleteUserModal(user: User) {
+    const config = {
+      class: 'modal-dialog-centered',
+      initialState: {
+        user
+      }
+    };
+    this.bsModalRef = this.modalService.show(DeleteAccountModalComponent, config);
+    this.bsModalRef.content.deleteUserAccount.subscribe(response => {
+      if (response) {
+        this.accountService.deleteAccount().subscribe(() => {
+          this.accountService.logout();
+          this.router.navigateByUrl('/');
+          this.toastr.success(`You account has been deleted.`);
+        }, error => {
+          this.toastr.error(error, 'Encountered an error while trying to delete your account.');
+        });
+      }
+    });
   }
 
   /**
@@ -95,14 +117,12 @@ export class MemberEditComponent implements OnInit {
           m.lastName = m.lastName.charAt(0).toUpperCase() + m.lastName.toLowerCase().slice(1);
           // selectedState variable needed for dynamic hiding/displaying of city dropdown
           this.selectedState = m.state;
-          console.log(this.selectedState);
           // Cities from json file should have loaded, so now we can assign it. This will dynamically fill cities dropdown with...
           // ...a list of cities for that particular state.
           this.cities = this.states[this.selectedState];
 
           // Within the edit photo page, we want the user's photos to show their Main photo FIRST. So sort the array of photos.
           let shouldSkip = false;
-          console.log(m.photos)
           m.photos.forEach((photoObject, i) => {
             if (shouldSkip) {
               return;
@@ -110,12 +130,9 @@ export class MemberEditComponent implements OnInit {
             if (photoObject.isMain === true) {
               m.photos.splice(i, 1);
               m.photos.unshift(photoObject);
-              console.log(photoObject);
               shouldSkip = true;
             }
-            console.log('still in loop');
           });
-          console.log(m.photos);
         }
       }
 
