@@ -12,7 +12,7 @@ import { PresenceService } from './_services/presence.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Saddle Up Cyclists';
+  title = 'Meet Cyclists';
   isLoading: boolean;
 
   // Inject the account service, which is a singleton.

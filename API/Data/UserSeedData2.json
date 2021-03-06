@@ -2,7 +2,7 @@
     {
       "UserName": "WandaCarter",
       "Gender": "female",
-      "DateOfBirth": "1935-05-16",
+      "DateOfBirth": "1980-05-16",
       "FirstName": "Wanda",
       "LastName": "Carter",
       "CreatedAt": "2020-12-03",
@@ -23,7 +23,7 @@
     {
       "UserName": "TerriColon",
       "Gender": "female",
-      "DateOfBirth": "1958-09-18",
+      "DateOfBirth": "1985-09-18",
       "FirstName": "Terri",
       "LastName": "Colon",
       "CreatedAt": "2019-07-11",
@@ -44,7 +44,7 @@
     {
       "UserName": "CharlotteFernandez",
       "Gender": "female",
-      "DateOfBirth": "1962-06-23",
+      "DateOfBirth": "1975-06-23",
       "FirstName": "Charlotte",
       "LastName": "Fernandez",
       "CreatedAt": "2020-01-02",
@@ -65,7 +65,7 @@
     {
       "UserName": "TabithaMckinney",
       "Gender": "female",
-      "DateOfBirth": "1972-04-22",
+      "DateOfBirth": "1982-04-22",
       "FirstName": "Tabitha",
       "LastName": "Mckinney",
       "CreatedAt": "2020-01-27",
@@ -86,7 +86,7 @@
     {
       "UserName": "LeahRyan",
       "Gender": "female",
-      "DateOfBirth": "1983-03-20",
+      "DateOfBirth": "1987-03-20",
       "FirstName": "Leah",
       "LastName": "Ryan",
       "CreatedAt": "2020-02-07",
@@ -95,7 +95,7 @@
       "CyclingCategory": "gravel",
       "CyclingFrequency": "weekly",
       "SkillLevel": "intermediate",
-      "City": "Phoenix",
+      "City": "Tucson",
       "State": "Arizona",
       "Photos": [
         {
@@ -107,7 +107,7 @@
     {
       "UserName": "ChristyBerger",
       "Gender": "female",
-      "DateOfBirth": "1970-01-28",
+      "DateOfBirth": "1990-01-28",
       "FirstName": "Christy",
       "LastName": "Berger",
       "CreatedAt": "2020-01-28",
@@ -149,7 +149,7 @@
     {
       "UserName": "LeslieWalker",
       "Gender": "female",
-      "DateOfBirth": "1937-07-02",
+      "DateOfBirth": "1988-07-02",
       "FirstName": "Leslie",
       "LastName": "Walker",
       "CreatedAt": "2019-07-17",
@@ -170,7 +170,7 @@
     {
       "UserName": "TinaTeal",
       "Gender": "female",
-      "DateOfBirth": "1965-08-23",
+      "DateOfBirth": "1974-08-23",
       "FirstName": "Tina",
       "LastName": "Teal",
       "CreatedAt": "2019-04-14",
@@ -191,7 +191,7 @@
     {
       "UserName": "TracieFox",
       "Gender": "female",
-      "DateOfBirth": "1935-10-29",
+      "DateOfBirth": "1983-10-29",
       "FirstName": "Tracie",
       "LastName": "Fox",
       "CreatedAt": "2020-04-26",
@@ -212,7 +212,7 @@
       {
       "UserName": "JoelMicky",
       "Gender": "male",
-      "DateOfBirth": "1980-09-23",
+      "DateOfBirth": "1991-09-23",
       "FirstName": "Joel",
       "LastName": "Micky",
       "CreatedAt": "2019-12-21",
@@ -317,7 +317,7 @@
     {
       "UserName": "BradleyHanson",
       "Gender": "male",
-      "DateOfBirth": "1945-02-27",
+      "DateOfBirth": "1980-02-27",
       "FirstName": "Bradley",
       "LastName": "Hanson",
       "CreatedAt": "2019-09-08",
@@ -359,7 +359,7 @@
     {
       "UserName": "JonPowers",
       "Gender": "male",
-      "DateOfBirth": "1933-02-25",
+      "DateOfBirth": "1993-02-25",
       "FirstName": "Jon",
       "LastName": "Powers",
       "CreatedAt": "2019-09-13",
@@ -380,7 +380,7 @@
     {
       "UserName": "HomerSimpson",
       "Gender": "male",
-      "DateOfBirth": "1977-09-24",
+      "DateOfBirth": "1992-09-24",
       "FirstName": "Homer",
       "LastName": "Simpson",
       "CreatedAt": "2020-09-28",
@@ -401,7 +401,7 @@
     {
       "UserName": "DukeLevy",
       "Gender": "male",
-      "DateOfBirth": "1984-03-19",
+      "DateOfBirth": "1980-03-19",
       "FirstName": "Duke",
       "LastName": "Levy",
       "CreatedAt": "2019-01-03",

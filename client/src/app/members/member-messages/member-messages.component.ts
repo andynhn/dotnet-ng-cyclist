@@ -29,7 +29,6 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
   loading = false;    // boolean to help toggle display in component based on whether data is being loaded.
   messageContent: string; // make sure the name of the input in the form is the same
   memberChatParams: MemberChatParams;     // aid in "scrolled pagination" of chat box, aka Infinite Scrolling
-  scrollTopCount: number;                 // tracks similarly named variable from the messageService
   scrolledPagesCount: number;             // tracks similarly named variable from the messageService
   allMessagesLoadedFlag: boolean;         // tracks similarly named variable from the messageService
   messageThreadLoaded: boolean;           // tracks similarly named variable from the messageService. Are messages loaded?
@@ -44,7 +43,6 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
     // We need to initialize some component variables in the constructor. Set them to the variables from the service.
         this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
         this.messageService.messageThreadLoaded$.pipe(take(1)).subscribe(m => this.messageThreadLoaded = m);
-        this.messageService.scrollTopCount$.pipe(take(1)).subscribe(s => this.scrollTopCount = s);
         this.messageService.scrolledPagesCount$.pipe(take(1)).subscribe(s => this.scrolledPagesCount = s);
         this.messageService.allMessagesLoadedFlag$.pipe(take(1)).subscribe(b => this.allMessagesLoadedFlag = b);
         this.messageService.scrollBottomCount$.pipe(take(1)).subscribe(s => this.scrollBottomCount = s);
@@ -70,11 +68,15 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
       /*
         IF USER CLICKS ON DIFFERENT TABS WITHIN THE PARENT COMPONENT:
         Eventually, activeTabC will have a value and we'll get here...
-        If not on the "Messages" tab, set "scrollBottomCount" to 0.
+        If not on the "Messages" tab, set "scrollBottomCount" to 0 and "scrolledPagesCount" to 1
         Although redudant if the component is just initalized, it's needed if the user navigates to tabs within the parent component.
+        These should be reset so that it always scrolls users to bottom of chat thread on component load
+        scrolledPagesCount is 1 for the initial load since it is essentially the
+        page number for scrolled pagination. Scrolled pagination won't work or load new messages correctly without this.
       */
       if (this.activeTabC.heading !== 'Messages' && this.scrollBottomCount !== 0) {
         this.scrollBottomCount = 0;
+        this.scrolledPagesCount = 1;
       }
       /*
         IF USER CLICKS ON THE MESSAGES TAB:
@@ -154,14 +156,9 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
       // ------------------------------------------------------------------------------------------------------------------------
       // ---------------------LOGIC FOR SCROLLING TO BOTTOM OF CHAT BOX ON INITIAL LOAD OF MESSAGES PAGE-------------------------
       // ------------------------------------------------------------------------------------------------------------------------
-      /*
-        IF USER CLICKS ON DIFFERENT TABS WITHIN THE PARENT COMPONENT:
-        Eventually, activeTabC will have a value and we'll get here...
-        If not on the "Messages" tab, set "scrollBottomCount" to 0.
-        Although redudant if the component is just initalized, it's needed if the user navigates to tabs within the parent component.
-      */
       if (this.activePageC !== 'Chat' && this.scrollBottomCount !== 0) {
         this.scrollBottomCount = 0;
+        this.scrolledPagesCount = 1;
       }
       /*
         IF USER CLICKS ON THE MESSAGES TAB:
@@ -244,21 +241,19 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
       Check if scrollBottomCount > 0 in order to skip the initial page load when the scroll is at the top momentarily before
       our logic that auto-scrolls down to bottom of chat thread.
       Check if scrollTop is within the range. User is near the top of their scroll container if within this range.
+      These checks are essential so that it does not always hit the API on scroll.
     */
-    if (this.scrollBottomCount > 0 && this.myScrollContainer.nativeElement.scrollTop < 25) {
-      this.scrollTopCount++;                // increment scrollTopCount, which could be incremented a few times within this range.
-      if (this.scrollTopCount === 1) {      // Since it can increment a few times, we only want to take the first count
-        this.messageService.allMessagesLoadedFlag$.pipe(take(1)).subscribe(b => {
-          this.allMessagesLoadedFlag = b;   // access this flag from the member service
-          /*
-             If false, we can return more messages from the server on scroll.
-             if true, we've reached the top of their scroll box. Stop infinite scrolling.
-          */
-          if (this.allMessagesLoadedFlag === false) {
-            this.displayMoreMessages();
-          }
-        });
-      }
+    if (this.scrollBottomCount > 0 && !this.loading && this.myScrollContainer.nativeElement.scrollTop < 25) {
+      this.messageService.allMessagesLoadedFlag$.pipe(take(1)).subscribe(b => {
+        this.allMessagesLoadedFlag = b;   // access this flag from the member service
+        /*
+            If false, we can return more messages from the server on scroll.
+            if true, we've reached the top of their scroll box. Stop infinite scrolling.
+        */
+        if (this.allMessagesLoadedFlag === false) {
+          this.displayMoreMessages();
+        }
+      });
     }
   }
 
@@ -270,6 +265,7 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
     this.memberChatParams.pageNumber = this.scrolledPagesCount;   // since it reflects the pageNumber, set the chat params property.
     const oldPosition = this.myScrollContainer.nativeElement.scrollTop; // store the "old" position to return their after message load.
     this.loadingService.setToLoading();                                 // activate our loading service indicator.
+    this.loading = true;                      // set to true to skip onScroll() logic while this is making the API call.
     setTimeout(() => {                                                  // Want a slight delay to indicate that messages are being fetched.
       this.messageService.setMemberChatParams(this.memberChatParams);   // set the params in the service. Used in method to get messages.
       this.messageService.displayMoreMessages(this.username).then(() => {   // Access Async service method. It returns a promise.
@@ -277,8 +273,8 @@ export class MemberMessagesComponent implements OnInit, AfterViewChecked {
         this.myScrollContainer.nativeElement.scrollTop = oldPosition;   // return user to position of where they left off in message thread
       }).finally(() => {
         this.loadingService.setToIdle();                          // turn off our loading indicator
-        this.scrollTopCount = 0;                                  // reset so that when the user scrolls again, more messages load.
-        this.messageService.resetScrollTopCount();
+        this.loading = false;                                     // turn loading off to enable onScroll logic again.
+        // console.log('finally');
       });
     }, 500);        // set the delay time.
   }

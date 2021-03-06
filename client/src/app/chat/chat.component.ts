@@ -62,7 +62,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.messageService.createHubConnection(this.user, this.selectedMember.username);
         this.loadingService.setToIdle();
         this.loading = false;
-      }, 500);
+      }, 200);
     }
   }
 

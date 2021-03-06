@@ -44,8 +44,6 @@ export class MessageService {
   scrollBottomCount$ = this.scrollBottomCount.asObservable();
 
   // **PROPERTIES THAT HELP WITH 'INFINITE SCROLLING UPWARDS' WITHIN A MESSAGE CHAT BOX
-  private scrollTopCount = new BehaviorSubject<number>(0);  // increment when user gets to top of scroll obx. Used to trigger a function.
-  scrollTopCount$ = this.scrollTopCount.asObservable();
   private scrolledPagesCount = new BehaviorSubject<number>(1);  // increments when API call made to load more messages on scroll to top
   scrolledPagesCount$ = this.scrolledPagesCount.asObservable();
   private allMessagesLoadedFlag = new BehaviorSubject<boolean>(false);  // tracks if all messages have been returned (scrolled to very top)
@@ -99,6 +97,8 @@ export class MessageService {
     this.hubConnection.on('ReceiveMessageThread', messages => {   // method name must match server-side method in MessageHub.cs
       if (messages.length < this.memberChatParams.pageSize) { // If returned messages are less than pageSize, all messages have been loaded
         this.allMessagesLoadedFlag.next(true);           // set to true to prevent component 'infinite scrolling' from making more API calls
+      } else {
+        this.allMessagesLoadedFlag.next(false);  // set to false to continue api calls within 'infinite scrolling'
       }
       this.messageThreadSource.next(messages);           // update the message thread to include the received messages from the server.
       this.messageThreadLoaded.next(true);  // set to true since messages are done loading. Used for auto-scroll bottom in chat on page load
@@ -164,6 +164,8 @@ export class MessageService {
    * @param username the username of the other user in the message thread
    */
   async displayMoreMessages(username: string) {
+    // console.log(this.memberChatParams.pageSize)
+    // console.log(this.memberChatParams.pageNumber)
     return this.hubConnection.invoke('GetMoreMessages',
         {                                                 // method must accept an object that matches the server-side parameters
           recipientUsername: username,
@@ -187,7 +189,6 @@ export class MessageService {
       this.resetMessageThreadLoadedBoolean();   // rest property that tracks whether a message thread is done loading
       // ----------------RESET PROPERTIES THAT HELP WITH INFINITE SCROLLING CHAT BOX------------------------
       this.resetMemberChatParams();             // reset params that help with 'scrolling pagination'. Provide pageNumber and pageSize.
-      this.resetScrollTopCount();               // reset property that tracks when user has scrolled to top of chat box
       this.resetScrolledPagesCount();           // reset property that tracks API calls to load more 'scrolled pages' for infinite scrolling
       this.resetAllMessagesLoadedFlag();        // reset proeprty that signals whether all messages have loaded to stop infinite scrolling.
       this.resetHubMessageReceivedFlag();       // reset property that signals a message receipt while 2 users are live in a chat.
@@ -211,13 +212,6 @@ export class MessageService {
   }
   resetScrollBottomCount(): void {
     this.scrollBottomCount.next(0);
-  }
-  // -------------------GET, SET, AND RESET SCROLL TOP COUNT--------------------
-  setScrollTopCount(value: number): void {
-    this.scrollTopCount.next(value);
-  }
-  resetScrollTopCount(): void {
-    this.scrollTopCount.next(0);
   }
   // -----------------GET, SET, AND RESET SCROLLED PAGES COUNT-------------------
   setScrolledPagesCount(value: number): void {

@@ -4,7 +4,7 @@
         style="overflow: scroll; height: 535px; padding-bottom: 0px;"
         (scroll)="onScroll($event)"
     >
-        <div *ngIf="(messageService.messageThread$ | async)?.length === 0">
+        <div *ngIf="(messageService.messageThread$ | async)?.length === 0 && (messageService.messageThreadLoaded$ | async)">
             No messages yet... say hi by using the message box below
         </div>
 
