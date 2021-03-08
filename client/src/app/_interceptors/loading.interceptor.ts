@@ -24,7 +24,7 @@ export class LoadingInterceptor implements HttpInterceptor {
     // when we intercept the http request, turn on the loading spinner by calling the method in the loading service
     this.loadingService.setToLoading();
     return next.handle(request).pipe(
-      // delay(400), // TODO: turn off delay for production
+      // delay(400), // turned off delay for production
       finalize(() => {
         // After the request has been handled, turn off the loading spinner.
         this.loadingService.setToIdle();
