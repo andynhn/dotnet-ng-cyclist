@@ -62,7 +62,9 @@ namespace API.Data
             // for dev purposes, seed an admin.
             var admin = new AppUser
             {
-                UserName = "admin"
+                UserName = "admin",
+                FirstName = "john",
+                LastName = "smith"
             };
 
             // save the admin to the db. Then given them the role of Admin and Moderator.
