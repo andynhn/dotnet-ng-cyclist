@@ -7,8 +7,6 @@ using API.Middleware;
 using API.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -32,42 +30,6 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // --------------------------------------------------HTTP/HTTPS REDIRECT--------------------------------------------------
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                // set to 1 day. if not set, defaults to 30. Set the value from hours to no more than a single day in case you need to revert the HTTPS infrastructure to HTTP. 
-                // After you're confident in the sustainability of the HTTPS configuration, increase the HSTS max-age value; a commonly used value is one year.
-                options.MaxAge = TimeSpan.FromDays(1);  
-            });
-
-            // The middleware defaults to sending a Status307TemporaryRedirect with all redirects. 
-            // If you prefer to send a permanent redirect status code when the app is in a non-Development environment, wrap 
-            // the middleware options configuration in a conditional check for a non-Development environment.
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-            {
-                services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                    options.HttpsPort = 5001;
-                });
-            } else {
-                services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    options.HttpsPort = 443;
-                });
-            }
-
-            // --------------------------------------------------HTTP/HTTPS REDIRECT--------------------------------------------------
-
             // gives us access to our custom extension method from ApplicationServiceExtensions.cs
             services.AddApplicationServices(_config);
 
@@ -93,20 +55,6 @@ namespace API
         {
             // Exception handling comes first. This is our custom exception handling middleware.
             app.UseMiddleware<ExceptionMiddleware>();
-            // --------------------------------------------------HTTP/HTTPS REDIRECT--------------------------------------------------
-            if (env.IsDevelopment())
-            {
-                app.UseForwardedHeaders();
-            }
-            else
-            {
-                // Forwarded Headers Middleware should run before other middleware. This ordering ensures that the middleware relying on 
-                // forwarded headers information can consume the header values for processing. 
-                // Forwarded Headers Middleware can run after diagnostics and error handling, but it must be run before calling UseHsts
-                app.UseForwardedHeaders();
-                app.UseHsts();
-            }
-            // --------------------------------------------------HTTP/HTTPS REDIRECT--------------------------------------------------
 
             // commented out for now in order to use our own custom exception handling middleware (above)
             // if (env.IsDevelopment())
