@@ -7,6 +7,8 @@ using API.Middleware;
 using API.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +32,52 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
+            // ---------------------------------------------------------------------------------------------------------------------
+            // --------------------HTTP/HTTPS REDIRECT LOGIC------------------------------------------------------------------------
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.2#forward-the-scheme-for-linux-and-non-iis-reverse-proxies
+            // To forward the scheme from the proxy in non-IIS scenarios, add and configure Forwarded Headers Middleware. 
+            // In Startup.ConfigureServices, use the following code:
+            if (string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED"), 
+                "true", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("ASPNETCORE_FORWARDEDHEADERS_ENABLED: " + Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED"));
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                        ForwardedHeaders.XForwardedProto;
+                    // Only loopback proxies are allowed by default.
+                    // Clear that restriction because forwarders are enabled by explicit 
+                    // configuration.
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                });
+            }
+
+            if (string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), 
+                "Development", StringComparison.OrdinalIgnoreCase))
+            {
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                    options.HttpsPort = 5001;
+                });
+            } else {
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    options.HttpsPort = 443;
+                });
+            }
+
+
+            // ---------------------------------------------------------------------------------------------------------------------
+            // --------------------HTTP/HTTPS REDIRECT LOGIC------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------------------------------
+
             // gives us access to our custom extension method from ApplicationServiceExtensions.cs
             services.AddApplicationServices(_config);
 
@@ -51,10 +99,83 @@ namespace API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             // Exception handling comes first. This is our custom exception handling middleware.
             app.UseMiddleware<ExceptionMiddleware>();
+
+            // ---------------------------------------------------------------------------------------------------------------------
+            // --------------------HTTP/HTTPS REDIRECT LOGIC------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------------------------------
+
+            app.UseForwardedHeaders();
+
+            // below is used to log the headers in the console
+            app.Use(async (context, next) =>
+            {
+                logger.LogInformation("------DEBUGGING REQUEST HEADERS AND HTTP/HTTPS REDIRECT");
+                // Request method, scheme, and path
+                logger.LogInformation("------REQUEST METHOD: {Method}", context.Request.Method);
+                logger.LogInformation("------REQUEST SCHEME: {Scheme}", context.Request.Scheme);
+                logger.LogInformation("------REQUEST PATH: {Path}", context.Request.Path);
+
+                // Headers
+                foreach (var header in context.Request.Headers)
+                {
+                    logger.LogInformation("------HEADER: {Key}: {Value}", header.Key, header.Value);
+                }
+
+                // Connection: RemoteIp
+                logger.LogInformation("------REQUEST REMOTE IP: {RemoteIpAddress}", 
+                    context.Connection.RemoteIpAddress);
+
+                await next();
+            });
+
+
+
+            // below is used to send the headers as a response to the app.
+            // To write the headers to the app's response, place the following terminal inline middleware immediately after the call to UseForwardedHeaders in Startup.Configure:
+            // app.Run(async (context) =>
+            // {
+            //     context.Response.ContentType = "text/plain";
+
+            //     // Request method, scheme, and path
+            //     await context.Response.WriteAsync(
+            //         $"Request Method: {context.Request.Method}{Environment.NewLine}");
+            //     await context.Response.WriteAsync(
+            //         $"Request Scheme: {context.Request.Scheme}{Environment.NewLine}");
+            //     await context.Response.WriteAsync(
+            //         $"Request Path: {context.Request.Path}{Environment.NewLine}");
+
+            //     // Headers
+            //     await context.Response.WriteAsync($"Request Headers:{Environment.NewLine}");
+
+            //     foreach (var header in context.Request.Headers)
+            //     {
+            //         await context.Response.WriteAsync($"{header.Key}: " +
+            //             $"{header.Value}{Environment.NewLine}");
+            //     }
+
+            //     await context.Response.WriteAsync(Environment.NewLine);
+
+            //     // Connection: RemoteIp
+            //     await context.Response.WriteAsync(
+            //         $"Request RemoteIp: {context.Connection.RemoteIpAddress}");
+            // });
+
+            // TODO: Must correctly implement http redirect to https for Heroku, specifically.
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-5.0#forwarded-headers-middleware-options
+            // Heroku: Redirects need to be performed at the application level as the Heroku router does not provide this functionality. 
+            // You should code the redirect logic into your application. Under the hood, Heroku router (over)writes the X-Forwarded-Proto...
+            // ... and the X-Forwarded-Port request headers. The app must check X-Forwarded-Proto and respond with a redirect response when it is not https but http.
+            // configure your server to only accepts clients whose X-Forwarded-Proto request header is set to https
+
+
+            // ---------------------------------------------------------------------------------------------------------------------
+            // --------------------HTTP/HTTPS REDIRECT LOGIC------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------------------------------
+
 
             // commented out for now in order to use our own custom exception handling middleware (above)
             // if (env.IsDevelopment())
