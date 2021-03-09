@@ -5,6 +5,8 @@ using API.Interfaces;
 using API.Services;
 using API.SignalR;
 using AutoMapper;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +49,15 @@ namespace API.Extensions
             
             // Add Automapper configuration here
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+            {
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    options.HttpsPort = 443;
+                });
+            }
 
             // configure the DataContext here and specify where to get the connections tring.
             services.AddDbContext<DataContext>(options =>
