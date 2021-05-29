@@ -3,6 +3,14 @@
 ## Summary
 Meet Cyclists is a social connection and live chatting app built using C#/.NET Core and Angular with a PostgreSQL database.
 
+This application is based on the dating app built alongside Udemy's online course on how to build a web app using ASP.NET Core and Angular. It incorporates many of the same designs, components, and core features as the Udemy course, but I took the theme and styling in a different direction and implemented a few additional features using what I had learned. These additional features include:
+
+1. A separate consolidated chat page (e.g. Facebook Messenger, Apple Messages, etc.) with infinite scrolling (API call to load messages when the user scrolls to the top of the current chat box) and dynamic name filtering when searching for message threads by username (by using a custom Angular pipe).
+2. Changing passwords and deleting accounts using ASP.NET Identity.
+3. Additional filtering and search criteria for the "Discover" page related to the cycling theme. For example, I added options for preferred cycling surface, cycling frequency, and skill level. I also added a State/City search using a JSON file. When searching for users, the City field will dynamically update based on what the user selects for the State.
+4. Responsive styling using ngx-bootstrap, including the use of side navigation for pages that include search and filters. This gave those pages a bit of a cleaner dashboard design.
+
+
 GitHub: *[https://github.com/andynhn/dotnet-ng-cyclist](https://github.com/andynhn/dotnet-ng-cyclist)*
 
 This document will guide developers on how to set up the application on their local machine. It will also provide a general overview of the application's overall architecture.
